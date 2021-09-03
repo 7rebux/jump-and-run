@@ -1,0 +1,6 @@
+# MySQL database settings
+hostname: "hostname"
+port: 0
+database: "database"
+username: "username"
+password: "password"
