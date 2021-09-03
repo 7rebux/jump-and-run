@@ -1,4 +1,2 @@
-- [ ] GitHub Repository
 - [ ] Permissions
-- [ ] Check if spawn was executed PlayerCommandPreprocessEvent 
-- Fail counter ?
+- [ ] Check if spawn was executed PlayerCommandPreprocessEvent
