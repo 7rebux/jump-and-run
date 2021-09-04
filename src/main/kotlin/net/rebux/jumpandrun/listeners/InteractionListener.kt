@@ -13,7 +13,7 @@ class InteractionListener: Listener {
     fun onInteract(event: PlayerInteractEvent) {
         if (event.item != null && event.item.itemMeta.displayName != null) {
             when (event.item.itemMeta.displayName) {
-                "${ChatColor.BOLD}${ChatColor.AQUA}Jump&Run´s" ->
+                "${ChatColor.AQUA}${ChatColor.BOLD}Jump&Run's" ->
                     event.player.openInventory(ParkourInventory(event.player).inventory)
                 Items.getCheckpointItem().itemMeta.displayName ->
                     event.player.teleport(Main.instance.playerCheckpoints[event.player]!!.second)
