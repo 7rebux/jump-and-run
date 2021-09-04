@@ -17,10 +17,10 @@ object SQLQueries {
             sqlConnection.update("""
                 CREATE TABLE IF NOT EXISTS Parkours (
                     id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-                    name varchar,
+                    name varchar(255),
                     difficulty int,
-                    material varchar,
-                    location varchar,
+                    material varchar(255),
+                    location varchar(1024),
                     reset_height int
                 );
             """.trimIndent())
@@ -29,7 +29,7 @@ object SQLQueries {
                 CREATE TABLE IF NOT EXISTS BestTimes (
                     uuid varchar(36),
                     parkour_id int,
-                    int time
+                    time int
                 );
             """.trimIndent())
         }
@@ -45,7 +45,7 @@ object SQLQueries {
 
     fun getGlobalBestTime(parkourId: Int): Pair<UUID, Int> {
         sqlConnection.query("""
-            SELECT MIN(time), uuid
+            SELECT MIN(time) AS "time", uuid
             FROM BestTimes
             WHERE parkour_id = $parkourId;
         """.trimIndent()).also { resultSet ->
@@ -59,7 +59,7 @@ object SQLQueries {
             SELECT *
             FROM BestTimes
             WHERE parkour_id = $parkourId
-                AND uuid = $uuid;
+                AND uuid = "$uuid";
         """.trimIndent()).also { return it.next() }
     }
 
@@ -68,7 +68,7 @@ object SQLQueries {
             SELECT time
             FROM BestTimes
             WHERE parkour_id = $parkourId
-                AND uuid = $uuid;
+                AND uuid = "$uuid";
         """.trimIndent()).also { resultSet ->
             resultSet.next()
             return resultSet.getInt("time")
@@ -81,13 +81,13 @@ object SQLQueries {
                 sqlConnection.update("""
                     UPDATE BestTimes
                     SET time = $time
-                    WHERE uuid = $uuid
+                    WHERE uuid = "$uuid"
                         AND parkour_id = $parkourId;
             """.trimIndent())
             } else {
                 sqlConnection.update("""
                     INSERT INTO BestTimes(uuid, parkour_id, time)
-                    VALUES($uuid, $parkourId, $time);
+                    VALUES("$uuid", $parkourId, $time);
                 """.trimIndent())
             }
         }
@@ -98,7 +98,7 @@ object SQLQueries {
             sqlConnection.update("""
                 DELETE FROM BestTimes
                 WHERE parkour_id = $parkourId
-                    AND uuid = $uuid;
+                    AND uuid = "$uuid";
             """.trimIndent())
         }
     }
@@ -131,8 +131,8 @@ object SQLQueries {
         Bukkit.getScheduler().runTaskAsynchronously(plugin) {
             sqlConnection.update("""
                 INSERT INTO Parkours(id, name, difficulty, material, location, reset_height)
-                VALUES(${parkour.id}, ${parkour.name}, ${parkour.difficulty.id}, ${parkour.material.name}, 
-                    ${LocationSerializer.toBase64String(parkour.location)}, ${parkour.resetHeight});
+                VALUES(${parkour.id}, "${parkour.name}", ${parkour.difficulty.id}, "${parkour.material.name}", 
+                    "${LocationSerializer.toBase64String(parkour.location)}", ${parkour.resetHeight});
             """.trimIndent())
         }
     }
