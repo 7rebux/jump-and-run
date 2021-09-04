@@ -15,39 +15,37 @@ import java.util.*
 
 class JumpAndRunCommand : CommandExecutor {
     private val plugin = Main.instance
-    private val prefix = plugin.prefix
 
-    // TODO permission
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         Bukkit.getScheduler().runTaskAsynchronously(plugin) {
-            if (args.isEmpty() || args[0].lowercase(Locale.getDefault()) == "help") {
-                sender.sendMessage("$prefix /jnr list")
-                sender.sendMessage("$prefix /jnr add <name> <difficultyId> <material> <resetHeight>")
-                sender.sendMessage("$prefix /jnr remove <id>")
-                sender.sendMessage("$prefix /jnr reset <id> <uuid>")
+            if (args.isEmpty() || args[0] == " " || args[0].lowercase(Locale.getDefault()) == "help") {
+                sender.sendMessage("${Main.PREFIX} /jnr list")
+                sender.sendMessage("${Main.PREFIX} /jnr add <name> <difficultyId> <material> <resetHeight>")
+                sender.sendMessage("${Main.PREFIX} /jnr remove <id>")
+                sender.sendMessage("${Main.PREFIX} /jnr reset <id> <uuid>")
             }
 
             when (args[0].lowercase(Locale.getDefault())) {
                 "list" -> {
                     if (plugin.parkourManager.parkours.isEmpty())
-                        sender.sendMessage("$prefix Es sind keine Parcours vorhanden!")
+                        sender.sendMessage("${Main.PREFIX} Es sind keine Parcours vorhanden!")
                     else
                         plugin.parkourManager.parkours.forEach {
-                            sender.sendMessage("$prefix #${it.id}: ${it.name} - ${it.difficulty}")
+                            sender.sendMessage("${Main.PREFIX} #${it.id}: ${it.name} - ${it.difficulty}")
                     }
                 }
                 "add" -> {
                     if (sender !is Player)
-                        sender.sendMessage("$prefix Dieser Befehl kann nur als Spieler ausgeführt werden!")
+                        sender.sendMessage("${Main.PREFIX} Dieser Befehl kann nur als Spieler ausgeführt werden!")
                     else if (args.size != 5)
-                        sender.sendMessage("$prefix /jnr add <name> <difficultyId> <material> <resetHeight>")
+                        sender.sendMessage("${Main.PREFIX} /jnr add <name> <difficultyId> <material> <resetHeight>")
                     else {
                         try {
                             val location = sender.location
-                            val id = plugin.parkourManager.getMaxId() ?: -1
+                            val id = plugin.parkourManager.getMaxId() ?: 0
                             val name = args[1]
                             val difficulty = Difficulty.getById(args[2].toInt())
-                            val material = Material.getMaterial(args[3])
+                            val material = Material.getMaterial(args[3].uppercase())
                             val resetHeight = args[4].toInt()
 
                             plugin.parkourManager.addParkour(
@@ -61,7 +59,7 @@ class JumpAndRunCommand : CommandExecutor {
                                 )
                             )
 
-                            sender.sendMessage("$prefix Parkour erfolgreich hinzugefügt")
+                            sender.sendMessage("${Main.PREFIX} Parkour erfolgreich hinzugefügt")
                         } catch (e: Exception) {
                             sender.sendMessage(e.message)
                         }
@@ -69,17 +67,17 @@ class JumpAndRunCommand : CommandExecutor {
                 }
                 "remove" -> {
                     if (args.size != 2)
-                        sender.sendMessage("$prefix /jnr remove <id>")
+                        sender.sendMessage("${Main.PREFIX} /jnr remove <id>")
                     else {
                         try {
                             val id = args[1].toInt()
 
                             if (plugin.parkourManager.hasParkour(id)) {
                                 plugin.parkourManager.removeParkour(id)
-                                sender.sendMessage("$prefix Parkour erfolgreich entfernt")
+                                sender.sendMessage("${Main.PREFIX} Parkour erfolgreich entfernt")
                             }
                             else
-                                sender.sendMessage("$prefix Dieser Parkour existiert nicht!")
+                                sender.sendMessage("${Main.PREFIX} Dieser Parkour existiert nicht!")
                         } catch (e: Exception) {
                             sender.sendMessage(e.message)
                         }
@@ -87,7 +85,7 @@ class JumpAndRunCommand : CommandExecutor {
                 }
                 "reset" -> {
                     if (args.size != 3)
-                        sender.sendMessage("$prefix /jnr reset <id> <uuid>")
+                        sender.sendMessage("${Main.PREFIX} /jnr reset <id> <uuid>")
                     else {
                         try {
                             val id = args[1].toInt()
@@ -96,7 +94,7 @@ class JumpAndRunCommand : CommandExecutor {
                             if (SQLQueries.hasPersonalBestTime(uuid, id))
                                 SQLQueries.resetBestTime(uuid, id)
                             else
-                                sender.sendMessage("$prefix Dieser Spieler hat keine Bestzeit!")
+                                sender.sendMessage("${Main.PREFIX} Dieser Spieler hat keine Bestzeit!")
                         } catch (e: Exception) {
                             sender.sendMessage(e.message)
                         }

@@ -16,8 +16,6 @@ import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 
 class Main: JavaPlugin() {
-    val prefix = "${org.bukkit.ChatColor.GRAY}[${org.bukkit.ChatColor.YELLOW}Jump&Run${org.bukkit.ChatColor.GRAY}]"
-
     private val mainConfigFile = File(dataFolder, "config.yml")
     val mainConfig: YamlConfiguration = YamlConfiguration.loadConfiguration(mainConfigFile)
 
@@ -44,6 +42,7 @@ class Main: JavaPlugin() {
         server.pluginManager.registerEvents(ConnectionListener(), this)
         server.pluginManager.registerEvents(MovementListener(), this)
         server.pluginManager.registerEvents(InteractionListener(), this)
+        server.pluginManager.registerEvents(InventoryListener(), this)
 
         getCommand("jumpandrun").executor = JumpAndRunCommand()
     }
@@ -53,6 +52,7 @@ class Main: JavaPlugin() {
     }
 
     companion object {
+        val PREFIX = "${org.bukkit.ChatColor.GRAY}[${org.bukkit.ChatColor.YELLOW}Jump&Run${org.bukkit.ChatColor.GRAY}]"
         lateinit var instance: Main
     }
 }

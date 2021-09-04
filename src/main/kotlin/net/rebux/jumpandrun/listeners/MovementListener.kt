@@ -24,7 +24,7 @@ class MovementListener: Listener {
             Material.IRON_PLATE -> {
                 if (Main.instance.playerCheckpoints[event.player]!!.second.distanceSquared(event.player.location) > 1) {
                     Main.instance.playerCheckpoints[event.player] = Pair(Main.instance.playerCheckpoints[event.player]!!.first, event.player.location)
-                    event.player.sendMessage("${Main.instance.prefix} Du hast einen neuen Checkpoint erreicht!")
+                    event.player.sendMessage("${Main.PREFIX} Du hast einen neuen Checkpoint erreicht!")
                     event.player.playSound(event.player.location, Sound.ORB_PICKUP, 1.0F, 1.0F)
                 }
             }
