@@ -18,7 +18,6 @@ class Parkour(val id: Int,
     val location: Location,
     val resetHeight: Int) {
 
-    // TODO call this asynchronous
     fun getItem(player: Player): ItemStack {
         val itemStack = ItemStack(material)
         val itemMeta = itemStack.itemMeta
@@ -53,7 +52,8 @@ class Parkour(val id: Int,
                 Main.instance.playerInventorySaves[player]!! += Pair(player.inventory.getItem(i), i)
         }
         player.inventory.clear()
-        // TODO give jnr items
+        player.inventory.setItem(0, Items.getCheckpointItem())
+        player.inventory.setItem(8, Items.getLeaveItem())
 
         Main.instance.playerCheckpoints[player] = Pair(this, location)
 
@@ -78,16 +78,16 @@ class Parkour(val id: Int,
 
         player.performCommand("/spawn")
 
-        player.sendMessage("${Main.instance.prefix} Du hast den Parkour erfolgreich abgeschlossen! Deine Zeit: ${TimeUtil.millisToTime(time)}")
+        player.sendMessage("${Main.PREFIX} Du hast den Parkour erfolgreich abgeschlossen! Deine Zeit: ${TimeUtil.millisToTime(time)}")
 
         Bukkit.getScheduler().runTaskAsynchronously(Main.instance) {
-            if (time < SQLQueries.getPersonalBestTime(player.uniqueId, id)) {
-                player.sendMessage("${Main.instance.prefix} Du hast eine neue persönliche Bestzeit aufgestellt!")
+            if (!SQLQueries.hasPersonalBestTime(player.uniqueId, id) || time < SQLQueries.getPersonalBestTime(player.uniqueId, id)) {
+                player.sendMessage("${Main.PREFIX} Du hast eine neue persönliche Bestzeit aufgestellt!")
                 player.playSound(player.location, Sound.ANVIL_LAND, 1.0F, 1.0F)
             }
 
-            if (time < SQLQueries.getGlobalBestTime(id).second) {
-                Bukkit.broadcastMessage("${Main.instance.prefix} Der Spieler ${player.name} hat mit $time eine neue globale Bestzeit für den Parkour $name aufgestellt!")
+            if (!SQLQueries.hasGlobalBestTime(id) || time < SQLQueries.getGlobalBestTime(id).second) {
+                Bukkit.broadcastMessage("${Main.PREFIX} Der Spieler ${player.name} hat mit ${TimeUtil.millisToTime(time)} eine neue globale Bestzeit für den Parkour $name aufgestellt!")
                 player.playSound(player.location, Sound.LEVEL_UP, 1.0F, 1.0F)
             }
 
