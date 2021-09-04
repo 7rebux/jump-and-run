@@ -8,3 +8,4 @@ commands:
   jumpandrun:
     aliases: [jnr]
     usage: /jumpandrun <list|add|remove|reset>
+    permission: jumpandrun.manage
