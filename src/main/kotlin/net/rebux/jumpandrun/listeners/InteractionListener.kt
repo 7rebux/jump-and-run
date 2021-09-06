@@ -18,7 +18,7 @@ class InteractionListener: Listener {
                 Items.getCheckpointItem().itemMeta.displayName ->
                     event.player.teleport(Main.instance.playerCheckpoints[event.player]!!.second)
                 Items.getLeaveItem().itemMeta.displayName ->
-                    Main.instance.playerCheckpoints[event.player]!!.first.quit(event.player)
+                    event.player.performCommand("/spawn")
             }
         }
     }

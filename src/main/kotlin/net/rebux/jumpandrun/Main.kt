@@ -43,6 +43,7 @@ class Main: JavaPlugin() {
         server.pluginManager.registerEvents(MovementListener(), this)
         server.pluginManager.registerEvents(InteractionListener(), this)
         server.pluginManager.registerEvents(InventoryListener(), this)
+        server.pluginManager.registerEvents(WorldChangeListener(), this)
 
         getCommand("jumpandrun").executor = JumpAndRunCommand()
     }

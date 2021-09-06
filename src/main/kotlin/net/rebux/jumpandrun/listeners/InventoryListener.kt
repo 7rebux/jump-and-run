@@ -7,22 +7,19 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.inventory.ItemStack
 
 class InventoryListener: Listener {
     @EventHandler
     fun onClick(event: InventoryClickEvent) {
-        val clickedItem: ItemStack = event.currentItem
-
-        if (clickedItem.type == Material.AIR)
+        if (event.currentItem?.type == Material.AIR)
             return
 
-        if (clickedItem.itemMeta.displayName == Items.getCheckpointItem().itemMeta.displayName)
-            // TODO restart
+        if (event.currentItem.itemMeta.displayName == Items.getCheckpointItem().itemMeta.displayName)
+            return
 
         if (event.inventory.name == "Parcours") {
             for (parkour in Main.instance.parkourManager.parkours) {
-                if (clickedItem.itemMeta.displayName == parkour.getItem(event.whoClicked as Player).itemMeta.displayName)
+                if (event.currentItem.itemMeta.displayName == parkour.getItem(event.whoClicked as Player).itemMeta.displayName && event.currentItem.type == parkour.material)
                     parkour.start(event.whoClicked as Player)
             }
         }

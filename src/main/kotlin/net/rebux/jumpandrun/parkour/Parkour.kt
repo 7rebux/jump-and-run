@@ -22,14 +22,13 @@ class Parkour(val id: Int,
         val itemStack = ItemStack(material)
         val itemMeta = itemStack.itemMeta
         val itemLore = arrayListOf<String>()
+        val hasBestTime = SQLQueries.hasPersonalBestTime(player.uniqueId, id)
 
         itemMeta.displayName = name
         itemLore.add("Schwierigkeit: $difficulty")
 
-        if (SQLQueries.hasPersonalBestTime(player.uniqueId, id)) {
-            itemStack.addUnsafeEnchantment(Enchantment.KNOCKBACK, 10)
+        if (hasBestTime)
             itemLore.add("Persönliche Bestzeit: ${TimeUtil.millisToTime(SQLQueries.getPersonalBestTime(player.uniqueId, id))}")
-        }
 
         if (SQLQueries.hasGlobalBestTime(id)) {
             SQLQueries.getGlobalBestTime(id).also {
@@ -40,6 +39,9 @@ class Parkour(val id: Int,
         itemMeta.lore = itemLore
         itemStack.itemMeta = itemMeta
 
+        if (hasBestTime)
+            itemStack.addUnsafeEnchantment(Enchantment.KNOCKBACK, 10)
+
         return itemStack
     }
 
@@ -49,7 +51,7 @@ class Parkour(val id: Int,
         Main.instance.playerInventorySaves[player] = arrayListOf()
         for (i in 0..player.inventory.size) {
             if (player.inventory.getItem(i) != null && player.inventory.getItem(i).type != Material.AIR)
-                Main.instance.playerInventorySaves[player]!! += Pair(player.inventory.getItem(i), i)
+                Main.instance.playerInventorySaves[player]!! += Pair(player.inventory.getItem(i).clone(), i)
         }
         player.inventory.clear()
         player.inventory.setItem(0, Items.getCheckpointItem())
@@ -63,8 +65,6 @@ class Parkour(val id: Int,
     fun quit(player: Player) {
         Main.instance.timers[player]!!.stop()
 
-        player.performCommand("/spawn")
-
         player.inventory.clear()
         Main.instance.playerInventorySaves[player]!!.forEach { player.inventory.setItem(it.second, it.first) }
         Main.instance.playerInventorySaves.remove(player)
@@ -75,8 +75,7 @@ class Parkour(val id: Int,
     fun finish(player: Player) {
         Main.instance.timers[player]!!.stop()
         val time = Main.instance.timers[player]!!.elapsedMillis
-
-        player.performCommand("/spawn")
+        var flag = false
 
         player.sendMessage("${Main.PREFIX} Du hast den Parkour erfolgreich abgeschlossen! Deine Zeit: ${TimeUtil.millisToTime(time)}")
 
@@ -84,6 +83,7 @@ class Parkour(val id: Int,
             if (!SQLQueries.hasPersonalBestTime(player.uniqueId, id) || time < SQLQueries.getPersonalBestTime(player.uniqueId, id)) {
                 player.sendMessage("${Main.PREFIX} Du hast eine neue persönliche Bestzeit aufgestellt!")
                 player.playSound(player.location, Sound.ANVIL_LAND, 1.0F, 1.0F)
+                flag = true
             }
 
             if (!SQLQueries.hasGlobalBestTime(id) || time < SQLQueries.getGlobalBestTime(id).second) {
@@ -91,7 +91,8 @@ class Parkour(val id: Int,
                 player.playSound(player.location, Sound.LEVEL_UP, 1.0F, 1.0F)
             }
 
-            SQLQueries.updateBestTime(time, player.uniqueId, id)
+            if (flag)
+                SQLQueries.updateBestTime(time, player.uniqueId, id)
         }
 
         player.inventory.clear()
@@ -99,5 +100,7 @@ class Parkour(val id: Int,
         Main.instance.playerInventorySaves.remove(player)
 
         Main.instance.playerCheckpoints.remove(player)
+
+        player.performCommand("/spawn")
     }
 }
