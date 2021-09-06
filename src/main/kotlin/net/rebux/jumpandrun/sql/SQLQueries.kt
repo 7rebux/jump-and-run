@@ -45,9 +45,10 @@ object SQLQueries {
 
     fun getGlobalBestTime(parkourId: Int): Pair<UUID, Int> {
         sqlConnection.query("""
-            SELECT MIN(time) AS "time", uuid
+            SELECT uuid, time 
             FROM BestTimes
-            WHERE parkour_id = $parkourId;
+            WHERE parkour_id = $parkourId
+	            AND time = (SELECT MIN(time) FROM BestTimes);
         """.trimIndent()).also { resultSet ->
             resultSet.next();
             return Pair(UUID.fromString(resultSet.getString("uuid")), resultSet.getInt("time"))
