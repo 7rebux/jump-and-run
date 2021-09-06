@@ -3,13 +3,11 @@ package net.rebux.jumpandrun.parkour
 import net.rebux.jumpandrun.Main
 import net.rebux.jumpandrun.sql.SQLQueries
 import net.rebux.jumpandrun.utils.TimeUtil
-import org.bukkit.Bukkit
-import org.bukkit.Location
-import org.bukkit.Material
-import org.bukkit.Sound
+import org.bukkit.*
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import java.util.*
 
 class Parkour(val id: Int,
     val name: String,
@@ -24,15 +22,17 @@ class Parkour(val id: Int,
         val itemLore = arrayListOf<String>()
         val hasBestTime = SQLQueries.hasPersonalBestTime(player.uniqueId, id)
 
-        itemMeta.displayName = name
-        itemLore.add("Schwierigkeit: $difficulty")
+        itemMeta.displayName = "${ChatColor.DARK_PURPLE}$name"
+        itemLore.add("${ChatColor.YELLOW}Schwierigkeit: $difficulty")
 
         if (hasBestTime)
-            itemLore.add("Persönliche Bestzeit: ${TimeUtil.millisToTime(SQLQueries.getPersonalBestTime(player.uniqueId, id))}")
+            itemLore.add("${ChatColor.GOLD}Persönliche Bestzeit: ${ChatColor.AQUA}$" +
+                    "{TimeUtil.millisToTime(SQLQueries.getPersonalBestTime(player.uniqueId, id))}")
 
         if (SQLQueries.hasGlobalBestTime(id)) {
             SQLQueries.getGlobalBestTime(id).also {
-                itemLore.add("Globale Bestzeit von ${Bukkit.getOfflinePlayer(it.first).name}: ${TimeUtil.millisToTime(it.second)}")
+                itemLore.add("${ChatColor.RED}Globale Bestzeit von ${ChatColor.BLUE}${Bukkit.getOfflinePlayer(it.first).name}: " +
+                        "${ChatColor.AQUA}${TimeUtil.millisToTime(it.second)}")
             }
         }
 
@@ -77,7 +77,8 @@ class Parkour(val id: Int,
         val time = Main.instance.timers[player]!!.elapsedMillis
         var flag = false
 
-        player.sendMessage("${Main.PREFIX} Du hast den Parkour erfolgreich abgeschlossen! Deine Zeit: ${TimeUtil.millisToTime(time)}")
+        player.sendMessage("${Main.PREFIX} Du hast den Parkour erfolgreich abgeschlossen! " +
+                "Deine Zeit: ${ChatColor.AQUA}${TimeUtil.millisToTime(time)}")
 
         Bukkit.getScheduler().runTaskAsynchronously(Main.instance) {
             if (!SQLQueries.hasPersonalBestTime(player.uniqueId, id) || time < SQLQueries.getPersonalBestTime(player.uniqueId, id)) {
@@ -87,8 +88,10 @@ class Parkour(val id: Int,
             }
 
             if (!SQLQueries.hasGlobalBestTime(id) || time < SQLQueries.getGlobalBestTime(id).second) {
-                Bukkit.broadcastMessage("${Main.PREFIX} Der Spieler ${player.name} hat mit ${TimeUtil.millisToTime(time)} eine neue globale Bestzeit für den Parkour $name aufgestellt!")
-                player.playSound(player.location, Sound.LEVEL_UP, 1.0F, 1.0F)
+                Bukkit.broadcastMessage("${Main.PREFIX} Der Spieler ${ChatColor.BLUE}${player.name} ${ChatColor.GRAY}hat " +
+                        "mit ${ChatColor.AQUA}${TimeUtil.millisToTime(time)} ${ChatColor.GRAY}eine neue globale Bestzeit " +
+                        "für den Parkour ${ChatColor.DARK_PURPLE}$name ${ChatColor.GRAY}aufgestellt!")
+                Bukkit.getOnlinePlayers().forEach { it.playSound(player.location, Sound.LEVEL_UP, 1.0F, 1.0F) }
             }
 
             if (flag)
