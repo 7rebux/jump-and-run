@@ -14,7 +14,6 @@ class Timer {
                 return@scheduleAtFixedRate
 
             elapsedMillis++
-
         },0, 1, TimeUnit.MILLISECONDS)
     }
 
