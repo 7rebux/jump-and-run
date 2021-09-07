@@ -48,7 +48,7 @@ object SQLQueries {
             SELECT uuid, time 
             FROM BestTimes
             WHERE parkour_id = $parkourId
-	            AND time = (SELECT MIN(time) FROM BestTimes);
+	            AND time = (SELECT MIN(time) FROM BestTimes WHERE parkour_id = $parkourId);
         """.trimIndent()).also { resultSet ->
             resultSet.next();
             return Pair(UUID.fromString(resultSet.getString("uuid")), resultSet.getInt("time"))
