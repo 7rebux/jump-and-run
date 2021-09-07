@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 class ConnectionListener: Listener {
     @EventHandler
     fun onConnect(event: PlayerJoinEvent) {
-        Main.instance.timers[event.player] = Timer()
+        Main.instance.timers[event.player] = Timer(event.player)
     }
 
     @EventHandler

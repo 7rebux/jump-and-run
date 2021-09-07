@@ -26,8 +26,8 @@ class Parkour(val id: Int,
         itemLore.add("${ChatColor.YELLOW}Schwierigkeit: $difficulty")
 
         if (hasBestTime)
-            itemLore.add("${ChatColor.GOLD}Persönliche Bestzeit: ${ChatColor.AQUA}$" +
-                    "{TimeUtil.millisToTime(SQLQueries.getPersonalBestTime(player.uniqueId, id))}")
+            itemLore.add("${ChatColor.GOLD}Persönliche Bestzeit: ${ChatColor.AQUA}" +
+                    TimeUtil.millisToTime(SQLQueries.getPersonalBestTime(player.uniqueId, id)))
 
         if (SQLQueries.hasGlobalBestTime(id)) {
             SQLQueries.getGlobalBestTime(id).also {
