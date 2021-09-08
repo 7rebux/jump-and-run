@@ -50,7 +50,7 @@ object SQLQueries {
             WHERE parkour_id = $parkourId
 	            AND time = (SELECT MIN(time) FROM BestTimes WHERE parkour_id = $parkourId);
         """.trimIndent()).also { resultSet ->
-            resultSet.next();
+            resultSet.next()
             return Pair(UUID.fromString(resultSet.getString("uuid")), resultSet.getInt("time"))
         }
     }
@@ -94,12 +94,21 @@ object SQLQueries {
         }
     }
 
-    fun resetBestTime(uuid: UUID, parkourId: Int) {
+    fun removeBestTime(uuid: UUID, parkourId: Int) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin) {
             sqlConnection.update("""
                 DELETE FROM BestTimes
                 WHERE parkour_id = $parkourId
                     AND uuid = "$uuid";
+            """.trimIndent())
+        }
+    }
+
+    fun removeBestTimes(parkourId: Int) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin) {
+            sqlConnection.update("""
+                DELETE FROM BestTimes
+                WHERE parkour_id = $parkourId;
             """.trimIndent())
         }
     }
@@ -125,7 +134,7 @@ object SQLQueries {
             )
         }
 
-        return parkours;
+        return parkours
     }
 
     fun addParkour(parkour: Parkour) {

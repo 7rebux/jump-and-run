@@ -92,7 +92,7 @@ class JumpAndRunCommand : CommandExecutor {
                             val uuid = UUID.fromString(args[2])
 
                             if (SQLQueries.hasPersonalBestTime(uuid, id))
-                                SQLQueries.resetBestTime(uuid, id)
+                                SQLQueries.removeBestTime(uuid, id)
                             else
                                 sender.sendMessage("${Main.PREFIX} Dieser Spieler hat keine Bestzeit!")
                         } catch (e: Exception) {

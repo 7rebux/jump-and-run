@@ -3,7 +3,6 @@ package net.rebux.jumpandrun.parkour
 import net.rebux.jumpandrun.Main
 import net.rebux.jumpandrun.sql.SQLQueries
 import org.bukkit.Bukkit
-import java.util.*
 
 class ParkourManager {
     val parkours = arrayListOf<Parkour>()
@@ -22,6 +21,7 @@ class ParkourManager {
     fun removeParkour(id: Int) {
         parkours.remove(getParkourById(id))
         SQLQueries.removeParkour(id)
+        SQLQueries.removeBestTimes(id)
     }
 
     fun hasParkour(id: Int) = getParkourById(id) != null
