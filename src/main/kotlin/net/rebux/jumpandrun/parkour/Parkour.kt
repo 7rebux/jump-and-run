@@ -72,6 +72,13 @@ class Parkour(val id: Int,
         Main.instance.playerCheckpoints.remove(player)
     }
 
+    fun restart(player: Player) {
+        Main.instance.timers[player]!!.stop()
+        player.teleport(location)
+        Main.instance.playerCheckpoints[player] = Pair(this, location)
+        Main.instance.timers[player]!!.start()
+    }
+
     fun finish(player: Player) {
         Main.instance.timers[player]!!.stop()
         val time = Main.instance.timers[player]!!.elapsedMillis

@@ -14,8 +14,11 @@ class InventoryListener: Listener {
         if (event.currentItem?.type == Material.AIR)
             return
 
-        if (event.currentItem.itemMeta.displayName == Items.getCheckpointItem().itemMeta.displayName)
-            return
+        if (event.currentItem.itemMeta.displayName == Items.getCheckpointItem().itemMeta.displayName) {
+            event.isCancelled = true
+            Main.instance.playerCheckpoints[event.whoClicked]!!.first.restart(event.whoClicked as Player)
+            event.whoClicked.closeInventory()
+        }
 
         if (event.inventory.name == "Parcours") {
             for (parkour in Main.instance.parkourManager.parkours) {
