@@ -1,5 +1,5 @@
 name: JumpAndRun
-version: 1.0
+version: 2.0
 author: Rebux
 description: Jump and Run Plugin
 main: net.rebux.jumpandrun.Main
@@ -7,5 +7,4 @@ main: net.rebux.jumpandrun.Main
 commands:
   jumpandrun:
     aliases: [jnr]
-    usage: /jumpandrun <list|add|remove|reset>
     permission: jumpandrun.manage

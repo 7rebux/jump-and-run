@@ -1,11 +1,14 @@
 package net.rebux.jumpandrun.utils
 
+@Suppress("SpellCheckingInspection")
 object TimeUtil {
-    fun millisToTime(millis: Int): String {
-        val minutes: Int = millis / 60000 % 60
-        val seconds: Int = millis / 1000 % 60
-        val milliseconds: Int = millis / 10 % 100
+    fun ticksToTime(ticks: Int): String {
+        val millis = ticks * 1000 / 20
 
-        return "${String.format("%02d", minutes)}:${String.format("%02d", seconds)}:${String.format("%02d", milliseconds)}"
+        val minutes: Int = (millis / 60000)
+        val seconds: Int = (millis / 1000) % 60
+        val milliseconds: Int = millis % 1000
+
+        return "${String.format("%02d", minutes)}.${String.format("%02d", seconds)}.${String.format("%03d", milliseconds)} Minuten"
     }
 }

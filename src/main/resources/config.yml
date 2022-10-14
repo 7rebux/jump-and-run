@@ -1,6 +1,9 @@
-# MySQL database settings
+# Database settings
 hostname: "hostname"
 port: 0
 database: "database"
 username: "username"
 password: "password"
+
+# Plugin settings
+resetHeight: 70

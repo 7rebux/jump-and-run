@@ -4,8 +4,8 @@ import net.rebux.jumpandrun.Main
 import net.rebux.jumpandrun.parkour.Difficulty
 import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.utils.LocationSerializer
-import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import java.util.*
 
 object SQLQueries {
@@ -13,104 +13,106 @@ object SQLQueries {
     private val sqlConnection = plugin.sqlConnection
 
     fun createTables() {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin) {
-            sqlConnection.update("""
-                CREATE TABLE IF NOT EXISTS Parkours (
-                    id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
-                    name varchar(255),
-                    difficulty int,
-                    material varchar(255),
-                    location varchar(1024),
-                    reset_height int
-                );
-            """.trimIndent())
+        sqlConnection.update("""
+            CREATE TABLE Parkours (
+                id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+                name varchar(255),
+                builder varchar(255),
+                difficulty int,
+                material varchar(255),
+                location varchar(1024)
+            );
+        """.trimIndent())
 
-            sqlConnection.update("""
-                CREATE TABLE IF NOT EXISTS BestTimes (
-                    uuid varchar(36),
-                    parkour_id int,
-                    time int
-                );
-            """.trimIndent())
-        }
+
+        sqlConnection.update("""
+            CREATE TABLE BestTimes (
+                uuid varchar(36),
+                parkour_id int,
+                time int
+            );
+        """.trimIndent())
     }
 
-    fun hasGlobalBestTime(parkourId: Int): Boolean {
+    fun hasGlobalBestTime(parkour: Parkour): Boolean {
         sqlConnection.query("""
             SELECT *
             FROM BestTimes
-            WHERE parkour_id = $parkourId;
+            WHERE parkour_id = ${parkour.id};
         """.trimIndent()).also { return it.next() }
     }
 
-    fun getGlobalBestTime(parkourId: Int): Pair<UUID, Int> {
+    fun getGlobalBestTimes(parkour: Parkour): Pair<List<UUID>, Int> {
         sqlConnection.query("""
             SELECT uuid, time 
             FROM BestTimes
-            WHERE parkour_id = $parkourId
-	            AND time = (SELECT MIN(time) FROM BestTimes WHERE parkour_id = $parkourId);
+            WHERE parkour_id = ${parkour.id}
+	            AND time = (SELECT MIN(time) FROM BestTimes WHERE parkour_id = ${parkour.id});
         """.trimIndent()).also { resultSet ->
-            resultSet.next()
-            return Pair(UUID.fromString(resultSet.getString("uuid")), resultSet.getInt("time"))
+            val players = arrayListOf<UUID>()
+            var time = Integer.MAX_VALUE
+
+            while (resultSet.next()) {
+                players += UUID.fromString(resultSet.getString("uuid"))
+                time = resultSet.getInt("time")
+            }
+
+            return Pair(players, time)
         }
     }
 
-    fun hasPersonalBestTime(uuid: UUID, parkourId: Int): Boolean {
+    fun hasPersonalBestTime(player: Player, parkour: Parkour): Boolean {
         sqlConnection.query("""
             SELECT *
             FROM BestTimes
-            WHERE parkour_id = $parkourId
+            WHERE parkour_id = ${parkour.id}
+                AND uuid = "${player.uniqueId}";
+        """.trimIndent()).also { return it.next() }
+    }
+
+    fun hasPersonalBestTime(uuid: UUID, parkour: Parkour): Boolean {
+        sqlConnection.query("""
+            SELECT *
+            FROM BestTimes
+            WHERE parkour_id = ${parkour.id}
                 AND uuid = "$uuid";
         """.trimIndent()).also { return it.next() }
     }
 
-    fun getPersonalBestTime(uuid: UUID, parkourId: Int): Int {
+    fun getPersonalBestTime(player: Player, parkour: Parkour): Int {
         sqlConnection.query("""
             SELECT time
             FROM BestTimes
-            WHERE parkour_id = $parkourId
-                AND uuid = "$uuid";
+            WHERE parkour_id = ${parkour.id}
+                AND uuid = "${player.uniqueId}";
         """.trimIndent()).also { resultSet ->
             resultSet.next()
             return resultSet.getInt("time")
         }
     }
 
-    fun updateBestTime(time: Int, uuid: UUID, parkourId: Int) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin) {
-            if (hasPersonalBestTime(uuid, parkourId)) {
-                sqlConnection.update("""
-                    UPDATE BestTimes
-                    SET time = $time
-                    WHERE uuid = "$uuid"
-                        AND parkour_id = $parkourId;
-            """.trimIndent())
-            } else {
-                sqlConnection.update("""
-                    INSERT INTO BestTimes(uuid, parkour_id, time)
-                    VALUES("$uuid", $parkourId, $time);
-                """.trimIndent())
-            }
-        }
-    }
-
-    fun removeBestTime(uuid: UUID, parkourId: Int) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin) {
+    fun updateBestTime(time: Int, player: Player, parkour: Parkour) {
+        if (hasPersonalBestTime(player, parkour)) {
             sqlConnection.update("""
-                DELETE FROM BestTimes
-                WHERE parkour_id = $parkourId
-                    AND uuid = "$uuid";
+                UPDATE BestTimes
+                SET time = $time
+                WHERE uuid = "${player.uniqueId}"
+                    AND parkour_id = ${parkour.id};
+            """.trimIndent())
+        } else {
+            sqlConnection.update("""
+                INSERT INTO BestTimes(uuid, parkour_id, time)
+                VALUES("${player.uniqueId}", ${parkour.id}, $time);
             """.trimIndent())
         }
     }
 
-    fun removeBestTimes(parkourId: Int) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin) {
-            sqlConnection.update("""
-                DELETE FROM BestTimes
-                WHERE parkour_id = $parkourId;
-            """.trimIndent())
-        }
+    fun removeBestTime(uuid: UUID, parkour: Parkour) {
+        sqlConnection.update("""
+            DELETE FROM BestTimes
+            WHERE parkour_id = ${parkour.id}
+                AND uuid = "$uuid";
+        """.trimIndent())
     }
 
     fun getParkours(): ArrayList<Parkour> {
@@ -126,10 +128,10 @@ object SQLQueries {
                 Parkour(
                     resultSet.getInt("id"),
                     resultSet.getString("name"),
+                    resultSet.getString("builder"),
                     Difficulty.getById(resultSet.getInt("difficulty"))!!,
                     Material.getMaterial(resultSet.getString("material")),
                     LocationSerializer.fromBase64String(resultSet.getString("location")),
-                    resultSet.getInt("reset_height")
                 )
             )
         }
@@ -138,21 +140,26 @@ object SQLQueries {
     }
 
     fun addParkour(parkour: Parkour) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin) {
-            sqlConnection.update("""
-                INSERT INTO Parkours(id, name, difficulty, material, location, reset_height)
-                VALUES(${parkour.id}, "${parkour.name}", ${parkour.difficulty.id}, "${parkour.material.name}", 
-                    "${LocationSerializer.toBase64String(parkour.location)}", ${parkour.resetHeight});
-            """.trimIndent())
-        }
+        sqlConnection.update("""
+            INSERT INTO Parkours(id, name, builder, difficulty, material, location)
+            VALUES(${parkour.id}, "${parkour.name}", "${parkour.builder}", ${parkour.difficulty.id}, "${parkour.material.name}",
+                "${LocationSerializer.toBase64String(parkour.location)}");
+        """.trimIndent())
     }
 
-    fun removeParkour(id: Int) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin) {
-            sqlConnection.update("""
-                DELETE FROM Parkours
-                WHERE id = $id;
-            """.trimIndent())
-        }
+    fun removeParkour(parkour: Parkour) {
+        sqlConnection.update("""
+            DELETE FROM Parkours
+            WHERE id = ${parkour.id};
+        """.trimIndent())
+
+        removeBestTimes(parkour)
+    }
+
+    fun removeBestTimes(parkour: Parkour) {
+        sqlConnection.update("""
+            DELETE FROM BestTimes
+            WHERE parkour_id = ${parkour.id};
+        """.trimIndent())
     }
 }

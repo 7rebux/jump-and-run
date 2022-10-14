@@ -4,48 +4,54 @@ import net.rebux.jumpandrun.commands.JumpAndRunCommand
 import net.rebux.jumpandrun.listeners.*
 import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.parkour.ParkourManager
-import net.rebux.jumpandrun.parkour.Timer
 import net.rebux.jumpandrun.sql.SQLConnection
 import net.rebux.jumpandrun.sql.SQLQueries
-import net.rebux.jumpandrun.utils.ConfigUtil
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 
-class Main: JavaPlugin() {
-    private val mainConfigFile = File(dataFolder, "config.yml")
-    val mainConfig: YamlConfiguration = YamlConfiguration.loadConfiguration(mainConfigFile)
+// Sadly this can't be an object due to bukkit implementation
+class Main : JavaPlugin() {
 
+    private val configFile = File(dataFolder, "config.yml")
+    val config: YamlConfiguration = YamlConfiguration.loadConfiguration(configFile)
     val sqlConnection = SQLConnection()
     val parkourManager = ParkourManager()
-
-    val timers = hashMapOf<Player, Timer>()
-    val playerInventorySaves = hashMapOf<Player, ArrayList<Pair<ItemStack, Int>>>()
-    val playerCheckpoints = hashMapOf<Player, Pair<Parkour, Location>>()
+    val active = hashMapOf<Player, Parkour>()
+    val checkpoints = hashMapOf<Player, Location>()
+    val times = hashMapOf<Player, Int>()
 
     override fun onEnable() {
         instance = this
 
-        sqlConnection.connect(
-            ConfigUtil.getString("hostname"),
-            ConfigUtil.getInt("port").toString(),
-            ConfigUtil.getString("database"),
-            ConfigUtil.getString("username"),
-            ConfigUtil.getString("password"))
-        SQLQueries.createTables()
+        Bukkit.getScheduler().runTaskAsynchronously(this) {
+            // connect to database
+            sqlConnection.connect(
+                config.getString("hostname"),
+                config.getInt("port").toString(),
+                config.getString("database"),
+                config.getString("username"),
+                config.getString("password")
+            )
 
-        parkourManager.loadParkours()
+            // load parkours
+            if (sqlConnection.hasTable("Parkours"))
+                parkourManager.loadParkours()
+            else
+                SQLQueries.createTables()
+        }
 
-        server.pluginManager.registerEvents(ConnectionListener(), this)
-        server.pluginManager.registerEvents(MovementListener(), this)
-        server.pluginManager.registerEvents(InteractionListener(), this)
-        server.pluginManager.registerEvents(InventoryListener(), this)
-        server.pluginManager.registerEvents(WorldChangeListener(), this)
+        // register listeners
+        server.pluginManager.registerEvents(ConnectionListener, this)
+        server.pluginManager.registerEvents(MovementListener, this)
+        server.pluginManager.registerEvents(InteractionListener, this)
+        server.pluginManager.registerEvents(CommandListener, this)
 
-        getCommand("jumpandrun").executor = JumpAndRunCommand()
+        // register commands
+        getCommand("jumpandrun").executor = JumpAndRunCommand
     }
 
     override fun onDisable() {
