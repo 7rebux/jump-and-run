@@ -28,6 +28,10 @@ object MovementListener: Listener {
         if (player !in plugin.active)
             return
 
+        // start time if not running and player has moved
+        if (player !in plugin.times && event.hasMoved())
+            plugin.times[player] = player.ticksLived
+
         // reset if player is underneath minimum height
         if (player.location.y <= plugin.config.getInt("resetHeight"))
             player.teleport(plugin.checkpoints[player])
@@ -57,5 +61,9 @@ object MovementListener: Listener {
 
             else -> {}
         }
+    }
+
+    private fun PlayerMoveEvent.hasMoved(): Boolean {
+        return this.from.x != this.to.x || this.from.y != this.to.y || this.from.z != this.to.z
     }
 }
