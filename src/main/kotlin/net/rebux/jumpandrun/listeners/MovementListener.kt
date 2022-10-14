@@ -40,8 +40,7 @@ object MovementListener: Listener {
 
             // handle checkpoints
             Material.IRON_BLOCK -> {
-                TODO("Dont check for yaw and pitch")
-                if (plugin.checkpoints[player] != blockLocation) {
+                if (plugin.checkpoints[player]!!.block.location != blockLocation.block.location) {
                     blockLocation.yaw = player.location.yaw
                     blockLocation.pitch = player.location.pitch
 
