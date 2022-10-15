@@ -3,6 +3,7 @@ package net.rebux.jumpandrun.item.impl
 import net.rebux.jumpandrun.Instance
 import net.rebux.jumpandrun.item.Item
 import net.rebux.jumpandrun.sql.SQLQueries
+import net.rebux.jumpandrun.template
 import net.rebux.jumpandrun.utils.TimeUtil
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -11,7 +12,6 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 
-@Suppress("SpellCheckingInspection")
 class MenuItem : Item() {
 
     private val plugin = Instance.plugin
@@ -33,6 +33,7 @@ class MenuItem : Item() {
         }
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     private fun showMenu(inventory: Inventory, player: Player, page: Int) {
         val parkoursPerPage = 45
 
@@ -43,22 +44,27 @@ class MenuItem : Item() {
                 break
 
             val parkour = plugin.parkourManager.parkours[index]
-            val hasTime = SQLQueries.hasPersonalBestTime(player, parkour)
 
-            val lore = arrayListOf(
-                "${ChatColor.GRAY}» ${ChatColor.YELLOW}Schwierigkeit: ${parkour.difficulty}",
-                "${ChatColor.GRAY}» ${ChatColor.YELLOW}Builder: ${ChatColor.BLUE}${parkour.builder}",
-                "",
-                "${ChatColor.GRAY}» ${ChatColor.GOLD}Persönliche Bestzeit:",
-                if (hasTime) "${ChatColor.BLUE}${TimeUtil.ticksToTime(SQLQueries.getPersonalBestTime(player, parkour))}" else "${ChatColor.RED}--.--.---",
-                "",
-                "${ChatColor.GRAY}» ${ChatColor.GOLD}Globale Bestzeit:",
-                if (SQLQueries.hasGlobalBestTime(parkour)) "${ChatColor.BLUE}${TimeUtil.ticksToTime(SQLQueries.getGlobalBestTimes(parkour).second)}" else "${ChatColor.RED}--.--.---",
-            )
-
-            if (SQLQueries.hasGlobalBestTime(parkour)) {
-                lore.add("${ChatColor.GRAY}von:")
-                lore.addAll(SQLQueries.getGlobalBestTimes(parkour).first.map { "${ChatColor.BLUE}${Bukkit.getOfflinePlayer(it).name}" })
+            val lore = buildList {
+                add(template("menu.difficulty", mapOf("difficulty" to parkour.difficulty)))
+                add(template("menu.builder", mapOf("builder" to parkour.builder)))
+                add("")
+                add(template("menu.personalBest.title"))
+                if (SQLQueries.hasPersonalBestTime(player, parkour))
+                    add(template("menu.personalBest.time", mapOf("time" to TimeUtil.ticksToTime(SQLQueries.getPersonalBestTime(player, parkour)))))
+                else
+                    add(template("menu.noTime"))
+                add("")
+                add(template("menu.globalBest.title"))
+                if (SQLQueries.hasGlobalBestTime(parkour)) {
+                    add(template("menu.globalBest.time", mapOf("time" to TimeUtil.ticksToTime(SQLQueries.getGlobalBestTimes(parkour).second))))
+                    add(template("menu.globalBest.subtitle"))
+                    SQLQueries.getGlobalBestTimes(parkour).first.forEach {
+                        add(template("menu.globalBest.player", mapOf("player" to Bukkit.getOfflinePlayer(it).name)))
+                    }
+                }
+                else
+                    add(template("menu.noTime"))
             }
 
             // create item

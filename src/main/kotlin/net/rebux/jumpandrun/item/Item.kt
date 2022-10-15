@@ -13,7 +13,7 @@ abstract class Item {
     data class Builder(
         private var material: Material = Material.AIR,
         private var displayName: String? = null,
-        private var lore: ArrayList<String>? = null,
+        private var lore: List<String>? = null,
         private var durability: Short? = null
     ) {
 
@@ -21,7 +21,7 @@ abstract class Item {
 
         fun displayName(displayName: String) = apply { this.displayName = displayName }
 
-        fun lore(lore: ArrayList<String>) = apply { this.lore = lore }
+        fun lore(lore: List<String>) = apply { this.lore = lore }
 
         fun durability(durability: Short) = apply { this.durability = durability }
 

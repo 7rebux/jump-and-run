@@ -47,6 +47,16 @@ class PluginConfig {
         config.addDefault("difficulty.hard", "Schwer")
         config.addDefault("difficulty.extreme", "Extrem")
 
+        config.addDefault("menu.difficulty", "${ChatColor.GRAY}» ${ChatColor.YELLOW}Schwierigkeit: {difficulty}")
+        config.addDefault("menu.builder", "${ChatColor.GRAY}» ${ChatColor.YELLOW}Builder: ${ChatColor.BLUE}{builder}")
+        config.addDefault("menu.personalBest.title", "${ChatColor.GRAY}» ${ChatColor.GOLD}Persönliche Bestzeit:")
+        config.addDefault("menu.personalBest.time", "${ChatColor.BLUE}{time}")
+        config.addDefault("menu.globalBest.title", "${ChatColor.GRAY}» ${ChatColor.GOLD}Globale Bestzeit:")
+        config.addDefault("menu.globalBest.time", "${ChatColor.BLUE}{time}")
+        config.addDefault("menu.globalBest.subtitle", "${ChatColor.GRAY}von:")
+        config.addDefault("menu.globalBest.player", "${ChatColor.BLUE}{player}")
+        config.addDefault("menu.noTime", "${ChatColor.RED}--.--.---")
+
         // items
         config.addDefault("items.menu", "${ChatColor.GRAY}» ${ChatColor.AQUA}JumpAndRuns")
         config.addDefault("items.checkpoint", "${ChatColor.RED}Zurück zum Checkpoint")
