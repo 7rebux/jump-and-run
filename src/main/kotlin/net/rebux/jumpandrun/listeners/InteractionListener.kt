@@ -3,7 +3,6 @@ package net.rebux.jumpandrun.listeners
 import net.rebux.jumpandrun.Main
 import net.rebux.jumpandrun.item.impl.*
 import org.bukkit.ChatColor
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -45,10 +44,8 @@ object InteractionListener: Listener {
         val item = event.currentItem
         val player = event.whoClicked as? Player // safe cast (null if whoClicked is not a player)
 
-        // TODO("check action")
-
         // check if item is valid
-        if (item.type == Material.AIR || item?.itemMeta?.displayName == null)
+        if (item?.itemMeta?.displayName == null)
             return
 
         // start parkour
