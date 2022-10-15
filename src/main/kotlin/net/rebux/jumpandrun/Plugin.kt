@@ -5,6 +5,7 @@ package net.rebux.jumpandrun
 import net.minecraft.server.v1_8_R3.IChatBaseComponent.ChatSerializer
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat
 import net.rebux.jumpandrun.commands.JumpAndRunCommand
+import net.rebux.jumpandrun.commands.TopCommand
 import net.rebux.jumpandrun.config.PluginConfig
 import net.rebux.jumpandrun.listeners.*
 import net.rebux.jumpandrun.parkour.Parkour
@@ -14,6 +15,7 @@ import net.rebux.jumpandrun.sql.SQLQueries
 import net.rebux.jumpandrun.utils.TimeUtil
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.command.CommandExecutor
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
@@ -54,7 +56,10 @@ class Plugin : JavaPlugin() {
         )
 
         // register commands
-        getCommand("jumpandrun").executor = JumpAndRunCommand
+        registerCommands(mapOf(
+            "jumpandrun" to JumpAndRunCommand,
+            "top" to TopCommand
+        ))
 
         // add bar scheduler
         Timer().scheduleAtFixedRate(object: TimerTask() {
@@ -75,5 +80,9 @@ class Plugin : JavaPlugin() {
 
     private fun registerListeners(vararg listener: Listener) {
         listener.forEach { server.pluginManager.registerEvents(it, this) }
+    }
+
+    private fun registerCommands(commands: Map<String, CommandExecutor>) {
+        commands.forEach { this.getCommand(it.key).executor = it.value }
     }
 }

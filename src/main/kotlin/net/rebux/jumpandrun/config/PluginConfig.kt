@@ -33,15 +33,16 @@ class PluginConfig {
         config.addDefault("messages.parkour.firstGlobalBest", "Du hast die ${ChatColor.GREEN}Erste Globale Bestzeit ${ChatColor.GRAY}erzielt!")
         config.addDefault("messages.parkour.globalBest", "${ChatColor.GREEN}{player} ${ChatColor.GRAY}hat die Bestzeit bei ${ChatColor.GREEN}{name} ${ChatColor.GRAY}von ${ChatColor.GREEN}{holders} ${ChatColor.GRAY}um ${ChatColor.GREEN}{time} ${ChatColor.GRAY}geschlagen!")
         config.addDefault("messages.parkour.personalBest", "Du hast eine neue ${ChatColor.GREEN}persönliche Bestzeit ${ChatColor.GRAY}erzielt!")
+        config.addDefault("messages.commands.playersOnly", "${ChatColor.RED}Dieser Befehl kann nur als Spieler ausgeführt werden!")
         config.addDefault("messages.commands.jnr.list.empty", "Es sind ${ChatColor.RED}keine ${ChatColor.GRAY}Jump and Runs vorhanden!")
         config.addDefault("messages.commands.jnr.list.full", "Es wurden ${ChatColor.GREEN}{size} ${ChatColor.GRAY}Jump and Runs gefunden:")
-        config.addDefault("messages.commands.jnr.add.playersOnly", "${ChatColor.RED}Dieser Befehl kann nur als Spieler ausgeführt werden!")
         config.addDefault("messages.commands.jnr.add.success", "Jump and Run ${ChatColor.GREEN}{name} ${ChatColor.GRAY}erfolgreich hinzugefügt")
         config.addDefault("messages.commands.jnr.remove.success", "Jump and Run ${ChatColor.RED}{name} ${ChatColor.GRAY}erfolgreich entfernt")
         config.addDefault("messages.commands.jnr.remove.notFound", "${ChatColor.RED}Dieses Jump and Run existiert nicht!")
         config.addDefault("messages.commands.jnr.reset.successAll", "Erfolgreich ${ChatColor.GREEN}alle Bestzeiten für ${ChatColor.GREEN}{name} ${ChatColor.GRAY}entfernt")
         config.addDefault("messages.commands.jnr.reset.successSingle", "Erfolgreich Bestzeit für {name} ${ChatColor.GRAY}von ${ChatColor.GREEN}{player} ${ChatColor.GRAY}entfernt")
         config.addDefault("messages.commands.jnr.reset.notFound", "${ChatColor.RED}Dieser Spieler hat keine Bestzeit!")
+        config.addDefault("messages.commands.top.invalid", "${ChatColor.RED}Du musst dich in einem Jump and Run befinden!")
 
         // difficulties
         config.addDefault("difficulty.easy", "Einfach")

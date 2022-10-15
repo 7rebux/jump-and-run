@@ -8,3 +8,5 @@ commands:
   jumpandrun:
     aliases: [jnr]
     permission: jumpandrun.manage
+  top:
+    description: Lists the top 5 players of the current Jump and Run

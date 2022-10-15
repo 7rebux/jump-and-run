@@ -52,7 +52,7 @@ object JumpAndRunCommand : CommandExecutor {
 
             "add" -> {
                 if (sender !is Player)
-                    sender.msgTemplate("commands.jnr.add.playersOnly")
+                    sender.msgTemplate("commands.playersOnly")
                 else if (args.size != 5)
                     sender.sendUsage()
                 else {
