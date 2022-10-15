@@ -1,7 +1,7 @@
 package net.rebux.jumpandrun.listeners
 
-import net.rebux.jumpandrun.Main
-import org.bukkit.ChatColor
+import net.rebux.jumpandrun.Instance
+import net.rebux.jumpandrun.msgTemplate
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.BlockFace
@@ -9,10 +9,9 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerMoveEvent
 
-@Suppress("SpellCheckingInspection")
 object MovementListener: Listener {
 
-    private val plugin = Main.instance
+    private val plugin = Instance.plugin
 
     @EventHandler
     fun onMove(event: PlayerMoveEvent) {
@@ -49,7 +48,7 @@ object MovementListener: Listener {
                     blockLocation.pitch = player.location.pitch
 
                     plugin.checkpoints[player] = blockLocation
-                    player.sendMessage("${Main.PREFIX} Du hast einen neuen ${ChatColor.GREEN}Checkpoint ${ChatColor.GRAY}erreicht!")
+                    player.msgTemplate("parkour.checkpoint")
                     player.playSound(player.location, Sound.ORB_PICKUP, 1.0F, 1.0F)
                 }
             }

@@ -1,6 +1,6 @@
 package net.rebux.jumpandrun.item.impl
 
-import net.rebux.jumpandrun.Main
+import net.rebux.jumpandrun.Instance
 import net.rebux.jumpandrun.item.Item
 import net.rebux.jumpandrun.sql.SQLQueries
 import net.rebux.jumpandrun.utils.TimeUtil
@@ -14,12 +14,12 @@ import org.bukkit.inventory.ItemStack
 @Suppress("SpellCheckingInspection")
 class MenuItem : Item() {
 
-    private val plugin = Main.instance
+    private val plugin = Instance.plugin
 
     override fun getItemStack(): ItemStack {
         return Builder()
             .material(Material.PAPER)
-            .displayName("${ChatColor.GRAY}» ${ChatColor.AQUA}JumpAndRuns")
+            .displayName(plugin.config.getString("items.menu"))
             .build()
     }
 

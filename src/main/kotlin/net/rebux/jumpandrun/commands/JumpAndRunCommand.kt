@@ -1,6 +1,8 @@
 package net.rebux.jumpandrun.commands
 
-import net.rebux.jumpandrun.Main
+import net.rebux.jumpandrun.Instance
+import net.rebux.jumpandrun.msg
+import net.rebux.jumpandrun.msgTemplate
 import net.rebux.jumpandrun.parkour.Difficulty
 import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.sql.SQLQueries
@@ -14,12 +16,9 @@ import org.bukkit.entity.Player
 import java.lang.Exception
 import java.util.*
 
-@Suppress("SpellCheckingInspection")
 object JumpAndRunCommand : CommandExecutor {
 
-    private val plugin = Main.instance
-
-    private fun CommandSender.msg(message: String) = this.sendMessage("${Main.PREFIX} $message")
+    private val plugin = Instance.plugin
 
     private fun CommandSender.sendUsage() {
         this.msg("/jnr list")
@@ -42,9 +41,9 @@ object JumpAndRunCommand : CommandExecutor {
         when (args[0].lowercase()) {
             "list" -> {
                 if (plugin.parkourManager.parkours.isEmpty())
-                    sender.msg("Es sind ${ChatColor.RED}keine ${ChatColor.GRAY}Jump and Runs vorhanden!")
+                    sender.msgTemplate("commands.jnr.list.empty")
                 else {
-                    sender.msg("Es wurden ${ChatColor.GREEN}${plugin.parkourManager.parkours.size} ${ChatColor.GRAY}Jump and Runs gefunden:")
+                    sender.msgTemplate("commands.jnr.list.full", mapOf("size" to plugin.parkourManager.parkours.size))
                     plugin.parkourManager.parkours.forEach {
                         sender.msg("#${it.id}: ${ChatColor.GREEN}${it.name} ${ChatColor.GRAY}- ${it.difficulty}")
                     }
@@ -53,7 +52,7 @@ object JumpAndRunCommand : CommandExecutor {
 
             "add" -> {
                 if (sender !is Player)
-                    sender.msg("${ChatColor.RED}Dieser Befehl kann nur als Spieler ausgeführt werden!")
+                    sender.msgTemplate("commands.jnr.add.playersOnly")
                 else if (args.size != 5)
                     sender.sendUsage()
                 else {
@@ -75,9 +74,9 @@ object JumpAndRunCommand : CommandExecutor {
                         val parkour = Parkour(id, name, builder, difficulty, material, location)
 
                         plugin.parkourManager.addParkour(parkour)
-                        sender.msg("Jump and Run ${ChatColor.GREEN}${parkour.name} ${ChatColor.GRAY}erfolgreich hinzugefügt")
+                        sender.msgTemplate("commands.jnr.add.success", mapOf("name" to name))
                     } catch (e: Exception) {
-                        sender.sendMessage(e.message)
+                        sender.msg("${ChatColor.RED}${e.message}")
                     }
                 }
             }
@@ -93,12 +92,12 @@ object JumpAndRunCommand : CommandExecutor {
                             val parkour = plugin.parkourManager.getParkourById(id)!!
 
                             plugin.parkourManager.removeParkour(parkour)
-                            sender.msg("Jump and Run ${ChatColor.RED}${parkour.name} ${ChatColor.GRAY}erfolgreich entfernt")
+                            sender.msgTemplate("commands.jnr.remove.success", mapOf("name" to parkour.name))
                         }
                         else
-                            sender.msg("${ChatColor.RED}Dieses Jump and Run existiert nicht!")
+                            sender.msgTemplate("commands.jnr.remove.notFound")
                     } catch (e: Exception) {
-                        sender.sendMessage("${ChatColor.RED}${e.message}")
+                        sender.msg("${ChatColor.RED}${e.message}")
                     }
                 }
             }
@@ -113,7 +112,7 @@ object JumpAndRunCommand : CommandExecutor {
                         if (args[2].lowercase() == "all") {
                             Bukkit.getScheduler().runTaskAsynchronously(plugin) {
                                 SQLQueries.removeBestTimes(parkour)
-                                sender.msg("Erfolgreich ${ChatColor.GREEN}alle Bestzeiten für ${ChatColor.GREEN}${parkour.name} ${ChatColor.GRAY}entfernt")
+                                sender.msgTemplate("commands.jnr.reset.successAll", mapOf("name" to parkour.name))
                             }
                         } else {
                             val uuid = UUID.fromString(args[2])
@@ -121,13 +120,16 @@ object JumpAndRunCommand : CommandExecutor {
                             Bukkit.getScheduler().runTaskAsynchronously(plugin) {
                                 if (SQLQueries.hasPersonalBestTime(uuid, parkour)) {
                                     SQLQueries.removeBestTime(uuid, parkour)
-                                    sender.msg("Erfolgreich Bestzeit für ${parkour.name} ${ChatColor.GRAY}von ${ChatColor.GREEN}${Bukkit.getOfflinePlayer(uuid)} ${ChatColor.GRAY}entfernt")
+                                    sender.msgTemplate("commands.jnr.reset.successSingle", mapOf(
+                                        "name" to parkour.name,
+                                        "player" to Bukkit.getOfflinePlayer(uuid))
+                                    )
                                 } else
-                                    sender.msg("${ChatColor.RED}Dieser Spieler hat keine Bestzeit!")
+                                    sender.msgTemplate("commands.jnr.reset.notFound")
                             }
                         }
                     } catch (e: Exception) {
-                        sender.sendMessage(e.message)
+                        sender.msg("${ChatColor.RED}${e.message}")
                     }
                 }
             }

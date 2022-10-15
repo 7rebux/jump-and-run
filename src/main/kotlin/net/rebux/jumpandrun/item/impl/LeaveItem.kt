@@ -1,8 +1,8 @@
 package net.rebux.jumpandrun.item.impl
 
+import net.rebux.jumpandrun.Instance
 import net.rebux.jumpandrun.item.Item
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
@@ -14,7 +14,7 @@ class LeaveItem : Item() {
         return Builder()
             .material(Material.INK_SACK)
             .durability(8)
-            .displayName("${ChatColor.RED}Verlassen ${ChatColor.GRAY}(/spawn)")
+            .displayName(Instance.plugin.config.getString("items.leave"))
             .build()
     }
 

@@ -1,6 +1,6 @@
 package net.rebux.jumpandrun.listeners
 
-import net.rebux.jumpandrun.Main
+import net.rebux.jumpandrun.Instance
 import net.rebux.jumpandrun.item.impl.*
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
@@ -49,7 +49,7 @@ object InteractionListener: Listener {
             return
 
         // start parkour
-        Main.instance.parkourManager.parkours.forEach {
+        Instance.plugin.parkourManager.parkours.forEach {
             if (it.name.equals(ChatColor.stripColor(item.itemMeta.displayName), true))
                 player?.let { player -> it.start(player) }
         }

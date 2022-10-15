@@ -1,20 +1,19 @@
 package net.rebux.jumpandrun.item.impl
 
-import net.rebux.jumpandrun.Main
+import net.rebux.jumpandrun.Instance
 import net.rebux.jumpandrun.item.Item
-import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 class RestartItem : Item() {
 
-    private val plugin = Main.instance
+    private val plugin = Instance.plugin
 
     override fun getItemStack(): ItemStack {
         return Builder()
             .material(Material.REDSTONE)
-            .displayName("${ChatColor.RED}Neustart")
+            .displayName(plugin.config.getString("items.restart"))
             .build()
     }
 

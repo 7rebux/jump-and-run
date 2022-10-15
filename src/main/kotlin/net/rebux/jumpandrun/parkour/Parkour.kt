@@ -1,6 +1,6 @@
 package net.rebux.jumpandrun.parkour
 
-import net.rebux.jumpandrun.Main
+import net.rebux.jumpandrun.*
 import net.rebux.jumpandrun.events.ParkourFinishEvent
 import net.rebux.jumpandrun.item.impl.CheckpointItem
 import net.rebux.jumpandrun.item.impl.LeaveItem
@@ -12,7 +12,6 @@ import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 
-@Suppress("SpellCheckingInspection")
 class Parkour(
     val id: Int,
     val name: String,
@@ -22,7 +21,7 @@ class Parkour(
     val location: Location,
 ) {
 
-    private val plugin = Main.instance
+    private val plugin = Instance.plugin
 
     fun start(player: Player) {
         // teleport
@@ -46,7 +45,10 @@ class Parkour(
     fun finish(player: Player) {
         val ticksNeeded = player.ticksLived - plugin.times[player]!!
 
-        player.sendMessage("${Main.PREFIX} Du hast das Jump and Run ${ChatColor.GREEN}$name ${ChatColor.GRAY}in ${ChatColor.GREEN}${TimeUtil.ticksToTime(ticksNeeded)} ${ChatColor.GRAY}geschafft")
+        player.msgTemplate("parkour.completed", mapOf(
+            "name" to name,
+            "time" to TimeUtil.ticksToTime(ticksNeeded))
+        )
 
         // call finish event
         Bukkit.getPluginManager().callEvent(ParkourFinishEvent(player))
@@ -56,7 +58,7 @@ class Parkour(
             if (!SQLQueries.hasPersonalBestTime(player, this) || ticksNeeded < SQLQueries.getPersonalBestTime(player, this)) {
                 // first global best
                 if (!SQLQueries.hasGlobalBestTime(this)) {
-                    player.sendMessage("${Main.PREFIX} Du hast die ${ChatColor.GREEN}Erste Globale Bestzeit ${ChatColor.GRAY}erzielt!")
+                    player.msgTemplate("parkour.firstGlobalBest")
                     player.playSound(player.location, Sound.LEVEL_UP, 1.0F, 1.0F)
                 }
 
@@ -66,13 +68,18 @@ class Parkour(
                     val recordHolders = SQLQueries.getGlobalBestTimes(this).first
                         .joinToString(", ") { Bukkit.getOfflinePlayer(it).name }
 
-                    Bukkit.broadcastMessage("${Main.PREFIX} ${ChatColor.GREEN}${player.name} ${ChatColor.GRAY}hat die Bestzeit bei ${ChatColor.GREEN}$name ${ChatColor.GRAY}von ${ChatColor.GREEN}$recordHolders ${ChatColor.GRAY}um ${ChatColor.GREEN}${TimeUtil.ticksToTime(timeDif)} ${ChatColor.GRAY}geschlagen!")
+                    msgTemplateGlobal("parkour.globalBest", mapOf(
+                        "player" to player.name,
+                        "name" to name,
+                        "holders" to recordHolders,
+                        "time" to TimeUtil.ticksToTime(timeDif))
+                    )
                     Bukkit.getOnlinePlayers().forEach { it.playSound(player.location, Sound.ANVIL_LAND, 1.0F, 1.0F) }
                 }
 
                 // new personal best
                 else {
-                    player.sendMessage("${Main.PREFIX} Du hast eine neue ${ChatColor.GREEN}persönliche Bestzeit ${ChatColor.GRAY}erzielt!")
+                    player.msgTemplate("parkour.personalBest")
                     player.playSound(player.location, Sound.LEVEL_UP, 1.0F, 1.0F)
                 }
 

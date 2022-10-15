@@ -1,17 +1,18 @@
 package net.rebux.jumpandrun.parkour
 
+import net.rebux.jumpandrun.Instance
 import org.bukkit.ChatColor
 
-@Suppress("SpellCheckingInspection")
 enum class Difficulty(
     val id: Int,
     private val displayName: String,
     private val color: ChatColor
 ) {
-    EASY    (0, "Einfach",  ChatColor.GREEN),
-    MEDIUM  (1, "Mittel",   ChatColor.GOLD),
-    HARD    (2, "Schwer",   ChatColor.RED),
-    EXTREME (3, "Extrem",   ChatColor.DARK_PURPLE);
+
+    EASY    (0, Instance.plugin.config.getString("difficulty.easy"), ChatColor.GREEN),
+    MEDIUM  (1, Instance.plugin.config.getString("difficulty.medium"), ChatColor.GOLD),
+    HARD    (2, Instance.plugin.config.getString("difficulty.hard"), ChatColor.RED),
+    EXTREME (3, Instance.plugin.config.getString("difficulty.extreme"), ChatColor.DARK_PURPLE);
 
     override fun toString() = "$color$displayName"
 

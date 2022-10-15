@@ -1,6 +1,6 @@
 package net.rebux.jumpandrun.listeners
 
-import net.rebux.jumpandrun.Main
+import net.rebux.jumpandrun.Instance
 import net.rebux.jumpandrun.utils.InventoryUtil
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent
 
 object CommandListener : Listener {
 
-    private val plugin = Main.instance
+    private val plugin = Instance.plugin
 
     @EventHandler
     fun onCommand(event: PlayerCommandPreprocessEvent) {

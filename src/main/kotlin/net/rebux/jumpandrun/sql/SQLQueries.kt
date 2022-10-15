@@ -1,6 +1,6 @@
 package net.rebux.jumpandrun.sql
 
-import net.rebux.jumpandrun.Main
+import net.rebux.jumpandrun.Instance
 import net.rebux.jumpandrun.parkour.Difficulty
 import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.utils.LocationSerializer
@@ -9,7 +9,8 @@ import org.bukkit.entity.Player
 import java.util.*
 
 object SQLQueries {
-    private val plugin = Main.instance
+
+    private val plugin = Instance.plugin
     private val sqlConnection = plugin.sqlConnection
 
     fun createTables() {
