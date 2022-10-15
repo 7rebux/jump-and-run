@@ -1,6 +1,7 @@
 package net.rebux.jumpandrun.parkour
 
 import net.rebux.jumpandrun.Main
+import net.rebux.jumpandrun.events.ParkourFinishEvent
 import net.rebux.jumpandrun.item.impl.CheckpointItem
 import net.rebux.jumpandrun.item.impl.LeaveItem
 import net.rebux.jumpandrun.item.impl.RestartItem
@@ -46,6 +47,9 @@ class Parkour(
         val ticksNeeded = player.ticksLived - plugin.times[player]!!
 
         player.sendMessage("${Main.PREFIX} Du hast das Jump and Run ${ChatColor.GREEN}$name ${ChatColor.GRAY}in ${ChatColor.GREEN}${TimeUtil.ticksToTime(ticksNeeded)} ${ChatColor.GRAY}geschafft")
+
+        // call finish event
+        Bukkit.getPluginManager().callEvent(ParkourFinishEvent(player))
 
         // handle time
         Bukkit.getScheduler().runTaskAsynchronously(plugin) {
