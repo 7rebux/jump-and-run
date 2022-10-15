@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package net.rebux.jumpandrun
 
 import net.rebux.jumpandrun.commands.JumpAndRunCommand
@@ -10,6 +12,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
+import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 
@@ -45,10 +48,12 @@ class Main : JavaPlugin() {
         }
 
         // register listeners
-        server.pluginManager.registerEvents(ConnectionListener, this)
-        server.pluginManager.registerEvents(MovementListener, this)
-        server.pluginManager.registerEvents(InteractionListener, this)
-        server.pluginManager.registerEvents(CommandListener, this)
+        registerListeners(
+            ConnectionListener,
+            MovementListener,
+            InteractionListener,
+            CommandListener,
+        )
 
         // register commands
         getCommand("jumpandrun").executor = JumpAndRunCommand
@@ -56,6 +61,10 @@ class Main : JavaPlugin() {
 
     override fun onDisable() {
         sqlConnection.disconnect()
+    }
+
+    private fun registerListeners(vararg listener: Listener) {
+        listener.forEach { server.pluginManager.registerEvents(it, this) }
     }
 
     companion object {
