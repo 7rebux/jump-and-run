@@ -1,3 +1,5 @@
+@file:Suppress("SpellCheckingInspection")
+
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
 
@@ -6,7 +8,7 @@ plugins {
 }
 
 group = "net.rebux"
-version = "1.0-SNAPSHOT"
+version = "2.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -29,6 +31,7 @@ repositories {
 
 dependencies {
     compileOnly("org.bukkit:bukkit:1.8.8-R0.1-SNAPSHOT")
+    implementation("com.github.azbh111:craftbukkit-1.8.8:R")
 }
 
 dependencies {

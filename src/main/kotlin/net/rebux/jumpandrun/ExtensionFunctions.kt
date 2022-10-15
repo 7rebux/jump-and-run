@@ -7,7 +7,7 @@ import org.bukkit.entity.Player
 import java.util.logging.Level
 
 private val plugin = Instance.plugin
-private val prefix = plugin.config.getString("prefix")
+private val prefix = plugin.config.getString("messages.prefix")
 
 fun error(message: String) {
     plugin.logger.log(Level.SEVERE, message)

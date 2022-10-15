@@ -1,16 +1,19 @@
 package net.rebux.jumpandrun.utils
 
-import net.rebux.jumpandrun.Instance
+import net.rebux.jumpandrun.template
 
 object TimeUtil {
 
     fun ticksToTime(ticks: Int): String {
         val millis = ticks * 1000 / 20
 
-        val minutes: Int = (millis / 60000)
-        val seconds: Int = (millis / 1000) % 60
-        val milliseconds: Int = millis % 1000
+        val m = (millis / 60000)
+        val s = (millis / 1000) % 60
+        val ms = millis % 1000
 
-        return "${String.format("%02d", minutes)}.${String.format("%02d", seconds)}.${String.format("%03d", milliseconds)} ${Instance.plugin.config.getString("messages.timeUnitMinutes")}"
+        return if (m == 0)
+            "${String.format("%02d", s)}.${String.format("%03d", ms)} ${template("timer.units.seconds")}"
+        else
+            "${String.format("%02d", m)}.${String.format("%02d", s)}.${String.format("%03d", ms)} ${template("timer.units.minutes")}"
     }
 }

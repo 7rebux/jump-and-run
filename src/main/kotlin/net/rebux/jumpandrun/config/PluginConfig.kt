@@ -12,7 +12,6 @@ class PluginConfig {
 
     init {
         // values
-        config.addDefault("prefix", "${ChatColor.GRAY}[${ChatColor.YELLOW}Jump&Run${ChatColor.GRAY}]")
         config.addDefault("resetHeight", 70)
 
         // database
@@ -22,15 +21,18 @@ class PluginConfig {
         config.addDefault("database.user", "username")
         config.addDefault("database.pass", "password")
 
+        // timer
+        config.addDefault("timer.bar", "${ChatColor.GREEN}{time}")
+        config.addDefault("timer.units.minutes", "Minuten")
+        config.addDefault("timer.units.seconds", "Sekunden")
+
         // messages
-        config.addDefault("messages.timeUnitMinutes", "Minuten")
+        config.addDefault("messages.prefix", "${ChatColor.GRAY}[${ChatColor.YELLOW}Jump&Run${ChatColor.GRAY}]")
         config.addDefault("messages.parkour.completed", "Du hast das Jump and Run ${ChatColor.GREEN}{name} ${ChatColor.GRAY}in ${ChatColor.GREEN}{time} ${ChatColor.GRAY}geschafft")
-        config.addDefault("messages.parkour.checkpint", "Du hast einen neuen ${ChatColor.GREEN}Checkpoint ${ChatColor.GRAY}erreicht!")
+        config.addDefault("messages.parkour.checkpoint", "Du hast einen neuen ${ChatColor.GREEN}Checkpoint ${ChatColor.GRAY}erreicht!")
         config.addDefault("messages.parkour.firstGlobalBest", "Du hast die ${ChatColor.GREEN}Erste Globale Bestzeit ${ChatColor.GRAY}erzielt!")
         config.addDefault("messages.parkour.globalBest", "${ChatColor.GREEN}{player} ${ChatColor.GRAY}hat die Bestzeit bei ${ChatColor.GREEN}{name} ${ChatColor.GRAY}von ${ChatColor.GREEN}{holders} ${ChatColor.GRAY}um ${ChatColor.GREEN}{time} ${ChatColor.GRAY}geschlagen!")
         config.addDefault("messages.parkour.personalBest", "Du hast eine neue ${ChatColor.GREEN}persönliche Bestzeit ${ChatColor.GRAY}erzielt!")
-
-        // commands
         config.addDefault("messages.commands.jnr.list.empty", "Es sind ${ChatColor.RED}keine ${ChatColor.GRAY}Jump and Runs vorhanden!")
         config.addDefault("messages.commands.jnr.list.full", "Es wurden ${ChatColor.GREEN}{size} ${ChatColor.GRAY}Jump and Runs gefunden:")
         config.addDefault("messages.commands.jnr.add.playersOnly", "${ChatColor.RED}Dieser Befehl kann nur als Spieler ausgeführt werden!")
@@ -47,6 +49,7 @@ class PluginConfig {
         config.addDefault("difficulty.hard", "Schwer")
         config.addDefault("difficulty.extreme", "Extrem")
 
+        // menu
         config.addDefault("menu.difficulty", "${ChatColor.GRAY}» ${ChatColor.YELLOW}Schwierigkeit: {difficulty}")
         config.addDefault("menu.builder", "${ChatColor.GRAY}» ${ChatColor.YELLOW}Builder: ${ChatColor.BLUE}{builder}")
         config.addDefault("menu.personalBest.title", "${ChatColor.GRAY}» ${ChatColor.GOLD}Persönliche Bestzeit:")
