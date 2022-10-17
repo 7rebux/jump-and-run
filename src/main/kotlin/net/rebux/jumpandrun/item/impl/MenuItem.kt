@@ -7,8 +7,10 @@ import net.rebux.jumpandrun.utils.TimeUtil
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
 class MenuItem : Item() {
@@ -23,13 +25,11 @@ class MenuItem : Item() {
     }
 
     override fun onInteract(player: Player) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin) {
-            showMenu(
-                Bukkit.createInventory(null, 54, getItemStack().itemMeta.displayName),
-                player,
-                0
-            )
-        }
+        showMenu(
+            Bukkit.createInventory(null, 54, getItemStack().itemMeta.displayName),
+            player,
+            0
+        )
     }
 
     private fun showMenu(inventory: Inventory, player: Player, page: Int) {
@@ -42,24 +42,24 @@ class MenuItem : Item() {
                 break
 
             val parkour = plugin.parkourManager.parkours[index]
-            val bestTime = parkour.times.map { it.value }.minOrNull()
-
+            val personalBest = parkour.times.filter { it.key == player }.map { it.value }.singleOrNull()
+            val globalBest = parkour.times.map { it.value }.minOrNull()
             val lore = buildList {
                 add(template("menu.difficulty", mapOf("difficulty" to parkour.difficulty)))
                 add(template("menu.builder", mapOf("builder" to parkour.builder)))
                 add("")
                 add(template("menu.personalBest.title"))
-                if (parkour.times.contains(player))
-                    add(template("menu.personalBest.time", mapOf("time" to TimeUtil.ticksToTime(parkour.times[player]!!))))
+                if (personalBest != null)
+                    add(template("menu.personalBest.time", mapOf("time" to TimeUtil.ticksToTime(personalBest))))
                 else
                     add(template("menu.noTime"))
                 add("")
                 add(template("menu.globalBest.title"))
-                if (bestTime != null) {
-                    add(template("menu.globalBest.time", mapOf("time" to TimeUtil.ticksToTime(bestTime))))
+                if (globalBest != null) {
+                    add(template("menu.globalBest.time", mapOf("time" to TimeUtil.ticksToTime(globalBest))))
                     add(template("menu.globalBest.subtitle"))
                     parkour.times
-                        .filter { it.value == bestTime }
+                        .filter { it.value == globalBest }
                         .forEach { add(template("menu.globalBest.player", mapOf("player" to it.key.name)))
                     }
                 }
@@ -79,8 +79,19 @@ class MenuItem : Item() {
 
                 override fun onInteract(player: Player) {}
             }
+            val itemStack = item.getItemStack()
 
-            inventory.setItem(slot, item.getItemStack())
+            // enchant item if player has personal best
+            personalBest?.run {
+                val itemMeta = itemStack.itemMeta
+
+                itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+                itemStack.itemMeta = itemMeta
+                itemStack.addUnsafeEnchantment(Enchantment.KNOCKBACK, 10)
+            }
+
+            // add item to inventory
+            inventory.setItem(slot, itemStack)
         }
 
         // TODO("Add navigation items")
