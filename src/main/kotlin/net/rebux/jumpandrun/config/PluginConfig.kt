@@ -43,6 +43,7 @@ class PluginConfig {
         config.addDefault("messages.commands.jnr.reset.successSingle", "Erfolgreich Bestzeit für {name} ${ChatColor.GRAY}von ${ChatColor.GREEN}{player} ${ChatColor.GRAY}entfernt")
         config.addDefault("messages.commands.jnr.reset.notFound", "${ChatColor.RED}Dieser Spieler hat keine Bestzeit!")
         config.addDefault("messages.commands.top.invalid", "${ChatColor.RED}Du musst dich in einem Jump and Run befinden!")
+        config.addDefault("messages.commands.top.entry", "${ChatColor.GREEN}#{rank} ${ChatColor.BLUE}{player} ${ChatColor.GRAY}» ${ChatColor.GREEN}{time}")
 
         // difficulties
         config.addDefault("difficulty.easy", "Einfach")
