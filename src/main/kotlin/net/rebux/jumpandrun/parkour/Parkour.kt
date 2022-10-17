@@ -1,16 +1,17 @@
 package net.rebux.jumpandrun.parkour
 
 import net.rebux.jumpandrun.*
+import net.rebux.jumpandrun.database.entities.ParkourEntity
+import net.rebux.jumpandrun.database.entities.TimeEntity
 import net.rebux.jumpandrun.events.ParkourFinishEvent
-import net.rebux.jumpandrun.item.impl.CheckpointItem
-import net.rebux.jumpandrun.item.impl.LeaveItem
-import net.rebux.jumpandrun.item.impl.RestartItem
-import net.rebux.jumpandrun.sql.SQLQueries
+import net.rebux.jumpandrun.item.impl.*
 import net.rebux.jumpandrun.utils.InventoryUtil
 import net.rebux.jumpandrun.utils.TimeUtil
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
+import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.LocalDateTime
 
 class Parkour(
     val id: Int,
@@ -19,8 +20,8 @@ class Parkour(
     val difficulty: Difficulty,
     val material: Material,
     val location: Location,
+    var times: MutableMap<OfflinePlayer, Int> = mutableMapOf()
 ) {
-
     private val plugin = Instance.plugin
 
     fun start(player: Player) {
@@ -44,6 +45,7 @@ class Parkour(
 
     fun finish(player: Player) {
         val ticksNeeded = player.ticksLived - plugin.times[player]!!
+        val globalBest = times.map { it.value }.minOrNull()
 
         player.msgTemplate("parkour.completed", mapOf(
             "name" to name,
@@ -54,37 +56,52 @@ class Parkour(
         Bukkit.getPluginManager().callEvent(ParkourFinishEvent(player))
 
         // handle time
-        Bukkit.getScheduler().runTaskAsynchronously(plugin) {
-            if (!SQLQueries.hasPersonalBestTime(player, this) || ticksNeeded < SQLQueries.getPersonalBestTime(player, this)) {
-                // first global best
-                if (!SQLQueries.hasGlobalBestTime(this)) {
-                    player.msgTemplate("parkour.firstGlobalBest")
-                    player.playSound(player.location, Sound.LEVEL_UP, 1.0F, 1.0F)
+        if (!times.contains(player) || ticksNeeded < times[player]!!) {
+            // first global best
+            if (globalBest == null) {
+                player.msgTemplate("parkour.firstGlobalBest")
+                player.playSound(player.location, Sound.LEVEL_UP, 1.0F, 1.0F)
+            }
+
+            // new global best
+            else if (ticksNeeded < globalBest) {
+                val delta = globalBest - ticksNeeded
+                val holders = times
+                    .filter { it.value == globalBest }
+                    .map { it.key.name }
+                    .joinToString(", ")
+
+                msgTemplateGlobal("parkour.globalBest", mapOf(
+                    "player" to player.name,
+                    "name" to name,
+                    "holders" to holders,
+                    "time" to TimeUtil.ticksToTime(delta))
+                )
+                Bukkit.getOnlinePlayers().forEach { it.playSound(player.location, Sound.ANVIL_LAND, 1.0F, 1.0F) }
+            }
+
+            // new personal best
+            else {
+                player.msgTemplate("parkour.personalBest")
+                player.playSound(player.location, Sound.LEVEL_UP, 1.0F, 1.0F)
+            }
+
+            // update best time
+            Bukkit.getScheduler().runTaskAsynchronously(plugin) {
+                transaction {
+                    TimeEntity.all()
+                        .find { it.parkour.id.value == this@Parkour.id && it.uuid == player.uniqueId.toString() }
+                        ?.delete()
+
+                    TimeEntity.new {
+                        uuid = player.uniqueId.toString()
+                        time = ticksNeeded
+                        date = LocalDateTime.now()
+                        parkour = ParkourEntity.findById(this@Parkour.id)!!
+                    }.also {
+                        times[player] = ticksNeeded
+                    }
                 }
-
-                // new global best
-                else if (ticksNeeded < SQLQueries.getGlobalBestTimes(this).second) {
-                    val timeDif = SQLQueries.getGlobalBestTimes(this).second - ticksNeeded
-                    val recordHolders = SQLQueries.getGlobalBestTimes(this).first
-                        .joinToString(", ") { Bukkit.getOfflinePlayer(it).name }
-
-                    msgTemplateGlobal("parkour.globalBest", mapOf(
-                        "player" to player.name,
-                        "name" to name,
-                        "holders" to recordHolders,
-                        "time" to TimeUtil.ticksToTime(timeDif))
-                    )
-                    Bukkit.getOnlinePlayers().forEach { it.playSound(player.location, Sound.ANVIL_LAND, 1.0F, 1.0F) }
-                }
-
-                // new personal best
-                else {
-                    player.msgTemplate("parkour.personalBest")
-                    player.playSound(player.location, Sound.LEVEL_UP, 1.0F, 1.0F)
-                }
-
-                // update best time
-                SQLQueries.updateBestTime(ticksNeeded, player, this)
             }
         }
 

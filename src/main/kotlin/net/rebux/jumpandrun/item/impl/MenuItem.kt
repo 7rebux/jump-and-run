@@ -2,7 +2,6 @@ package net.rebux.jumpandrun.item.impl
 
 import net.rebux.jumpandrun.Instance
 import net.rebux.jumpandrun.item.Item
-import net.rebux.jumpandrun.sql.SQLQueries
 import net.rebux.jumpandrun.template
 import net.rebux.jumpandrun.utils.TimeUtil
 import org.bukkit.Bukkit
@@ -33,7 +32,6 @@ class MenuItem : Item() {
         }
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
     private fun showMenu(inventory: Inventory, player: Player, page: Int) {
         val parkoursPerPage = 45
 
@@ -44,23 +42,25 @@ class MenuItem : Item() {
                 break
 
             val parkour = plugin.parkourManager.parkours[index]
+            val bestTime = parkour.times.map { it.value }.minOrNull()
 
             val lore = buildList {
                 add(template("menu.difficulty", mapOf("difficulty" to parkour.difficulty)))
                 add(template("menu.builder", mapOf("builder" to parkour.builder)))
                 add("")
                 add(template("menu.personalBest.title"))
-                if (SQLQueries.hasPersonalBestTime(player, parkour))
-                    add(template("menu.personalBest.time", mapOf("time" to TimeUtil.ticksToTime(SQLQueries.getPersonalBestTime(player, parkour)))))
+                if (parkour.times.contains(player))
+                    add(template("menu.personalBest.time", mapOf("time" to TimeUtil.ticksToTime(parkour.times[player]!!))))
                 else
                     add(template("menu.noTime"))
                 add("")
                 add(template("menu.globalBest.title"))
-                if (SQLQueries.hasGlobalBestTime(parkour)) {
-                    add(template("menu.globalBest.time", mapOf("time" to TimeUtil.ticksToTime(SQLQueries.getGlobalBestTimes(parkour).second))))
+                if (bestTime != null) {
+                    add(template("menu.globalBest.time", mapOf("time" to TimeUtil.ticksToTime(bestTime))))
                     add(template("menu.globalBest.subtitle"))
-                    SQLQueries.getGlobalBestTimes(parkour).first.forEach {
-                        add(template("menu.globalBest.player", mapOf("player" to Bukkit.getOfflinePlayer(it).name)))
+                    parkour.times
+                        .filter { it.value == bestTime }
+                        .forEach { add(template("menu.globalBest.player", mapOf("player" to it.key.name)))
                     }
                 }
                 else

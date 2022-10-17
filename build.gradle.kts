@@ -3,18 +3,15 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
 
-plugins {
-    kotlin("jvm") version "1.5.30"
-}
+val exposedVersion: String by project
 
-group = "net.rebux"
-version = "2.0-SNAPSHOT"
+plugins {
+    kotlin("jvm") version "1.7.20"
+}
 
 repositories {
     mavenCentral()
-}
 
-repositories {
     maven {
         url = URI("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
 
@@ -30,16 +27,17 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.bukkit:bukkit:1.8.8-R0.1-SNAPSHOT")
+    implementation("org.bukkit:bukkit:1.8.8-R0.1-SNAPSHOT")
     implementation("com.github.azbh111:craftbukkit-1.8.8:R")
-}
 
-dependencies {
+    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
+
+    implementation("org.slf4j:slf4j-nop:2.0.3")
+
     testImplementation(kotlin("test"))
-}
-
-tasks.test {
-    useJUnit()
 }
 
 tasks.withType<KotlinCompile>() {

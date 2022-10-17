@@ -1,11 +1,12 @@
 package net.rebux.jumpandrun.commands
 
 import net.rebux.jumpandrun.Instance
+import net.rebux.jumpandrun.database.entities.ParkourEntity
+import net.rebux.jumpandrun.database.entities.TimeEntity
 import net.rebux.jumpandrun.msg
 import net.rebux.jumpandrun.msgTemplate
 import net.rebux.jumpandrun.parkour.Difficulty
-import net.rebux.jumpandrun.parkour.Parkour
-import net.rebux.jumpandrun.sql.SQLQueries
+import net.rebux.jumpandrun.utils.LocationSerializer
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.command.Command
@@ -13,7 +14,7 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.Material
 import org.bukkit.entity.Player
-import java.lang.Exception
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 object JumpAndRunCommand : CommandExecutor {
@@ -22,7 +23,7 @@ object JumpAndRunCommand : CommandExecutor {
 
     private fun CommandSender.sendUsage() {
         this.msg("/jnr list")
-        this.msg("/jnr add <name> <builder> <difficultyId> <material>")
+        this.msg("/jnr add <name> <builder> <difficulty> <material>")
         this.msg("/jnr remove <id>")
         this.msg("/jnr reset <id> <uuid | all>")
     }
@@ -38,6 +39,7 @@ object JumpAndRunCommand : CommandExecutor {
             return true
         }
 
+        // list parkours
         when (args[0].lowercase()) {
             "list" -> {
                 if (plugin.parkourManager.parkours.isEmpty())
@@ -50,94 +52,93 @@ object JumpAndRunCommand : CommandExecutor {
                 }
             }
 
+            // add parkour
             "add" -> {
                 if (sender !is Player)
                     sender.msgTemplate("commands.playersOnly")
                 else if (args.size != 5)
                     sender.sendUsage()
                 else {
-                    try {
-                        val block = sender.location.block.location
-                        val location = block.add(
-                            if (block.x < 0) -0.5 else 0.5,
-                            0.0,
-                            if (block.z < 0) -0.5 else 0.5
-                        )
-                        val id = (plugin.parkourManager.getMaxId() ?: 0) + 1
-                        val name = args[1]
-                        val builder = args[2]
-                        val difficulty = Difficulty.getById(args[3].toInt())!!
-                        val material = Material.getMaterial(args[4].uppercase())
+                    val block = sender.location.block.location
+                    val location = block.add(
+                        if (block.x < 0) -0.5 else 0.5,
+                        0.0,
+                        if (block.z < 0) -0.5 else 0.5
+                    ).apply { yaw = 90F }
 
-                        location.yaw = 90F
-
-                        val parkour = Parkour(id, name, builder, difficulty, material, location)
-
-                        plugin.parkourManager.addParkour(parkour)
-                        sender.msgTemplate("commands.jnr.add.success", mapOf("name" to name))
-                    } catch (e: Exception) {
-                        sender.msg("${ChatColor.RED}${e.message}")
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin) {
+                        transaction {
+                            ParkourEntity.new {
+                                this.name = args[1]
+                                this.builder = args[2]
+                                this.difficulty = Difficulty.getDifficulty(args[3].uppercase())!!
+                                this.material = Material.getMaterial(args[4].uppercase())
+                                this.location = LocationSerializer.toBase64String(location)
+                            }.also {
+                                plugin.parkourManager.parkours += it.toParkour()
+                                sender.msgTemplate("commands.jnr.add.success", mapOf("name" to it.name))
+                            }
+                        }
                     }
                 }
             }
 
+            // remove parkour
             "remove" -> {
                 if (args.size != 2)
                     sender.sendUsage()
                 else {
-                    try {
-                        val id = args[1].toInt()
-
-                        if (plugin.parkourManager.hasParkour(id)) {
-                            val parkour = plugin.parkourManager.getParkourById(id)!!
-
-                            plugin.parkourManager.removeParkour(parkour)
-                            sender.msgTemplate("commands.jnr.remove.success", mapOf("name" to parkour.name))
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin) {
+                        transaction {
+                            ParkourEntity.findById(args[1].toInt())?.let {
+                                it.delete()
+                                plugin.parkourManager.parkours -= plugin.parkourManager.getParkourById(it.id.value)!!
+                                sender.msgTemplate("commands.jnr.remove.success", mapOf("name" to it.name))
+                            } ?: sender.msgTemplate("commands.jnr.remove.notFound")
                         }
-                        else
-                            sender.msgTemplate("commands.jnr.remove.notFound")
-                    } catch (e: Exception) {
-                        sender.msg("${ChatColor.RED}${e.message}")
                     }
                 }
             }
 
+            // reset times
             "reset" -> {
                 if (args.size != 3)
                     sender.sendUsage()
                 else {
-                    try {
-                        val parkour = plugin.parkourManager.getParkourById(args[1].toInt())!!
-
-                        if (args[2].lowercase() == "all") {
-                            Bukkit.getScheduler().runTaskAsynchronously(plugin) {
-                                SQLQueries.removeBestTimes(parkour)
-                                sender.msgTemplate("commands.jnr.reset.successAll", mapOf("name" to parkour.name))
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin) {
+                        if (args[2].lowercase() != "all") {
+                            transaction {
+                                TimeEntity.all()
+                                    .singleOrNull { it.parkour.id.value == args[1].toInt() && it.uuid == args[2] }?.let {
+                                        it.delete()
+                                        sender.msgTemplate("commands.jnr.reset.successSingle", mapOf(
+                                            "name" to it.parkour.name,
+                                            "player" to Bukkit.getOfflinePlayer(UUID.fromString(it.uuid)).name)
+                                        )
+                                        plugin.parkourManager.getParkourById(args[1].toInt())!!.times
+                                            .remove(Bukkit.getOfflinePlayer(UUID.fromString(it.uuid)))
+                                    } ?: sender.msgTemplate("commands.jnr.reset.notFound")
                             }
                         } else {
-                            val uuid = UUID.fromString(args[2])
-
-                            Bukkit.getScheduler().runTaskAsynchronously(plugin) {
-                                if (SQLQueries.hasPersonalBestTime(uuid, parkour)) {
-                                    SQLQueries.removeBestTime(uuid, parkour)
-                                    sender.msgTemplate("commands.jnr.reset.successSingle", mapOf(
-                                        "name" to parkour.name,
-                                        "player" to Bukkit.getOfflinePlayer(uuid))
-                                    )
-                                } else
-                                    sender.msgTemplate("commands.jnr.reset.notFound")
+                            transaction {
+                                TimeEntity.all()
+                                    .filter { it.parkour.id.value == args[1].toInt() }
+                                    .onEach {
+                                        it.delete()
+                                        plugin.parkourManager.getParkourById(args[1].toInt())!!.times
+                                            .remove(Bukkit.getOfflinePlayer(UUID.fromString(it.uuid)))
+                                    }
+                                    .also {
+                                        sender.msgTemplate("commands.jnr.reset.successAll",
+                                            mapOf("name" to it.first().parkour.name))
+                                    }
                             }
                         }
-                    } catch (e: Exception) {
-                        sender.msg("${ChatColor.RED}${e.message}")
                     }
                 }
             }
 
-            "debug" -> {
-                sender.msg("Active players: ${ChatColor.GREEN}${plugin.active.keys.joinToString(", ") { it.name } }")
-            }
-
+            // if subcommand is not valid
             else -> sender.sendUsage()
         }
         return true

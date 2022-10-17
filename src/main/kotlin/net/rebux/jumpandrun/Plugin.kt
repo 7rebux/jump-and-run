@@ -4,16 +4,14 @@ package net.rebux.jumpandrun
 
 import net.minecraft.server.v1_8_R3.IChatBaseComponent.ChatSerializer
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat
-import net.rebux.jumpandrun.commands.JumpAndRunCommand
-import net.rebux.jumpandrun.commands.TopCommand
+import net.rebux.jumpandrun.commands.*
 import net.rebux.jumpandrun.config.PluginConfig
+import net.rebux.jumpandrun.database.DatabaseConnector
+import net.rebux.jumpandrun.database.SchemaInitializer
 import net.rebux.jumpandrun.listeners.*
 import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.parkour.ParkourManager
-import net.rebux.jumpandrun.sql.SQLConnection
-import net.rebux.jumpandrun.sql.SQLQueries
 import net.rebux.jumpandrun.utils.TimeUtil
-import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.command.CommandExecutor
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
@@ -28,24 +26,21 @@ class Plugin : JavaPlugin() {
 
     private val instance = Instance(this)
     private val config = PluginConfig()
+    private val databaseConnector = DatabaseConnector()
+    private val schemaInitializer = SchemaInitializer()
 
-    val sqlConnection = SQLConnection()
     val parkourManager = ParkourManager()
     val active = hashMapOf<Player, Parkour>()
     val checkpoints = hashMapOf<Player, Location>()
     val times = hashMapOf<Player, Int>()
 
     override fun onEnable() {
-        Bukkit.getScheduler().runTaskAsynchronously(this) {
-            // connect to database
-            sqlConnection.connect()
+        // connect to database
+        databaseConnector.connect()
+        schemaInitializer.initialize()
 
-            // load parkours
-            if (sqlConnection.hasTable("Parkours"))
-                parkourManager.loadParkours()
-            else
-                SQLQueries.createTables()
-        }
+        // load data
+        parkourManager.load()
 
         // register listeners
         registerListeners(
@@ -72,10 +67,6 @@ class Plugin : JavaPlugin() {
                 }
             }
         }, 0, 50)
-    }
-
-    override fun onDisable() {
-        sqlConnection.disconnect()
     }
 
     private fun registerListeners(vararg listener: Listener) {
