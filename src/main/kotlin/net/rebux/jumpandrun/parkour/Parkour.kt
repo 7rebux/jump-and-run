@@ -4,8 +4,10 @@ import net.rebux.jumpandrun.*
 import net.rebux.jumpandrun.database.entities.ParkourEntity
 import net.rebux.jumpandrun.database.entities.TimeEntity
 import net.rebux.jumpandrun.events.ParkourFinishEvent
+import net.rebux.jumpandrun.item.impl.CheckpointItem
+import net.rebux.jumpandrun.item.impl.LeaveItem
+import net.rebux.jumpandrun.item.impl.RestartItem
 import net.rebux.jumpandrun.item.ItemRegistry
-import net.rebux.jumpandrun.item.impl.*
 import net.rebux.jumpandrun.utils.InventoryUtil
 import net.rebux.jumpandrun.utils.TimeUtil
 import org.bukkit.*
@@ -90,11 +92,11 @@ class Parkour(
             Bukkit.getScheduler().runTaskAsynchronously(plugin) {
                 transaction {
                     TimeEntity.all()
-                        .find { it.parkour.id.value == this@Parkour.id && it.uuid == player.uniqueId.toString() }
+                        .find { it.parkour.id.value == this@Parkour.id && it.uuid == player.uniqueId }
                         ?.delete()
 
                     TimeEntity.new {
-                        uuid = player.uniqueId.toString()
+                        uuid = player.uniqueId
                         time = ticksNeeded
                         date = LocalDateTime.now()
                         parkour = ParkourEntity.findById(this@Parkour.id)!!
