@@ -8,6 +8,9 @@ import org.bukkit.inventory.ItemStack
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
+/**
+ * A registry that stores custom [Item] instances and caches it's [ItemStack]s
+ */
 object ItemRegistry {
 
     private val items = ConcurrentHashMap<Int, Item>()

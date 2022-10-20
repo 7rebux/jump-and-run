@@ -7,6 +7,9 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
+/**
+ * An [Item] implementation that restarts the current parkour
+ */
 object RestartItem : Item() {
 
     val id = ItemRegistry.register(this)

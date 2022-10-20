@@ -8,6 +8,9 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 
+/**
+ * Contains event listeners for [PlayerJoinEvent] and [PlayerQuitEvent]
+ */
 object ConnectionListener: Listener {
 
     private val plugin = Instance.plugin

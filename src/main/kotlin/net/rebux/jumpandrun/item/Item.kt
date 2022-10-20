@@ -5,6 +5,9 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 
+/**
+ * A wrapper class that contains a [ItemStack] and an interact event
+ */
 abstract class Item {
 
     abstract fun createItemStack(): ItemStack

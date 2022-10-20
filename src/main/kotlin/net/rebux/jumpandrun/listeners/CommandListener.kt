@@ -6,6 +6,9 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 
+/**
+ * Contains event listeners for [PlayerCommandPreprocessEvent]
+ */
 object CommandListener : Listener {
 
     private val plugin = Instance.plugin

@@ -9,6 +9,9 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.inventory.ItemStack
 
+/**
+ * An [Item] implementation that leaves the current parkour
+ */
 object LeaveItem : Item() {
 
     val id = ItemRegistry.register(this)

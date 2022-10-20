@@ -109,14 +109,14 @@ object JumpAndRunCommand : CommandExecutor {
                         if (args[2].lowercase() != "all") {
                             transaction {
                                 TimeEntity.all()
-                                    .singleOrNull { it.parkour.id.value == args[1].toInt() && it.uuid == args[2] }?.let {
+                                    .singleOrNull { it.parkour.id.value == args[1].toInt() && it.uuid == UUID.fromString(args[2]) }?.let {
                                         it.delete()
                                         sender.msgTemplate("commands.jnr.reset.successSingle", mapOf(
                                             "name" to it.parkour.name,
-                                            "player" to Bukkit.getOfflinePlayer(UUID.fromString(it.uuid)).name)
+                                            "player" to Bukkit.getOfflinePlayer(it.uuid).name)
                                         )
                                         plugin.parkourManager.getParkourById(args[1].toInt())!!.times
-                                            .remove(Bukkit.getOfflinePlayer(UUID.fromString(it.uuid)))
+                                            .remove(Bukkit.getOfflinePlayer(it.uuid))
                                     } ?: sender.msgTemplate("commands.jnr.reset.notFound")
                             }
                         } else {
@@ -126,7 +126,7 @@ object JumpAndRunCommand : CommandExecutor {
                                     .onEach {
                                         it.delete()
                                         plugin.parkourManager.getParkourById(args[1].toInt())!!.times
-                                            .remove(Bukkit.getOfflinePlayer(UUID.fromString(it.uuid)))
+                                            .remove(Bukkit.getOfflinePlayer(it.uuid))
                                     }
                                     .also {
                                         sender.msgTemplate("commands.jnr.reset.successAll",
