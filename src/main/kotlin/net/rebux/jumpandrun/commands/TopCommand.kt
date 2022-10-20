@@ -3,6 +3,7 @@ package net.rebux.jumpandrun.commands
 import net.rebux.jumpandrun.Instance
 import net.rebux.jumpandrun.msgTemplate
 import net.rebux.jumpandrun.utils.TimeUtil
+import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -33,7 +34,7 @@ object TopCommand : CommandExecutor {
                     .forEachIndexed { i, (key, value) ->
                         sender.msgTemplate("commands.top.entry", mapOf(
                             "rank" to i+1,
-                            "player" to key.name,
+                            "player" to Bukkit.getOfflinePlayer(key).name,
                             "time" to TimeUtil.ticksToTime(value)
                         ))
                     }

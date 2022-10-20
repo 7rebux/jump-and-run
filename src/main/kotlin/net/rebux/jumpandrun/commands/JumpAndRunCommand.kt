@@ -116,7 +116,7 @@ object JumpAndRunCommand : CommandExecutor {
                                             "player" to Bukkit.getOfflinePlayer(it.uuid).name)
                                         )
                                         plugin.parkourManager.getParkourById(args[1].toInt())!!.times
-                                            .remove(Bukkit.getOfflinePlayer(it.uuid))
+                                            .remove(it.uuid)
                                     } ?: sender.msgTemplate("commands.jnr.reset.notFound")
                             }
                         } else {
@@ -126,7 +126,7 @@ object JumpAndRunCommand : CommandExecutor {
                                     .onEach {
                                         it.delete()
                                         plugin.parkourManager.getParkourById(args[1].toInt())!!.times
-                                            .remove(Bukkit.getOfflinePlayer(it.uuid))
+                                            .remove(it.uuid)
                                     }
                                     .also {
                                         sender.msgTemplate("commands.jnr.reset.successAll",

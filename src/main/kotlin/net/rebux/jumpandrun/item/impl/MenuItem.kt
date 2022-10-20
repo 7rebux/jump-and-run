@@ -66,7 +66,7 @@ object MenuItem : Item() {
                 break
 
             val parkour = plugin.parkourManager.parkours[index]
-            val personalBest = parkour.times.filter { it.key == player }.map { it.value }.singleOrNull()
+            val personalBest = parkour.times.filter { it.key == player.uniqueId }.map { it.value }.singleOrNull()
             val globalBest = parkour.times.map { it.value }.minOrNull()
 
             val lore = buildList {
@@ -85,7 +85,8 @@ object MenuItem : Item() {
                     add(template("menu.globalBest.subtitle"))
                     parkour.times
                         .filter { it.value == globalBest }
-                        .forEach { add(template("menu.globalBest.player", mapOf("player" to it.key.name)))
+                        .forEach { add(template("menu.globalBest.player",
+                            mapOf("player" to Bukkit.getOfflinePlayer(it.key).name)))
                     }
                 }
                 else

@@ -1,7 +1,6 @@
 package net.rebux.jumpandrun.database.entities
 
 import net.rebux.jumpandrun.database.models.Times
-import org.bukkit.Bukkit
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -14,5 +13,5 @@ class TimeEntity(id: EntityID<Int>) : IntEntity(id) {
     var date by Times.date
     var parkour by ParkourEntity referencedOn Times.parkour
 
-    fun toMapEntry() = Bukkit.getOfflinePlayer(uuid) to time
+    fun toMapEntry() = uuid to time
 }

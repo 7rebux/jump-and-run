@@ -15,6 +15,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
+import java.util.UUID
 
 class Parkour(
     val id: Int,
@@ -23,7 +24,7 @@ class Parkour(
     val difficulty: Difficulty,
     val material: Material,
     val location: Location,
-    var times: MutableMap<OfflinePlayer, Int> = mutableMapOf()
+    var times: MutableMap<UUID, Int> = mutableMapOf()
 ) {
     private val plugin = Instance.plugin
 
@@ -58,7 +59,7 @@ class Parkour(
         Bukkit.getPluginManager().callEvent(ParkourFinishEvent(player))
 
         // handle time
-        if (!times.contains(player) || ticksNeeded < times[player]!!) {
+        if (!times.contains(player.uniqueId) || ticksNeeded < times[player.uniqueId]!!) {
             // first global best
             if (globalBest == null) {
                 player.msgTemplate("parkour.firstGlobalBest")
@@ -70,7 +71,7 @@ class Parkour(
                 val delta = globalBest - ticksNeeded
                 val holders = times
                     .filter { it.value == globalBest }
-                    .map { it.key.name }
+                    .map { Bukkit.getOfflinePlayer(it.key).name }
                     .joinToString(", ")
 
                 msgTemplateGlobal("parkour.globalBest", mapOf(
@@ -101,7 +102,7 @@ class Parkour(
                         date = LocalDateTime.now()
                         parkour = ParkourEntity.findById(this@Parkour.id)!!
                     }.also {
-                        times[player] = ticksNeeded
+                        times[player.uniqueId] = ticksNeeded
                     }
                 }
             }
