@@ -1,6 +1,7 @@
 package net.rebux.jumpandrun.listeners
 
 import net.rebux.jumpandrun.Instance
+import net.rebux.jumpandrun.item.ItemRegistry
 import net.rebux.jumpandrun.item.impl.MenuItem
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -14,7 +15,7 @@ object ConnectionListener: Listener {
     @EventHandler
     fun onJoin(event: PlayerJoinEvent) {
         // give menu item
-        event.player.inventory.setItem(4, MenuItem().getItemStack())
+        event.player.inventory.setItem(4, ItemRegistry.getItemStack(MenuItem.id))
     }
 
     @EventHandler

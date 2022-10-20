@@ -1,23 +1,33 @@
 package net.rebux.jumpandrun.item.impl
 
 import net.rebux.jumpandrun.Instance
+import net.rebux.jumpandrun.Plugin
 import net.rebux.jumpandrun.item.Item
+import net.rebux.jumpandrun.item.ItemRegistry
 import net.rebux.jumpandrun.template
 import net.rebux.jumpandrun.utils.TimeUtil
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
-class MenuItem : Item() {
+/**
+ * An [Item] implementation that lists every parkour in an inventory
+ */
+object MenuItem : Item() {
+
+    val id = ItemRegistry.register(this)
 
     private val plugin = Instance.plugin
+    private val parkoursPerPage = plugin.config.getInt("parkoursPerPage")
+    private val inventorySize = parkoursPerPage + 9
 
-    override fun getItemStack(): ItemStack {
+    override fun createItemStack(): ItemStack {
         return Builder()
             .material(Material.PAPER)
             .displayName(plugin.config.getString("items.menu"))
@@ -25,25 +35,40 @@ class MenuItem : Item() {
     }
 
     override fun onInteract(player: Player) {
+        openInventory(player, 0)
+    }
+
+    /**
+     * Opens the parkour menu inventory for the given [player] on the given [page]
+     *
+     * @param player the player to open the inventory
+     * @param page the initial page
+     */
+    fun openInventory(player: Player, page: Int) {
         showMenu(
-            Bukkit.createInventory(null, 54, getItemStack().itemMeta.displayName),
-            player,
-            0
+            Bukkit.createInventory(
+                null, inventorySize, ItemRegistry.getItemStack(id).itemMeta.displayName
+            ), player, page
         )
     }
 
     private fun showMenu(inventory: Inventory, player: Player, page: Int) {
-        val parkoursPerPage = 45
+        val parkours = plugin.parkourManager.parkours.size
 
-        for (slot in 0..parkoursPerPage) {
+        // clear inventory
+        inventory.clear()
+
+        // add parkours
+        for (slot in 0 until parkoursPerPage) {
             val index = slot + page * parkoursPerPage
 
-            if (index >= plugin.parkourManager.parkours.size)
+            if (index >= parkours)
                 break
 
             val parkour = plugin.parkourManager.parkours[index]
             val personalBest = parkour.times.filter { it.key == player }.map { it.value }.singleOrNull()
             val globalBest = parkour.times.map { it.value }.minOrNull()
+
             val lore = buildList {
                 add(template("menu.difficulty", mapOf("difficulty" to parkour.difficulty)))
                 add(template("menu.builder", mapOf("builder" to parkour.builder)))
@@ -68,18 +93,11 @@ class MenuItem : Item() {
             }
 
             // create item
-            val item = object: Item() {
-                override fun getItemStack(): ItemStack {
-                    return Builder()
-                        .material(parkour.material)
-                        .displayName("${ChatColor.DARK_AQUA}${parkour.name}")
-                        .lore(lore)
-                        .build()
-                }
-
-                override fun onInteract(player: Player) {}
-            }
-            val itemStack = item.getItemStack()
+            val itemStack = Builder()
+                .material(parkour.material)
+                .displayName("${ChatColor.DARK_AQUA}${parkour.name}")
+                .lore(lore)
+                .build()
 
             // enchant item if player has personal best
             personalBest?.run {
@@ -90,11 +108,36 @@ class MenuItem : Item() {
                 itemStack.addUnsafeEnchantment(Enchantment.KNOCKBACK, 10)
             }
 
+            val nmsCopy = CraftItemStack.asNMSCopy(itemStack)
+            nmsCopy.tag.setInt(Plugin.PARKOUR_TAG, parkour.id)
+
             // add item to inventory
-            inventory.setItem(slot, itemStack)
+            inventory.setItem(slot, CraftItemStack.asCraftMirror(nmsCopy))
         }
 
-        // TODO("Add navigation items")
+        // add navigation items
+        if (parkours > parkoursPerPage * (page + 1)) {
+            val itemStack = SkullBuilder()
+                .displayName(template("items.nextPage"))
+                .username("MHF_ArrowRight")
+                .build()
+
+            val nmsCopy = CraftItemStack.asNMSCopy(itemStack)
+            nmsCopy.tag.setInt(Plugin.PAGE_TAG, page)
+
+            inventory.setItem(inventorySize - 1, CraftItemStack.asCraftMirror(nmsCopy))
+        }
+        if (page > 0) {
+            val itemStack = SkullBuilder()
+                .displayName(template("items.previousPage"))
+                .username("MHF_ArrowLeft")
+                .build()
+
+            val nmsCopy = CraftItemStack.asNMSCopy(itemStack)
+            nmsCopy.tag.setInt(Plugin.PAGE_TAG, page * -1)
+
+            inventory.setItem(inventorySize - 9, CraftItemStack.asCraftMirror(nmsCopy))
+        }
 
         // open inventory
         player.openInventory(inventory)

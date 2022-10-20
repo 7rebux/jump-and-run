@@ -2,15 +2,18 @@ package net.rebux.jumpandrun.item.impl
 
 import net.rebux.jumpandrun.Instance
 import net.rebux.jumpandrun.item.Item
+import net.rebux.jumpandrun.item.ItemRegistry
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.inventory.ItemStack
 
-class LeaveItem : Item() {
+object LeaveItem : Item() {
 
-    override fun getItemStack(): ItemStack {
+    val id = ItemRegistry.register(this)
+
+    override fun createItemStack(): ItemStack {
         return Builder()
             .material(Material.INK_SACK)
             .durability(8)

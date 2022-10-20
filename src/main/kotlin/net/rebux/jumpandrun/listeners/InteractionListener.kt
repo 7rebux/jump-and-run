@@ -1,8 +1,10 @@
 package net.rebux.jumpandrun.listeners
 
 import net.rebux.jumpandrun.Instance
-import net.rebux.jumpandrun.item.impl.*
-import org.bukkit.ChatColor
+import net.rebux.jumpandrun.Plugin
+import net.rebux.jumpandrun.item.ItemRegistry
+import net.rebux.jumpandrun.item.impl.MenuItem
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack
 import org.bukkit.entity.Minecart
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -12,38 +14,31 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.ItemStack
 
+/**
+ * Contains event listeners for [PlayerInteractEvent], [PlayerInteractEntityEvent] and [InventoryClickEvent]
+ */
 object InteractionListener: Listener {
 
     private val plugin = Instance.plugin
-    private val items = arrayListOf(
-        MenuItem(),
-        LeaveItem(),
-        RestartItem(),
-        CheckpointItem()
-    )
 
     @EventHandler
     fun onInteract(event: PlayerInteractEvent) {
         val player = event.player
-        val item = player.itemInHand
+        val item: ItemStack? = player.itemInHand
 
         // check if action is correct
         if (event.action !in listOf(Action.RIGHT_CLICK_BLOCK, Action.RIGHT_CLICK_AIR))
             return
 
-        // check item is valid
-        if (item?.itemMeta?.displayName == null)
-            return
-
-        // call interact event
-        items.forEach {
-            if (it.getItemStack().itemMeta.displayName.equals(item.itemMeta.displayName, true))
-                it.onInteract(player)
-        }
+        // call interact event if item is not null
+        item?.let { ItemRegistry.onInteract(item, player) }
     }
 
-    // "bug" fix for lobby plugin
+    /**
+     * "Bug" fix for lobby plugin
+     */
     @EventHandler(priority = EventPriority.HIGH)
     fun onEntityInteract(event: PlayerInteractEntityEvent) {
         val player = event.player
@@ -59,17 +54,30 @@ object InteractionListener: Listener {
 
     @EventHandler
     fun onClick(event: InventoryClickEvent) {
-        val item = event.currentItem
-        val player = event.whoClicked as? Player // safe cast (null if whoClicked is not a player)
+        val nmsCopy: net.minecraft.server.v1_8_R3.ItemStack? = CraftItemStack.asNMSCopy(event.currentItem)
+        val player = event.whoClicked as? Player ?: return
 
         // check if item is valid
-        if (item?.itemMeta?.displayName == null)
+        if (nmsCopy?.hasTag() != true)
             return
 
-        // start parkour
-        Instance.plugin.parkourManager.parkours.forEach {
-            if (it.name.equals(ChatColor.stripColor(item.itemMeta.displayName), true))
-                player?.let { player -> it.start(player) }
+        when {
+            // parkour items
+            nmsCopy.tag.hasKey(Plugin.PARKOUR_TAG) -> {
+                val id = nmsCopy.tag.getInt(Plugin.PARKOUR_TAG)
+                val parkour = plugin.parkourManager.getParkourById(id)
+
+                parkour?.start(player) ?: error("Parkour #$id not found!")
+                event.isCancelled = true
+            }
+
+            // page items
+            nmsCopy.tag.hasKey(Plugin.PAGE_TAG) -> {
+                val page = nmsCopy.tag.getInt(Plugin.PAGE_TAG)
+
+                MenuItem.openInventory(player, if (page >= 0) page + 1 else -page - 1)
+                event.isCancelled = true
+            }
         }
     }
 }

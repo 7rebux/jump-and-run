@@ -4,6 +4,7 @@ import net.rebux.jumpandrun.*
 import net.rebux.jumpandrun.database.entities.ParkourEntity
 import net.rebux.jumpandrun.database.entities.TimeEntity
 import net.rebux.jumpandrun.events.ParkourFinishEvent
+import net.rebux.jumpandrun.item.ItemRegistry
 import net.rebux.jumpandrun.item.impl.*
 import net.rebux.jumpandrun.utils.InventoryUtil
 import net.rebux.jumpandrun.utils.TimeUtil
@@ -33,10 +34,9 @@ class Parkour(
         player.inventory.clear()
 
         // add items
-        player.inventory.setItem(0, CheckpointItem().getItemStack())
-        player.inventory.setItem(1, RestartItem().getItemStack())
-        //player.inventory.setItem(4, HiderItem().getItemStack())
-        player.inventory.setItem(8, LeaveItem().getItemStack())
+        player.inventory.setItem(0, ItemRegistry.getItemStack(CheckpointItem.id))
+        player.inventory.setItem(1, ItemRegistry.getItemStack(RestartItem.id))
+        player.inventory.setItem(8, ItemRegistry.getItemStack(LeaveItem.id))
 
         plugin.active[player] = this
         plugin.checkpoints[player] = location

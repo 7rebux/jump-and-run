@@ -14,6 +14,7 @@ class PluginConfig {
         // values
         config.addDefault("resetHeight", 70)
         config.addDefault("worldName", "lobby2020")
+        config.addDefault("parkoursPerPage", 9)
 
         // database
         config.addDefault("database.host", "127.0.0.1")
@@ -65,6 +66,8 @@ class PluginConfig {
 
         // items
         config.addDefault("items.menu", "${ChatColor.GRAY}» ${ChatColor.AQUA}JumpAndRuns")
+        config.addDefault("items.nextPage", "${ChatColor.GRAY}Nächste Seite ${ChatColor.GREEN}»")
+        config.addDefault("items.previousPage", "${ChatColor.GREEN}« ${ChatColor.GRAY}Vorherige Seite")
         config.addDefault("items.checkpoint", "${ChatColor.RED}Zurück zum Checkpoint")
         config.addDefault("items.restart", "${ChatColor.RED}Neustart")
         config.addDefault("items.leave", "${ChatColor.RED}Verlassen ${ChatColor.GRAY}(/spawn)")

@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "SpellCheckingInspection")
 
 package net.rebux.jumpandrun
 
@@ -61,9 +61,13 @@ class Plugin : JavaPlugin() {
             override fun run() {
                 active.keys.forEach { player ->
                     val time: Int = times[player] ?: player.ticksLived
-                    val bar: String = template("timer.bar", mapOf("time" to TimeUtil.ticksToTime(player.ticksLived - time)))
+                    val bar: String = template(
+                        "timer.bar",
+                        mapOf("time" to TimeUtil.ticksToTime(player.ticksLived - time))
+                    )
 
-                    (player as CraftPlayer).handle.playerConnection.sendPacket(PacketPlayOutChat(ChatSerializer.a("{\"text\":\"$bar\"}"), 2))
+                    (player as CraftPlayer).handle.playerConnection
+                        .sendPacket(PacketPlayOutChat(ChatSerializer.a("{\"text\":\"$bar\"}"), 2))
                 }
             }
         }, 0, 50)
@@ -75,5 +79,11 @@ class Plugin : JavaPlugin() {
 
     private fun registerCommands(commands: Map<String, CommandExecutor>) {
         commands.forEach { this.getCommand(it.key).executor = it.value }
+    }
+
+    companion object {
+        const val ID_TAG = "net.rebux.jumpandrun.id"
+        const val PARKOUR_TAG = "net.rebux.jumpandrun.parkour"
+        const val PAGE_TAG = "net.rebux.jumpandrun.page"
     }
 }
