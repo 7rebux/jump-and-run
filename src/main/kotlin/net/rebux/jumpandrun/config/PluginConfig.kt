@@ -14,7 +14,7 @@ class PluginConfig {
         // values
         config.addDefault("resetHeight", 70)
         config.addDefault("worldName", "lobby2020")
-        config.addDefault("parkoursPerPage", 9)
+        config.addDefault("parkoursPerPage", 45)
 
         // database
         config.addDefault("database.host", "127.0.0.1")
@@ -41,7 +41,7 @@ class PluginConfig {
         config.addDefault("messages.commands.jnr.add.success", "Jump and Run ${ChatColor.GREEN}{name} ${ChatColor.GRAY}erfolgreich hinzugefügt")
         config.addDefault("messages.commands.jnr.remove.success", "Jump and Run ${ChatColor.RED}{name} ${ChatColor.GRAY}erfolgreich entfernt")
         config.addDefault("messages.commands.jnr.remove.notFound", "${ChatColor.RED}Dieses Jump and Run existiert nicht!")
-        config.addDefault("messages.commands.jnr.reset.successAll", "Erfolgreich ${ChatColor.GREEN}alle Bestzeiten für ${ChatColor.GREEN}{name} ${ChatColor.GRAY}entfernt")
+        config.addDefault("messages.commands.jnr.reset.successAll", "Erfolgreich ${ChatColor.GREEN}alle ${ChatColor.GRAY}Bestzeiten für ${ChatColor.GREEN}{name} ${ChatColor.GRAY}entfernt")
         config.addDefault("messages.commands.jnr.reset.successSingle", "Erfolgreich Bestzeit für ${ChatColor.GREEN}{name} ${ChatColor.GRAY}von ${ChatColor.GREEN}{player} ${ChatColor.GRAY}entfernt")
         config.addDefault("messages.commands.jnr.reset.notFound", "${ChatColor.RED}Dieser Spieler hat keine Bestzeit!")
         config.addDefault("messages.commands.top.invalid", "${ChatColor.RED}Du musst dich in einem Jump and Run befinden!")
