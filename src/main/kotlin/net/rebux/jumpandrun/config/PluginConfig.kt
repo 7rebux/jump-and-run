@@ -42,7 +42,7 @@ class PluginConfig {
         config.addDefault("messages.commands.jnr.remove.success", "Jump and Run ${ChatColor.RED}{name} ${ChatColor.GRAY}erfolgreich entfernt")
         config.addDefault("messages.commands.jnr.remove.notFound", "${ChatColor.RED}Dieses Jump and Run existiert nicht!")
         config.addDefault("messages.commands.jnr.reset.successAll", "Erfolgreich ${ChatColor.GREEN}alle Bestzeiten für ${ChatColor.GREEN}{name} ${ChatColor.GRAY}entfernt")
-        config.addDefault("messages.commands.jnr.reset.successSingle", "Erfolgreich Bestzeit für {name} ${ChatColor.GRAY}von ${ChatColor.GREEN}{player} ${ChatColor.GRAY}entfernt")
+        config.addDefault("messages.commands.jnr.reset.successSingle", "Erfolgreich Bestzeit für ${ChatColor.GREEN}{name} ${ChatColor.GRAY}von ${ChatColor.GREEN}{player} ${ChatColor.GRAY}entfernt")
         config.addDefault("messages.commands.jnr.reset.notFound", "${ChatColor.RED}Dieser Spieler hat keine Bestzeit!")
         config.addDefault("messages.commands.top.invalid", "${ChatColor.RED}Du musst dich in einem Jump and Run befinden!")
         config.addDefault("messages.commands.top.entry", "${ChatColor.GREEN}#{rank} ${ChatColor.BLUE}{player} ${ChatColor.GRAY}» ${ChatColor.GREEN}{time}")
