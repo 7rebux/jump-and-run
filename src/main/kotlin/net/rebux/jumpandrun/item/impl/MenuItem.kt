@@ -53,7 +53,8 @@ object MenuItem : Item() {
     }
 
     private fun showMenu(inventory: Inventory, player: Player, page: Int) {
-        val parkours = plugin.parkourManager.parkours.size
+        val parkours = plugin.parkourManager.parkours.sortedBy { it.difficulty }
+        val parkourCount = plugin.parkourManager.parkours.size
 
         // clear inventory
         inventory.clear()
@@ -62,10 +63,10 @@ object MenuItem : Item() {
         for (slot in 0 until parkoursPerPage) {
             val index = slot + page * parkoursPerPage
 
-            if (index >= parkours)
+            if (index >= parkourCount)
                 break
 
-            val parkour = plugin.parkourManager.parkours[index]
+            val parkour = parkours[index]
             val personalBest = parkour.times.filter { it.key == player.uniqueId }.map { it.value }.singleOrNull()
             val globalBest = parkour.times.map { it.value }.minOrNull()
 
@@ -117,7 +118,7 @@ object MenuItem : Item() {
         }
 
         // add navigation items
-        if (parkours > parkoursPerPage * (page + 1)) {
+        if (parkourCount > parkoursPerPage * (page + 1)) {
             val itemStack = SkullBuilder()
                 .displayName(template("items.nextPage"))
                 .username("MHF_ArrowRight")
