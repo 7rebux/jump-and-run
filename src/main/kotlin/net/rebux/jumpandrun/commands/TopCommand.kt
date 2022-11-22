@@ -4,6 +4,7 @@ import net.rebux.jumpandrun.Instance
 import net.rebux.jumpandrun.msgTemplate
 import net.rebux.jumpandrun.utils.TimeUtil
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -25,6 +26,14 @@ object TopCommand : CommandExecutor {
             else -> {
                 val parkour = plugin.active[sender]!!
 
+                if (parkour.times.isEmpty()) {
+                    sender.msgTemplate("commands.top.empty")
+                    return true
+                }
+
+                val bestTime = parkour.times.minOf { it.value }
+
+                sender.msgTemplate("commands.top.header", mapOf("name" to parkour.name))
                 parkour.times
                     .toList()
                     .sortedBy { (_, value) -> value }
@@ -32,10 +41,11 @@ object TopCommand : CommandExecutor {
                     .toMap()
                     .asIterable()
                     .forEachIndexed { i, (key, value) ->
-                        sender.msgTemplate("commands.top.entry", mapOf(
+                        sender.msgTemplate("commands.top.time", mapOf(
                             "rank" to i+1,
                             "player" to Bukkit.getOfflinePlayer(key).name,
-                            "time" to TimeUtil.ticksToTime(value)
+                            "time" to TimeUtil.ticksToTime(value),
+                            "delta" to if (i == 0) "${ChatColor.GREEN}✫" else "-" + TimeUtil.ticksToTime(value - bestTime)
                         ))
                     }
             }
