@@ -54,6 +54,7 @@ class PluginConfig {
         config.addDefault("difficulty.extreme", "Extrem")
 
         // menu
+        config.addDefault("menu.title", "${ChatColor.AQUA}JumpAndRuns ${ChatColor.GRAY}(${ChatColor.YELLOW}{completed}/{quantity}${ChatColor.GRAY}) ${ChatColor.GREEN}{records}✫")
         config.addDefault("menu.difficulty", "${ChatColor.GRAY}» ${ChatColor.YELLOW}Schwierigkeit: {difficulty}")
         config.addDefault("menu.builder", "${ChatColor.GRAY}» ${ChatColor.YELLOW}Builder: ${ChatColor.BLUE}{builder}")
         config.addDefault("menu.personalBest.title", "${ChatColor.GRAY}» ${ChatColor.GOLD}Persönliche Bestzeit:")

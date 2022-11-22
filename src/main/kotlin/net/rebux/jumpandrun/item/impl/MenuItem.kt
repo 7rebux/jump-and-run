@@ -38,6 +38,14 @@ object MenuItem : Item() {
         openInventory(player, 0)
     }
 
+    private fun countPersonalBest(player: Player) = plugin.parkourManager.parkours.count {
+        it.times.containsKey(player.uniqueId)
+    }
+
+    private fun countGlobalBest(player: Player) = plugin.parkourManager.parkours.count { parkour ->
+        parkour.times.getOrDefault(player.uniqueId, Int.MAX_VALUE) == parkour.times.minOfOrNull { it.value }
+    }
+
     /**
      * Opens the parkour menu inventory for the given [player] on the given [page]
      *
@@ -47,7 +55,13 @@ object MenuItem : Item() {
     fun openInventory(player: Player, page: Int) {
         showMenu(
             Bukkit.createInventory(
-                null, inventorySize, ItemRegistry.getItemStack(id).itemMeta.displayName
+                null,
+                inventorySize,
+                template("menu.title", mapOf(
+                    "completed" to countPersonalBest(player),
+                    "quantity" to plugin.parkourManager.parkours.size,
+                    "records" to countGlobalBest(player)
+                ))
             ), player, page
         )
     }
@@ -69,7 +83,6 @@ object MenuItem : Item() {
             val parkour = parkours[index]
             val personalBest = parkour.times.filter { it.key == player.uniqueId }.map { it.value }.singleOrNull()
             val globalBest = parkour.times.map { it.value }.minOrNull()
-
             val lore = buildList {
                 add(template("menu.difficulty", mapOf("difficulty" to parkour.difficulty)))
                 add(template("menu.builder", mapOf("builder" to parkour.builder)))
@@ -93,11 +106,16 @@ object MenuItem : Item() {
                 else
                     add(template("menu.noTime"))
             }
+            val displayName = "${ChatColor.DARK_AQUA}${parkour.name} " +
+                    if (personalBest != null)
+                        "${if (personalBest == globalBest) ChatColor.GREEN else ChatColor.GRAY}✔"
+                    else
+                        "${ChatColor.RED}✘"
 
             // create item
             val itemStack = Builder()
                 .material(parkour.material)
-                .displayName("${ChatColor.DARK_AQUA}${parkour.name}")
+                .displayName(displayName)
                 .lore(lore)
                 .build()
 
