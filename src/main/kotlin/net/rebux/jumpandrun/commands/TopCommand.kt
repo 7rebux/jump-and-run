@@ -45,7 +45,7 @@ object TopCommand : CommandExecutor {
                             "rank" to i+1,
                             "player" to Bukkit.getOfflinePlayer(key).name,
                             "time" to TimeUtil.ticksToTime(value),
-                            "delta" to if (i == 0) "${ChatColor.GREEN}✫" else "-" + TimeUtil.ticksToTime(value - bestTime)
+                            "delta" to if (value - bestTime == 0) "${ChatColor.GREEN}✫" else "-" + TimeUtil.ticksToTime(value - bestTime)
                         ))
                     }
             }
