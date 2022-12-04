@@ -3,6 +3,7 @@
 package net.rebux.jumpandrun
 
 import net.minecraft.server.v1_8_R3.IChatBaseComponent.ChatSerializer
+import net.minecraft.server.v1_8_R3.MinecraftServer
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat
 import net.rebux.jumpandrun.commands.*
 import net.rebux.jumpandrun.config.PluginConfig
@@ -60,17 +61,17 @@ class Plugin : JavaPlugin() {
         Timer().scheduleAtFixedRate(object: TimerTask() {
             override fun run() {
                 active.keys.forEach { player ->
-                    val time: Int = times[player] ?: player.ticksLived
+                    val time: Int = times[player] ?: MinecraftServer.getServer().at()
                     val bar: String = template(
                         "timer.bar",
-                        mapOf("time" to TimeUtil.ticksToTime(player.ticksLived - time))
+                        mapOf("time" to TimeUtil.ticksToTime(MinecraftServer.getServer().at() - time))
                     )
 
                     (player as CraftPlayer).handle.playerConnection
                         .sendPacket(PacketPlayOutChat(ChatSerializer.a("{\"text\":\"$bar\"}"), 2))
                 }
             }
-        }, 0, 50)
+        }, 0, 10)
     }
 
     private fun registerListeners(vararg listener: Listener) {

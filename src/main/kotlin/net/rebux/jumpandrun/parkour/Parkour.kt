@@ -1,5 +1,6 @@
 package net.rebux.jumpandrun.parkour
 
+import net.minecraft.server.v1_8_R3.MinecraftServer
 import net.rebux.jumpandrun.*
 import net.rebux.jumpandrun.database.entities.ParkourEntity
 import net.rebux.jumpandrun.database.entities.TimeEntity
@@ -43,11 +44,11 @@ class Parkour(
 
         plugin.active[player] = this
         plugin.checkpoints[player] = location
-        plugin.times[player] = player.ticksLived
+        plugin.times[player] = MinecraftServer.getServer().at()
     }
 
     fun finish(player: Player) {
-        val ticksNeeded = player.ticksLived - plugin.times[player]!!
+        val ticksNeeded = MinecraftServer.getServer().at() - plugin.times[player]!!
         val globalBest = times.map { it.value }.minOrNull()
 
         player.msgTemplate("parkour.completed", mapOf(
