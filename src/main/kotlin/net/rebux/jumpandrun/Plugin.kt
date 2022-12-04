@@ -71,7 +71,7 @@ class Plugin : JavaPlugin() {
                         .sendPacket(PacketPlayOutChat(ChatSerializer.a("{\"text\":\"$bar\"}"), 2))
                 }
             }
-        }, 0, 10)
+        }, 0, 50)
     }
 
     private fun registerListeners(vararg listener: Listener) {

@@ -1,6 +1,8 @@
 package net.rebux.jumpandrun.parkour
 
+import net.minecraft.server.v1_8_R3.IChatBaseComponent
 import net.minecraft.server.v1_8_R3.MinecraftServer
+import net.minecraft.server.v1_8_R3.PacketPlayOutChat
 import net.rebux.jumpandrun.*
 import net.rebux.jumpandrun.database.entities.ParkourEntity
 import net.rebux.jumpandrun.database.entities.TimeEntity
@@ -12,6 +14,7 @@ import net.rebux.jumpandrun.item.ItemRegistry
 import net.rebux.jumpandrun.utils.InventoryUtil
 import net.rebux.jumpandrun.utils.TimeUtil
 import org.bukkit.*
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -50,11 +53,19 @@ class Parkour(
     fun finish(player: Player) {
         val ticksNeeded = MinecraftServer.getServer().at() - plugin.times[player]!!
         val globalBest = times.map { it.value }.minOrNull()
+        val bar: String = template(
+            "timer.bar",
+            mapOf("time" to TimeUtil.ticksToTime(ticksNeeded))
+        )
 
         player.msgTemplate("parkour.completed", mapOf(
             "name" to name,
             "time" to TimeUtil.ticksToTime(ticksNeeded))
         )
+
+        // display last tick
+        (player as CraftPlayer).handle.playerConnection
+            .sendPacket(PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\":\"$bar\"}"), 2))
 
         // call finish event
         Bukkit.getPluginManager().callEvent(ParkourFinishEvent(player))
