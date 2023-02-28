@@ -108,7 +108,7 @@ object MenuItem : Item() {
             }
             val displayName = "${ChatColor.DARK_AQUA}${parkour.name} " +
                     if (personalBest != null)
-                        "${if (personalBest == globalBest) ChatColor.GREEN else ChatColor.GRAY}✔"
+                        if (personalBest == globalBest) "${ChatColor.GOLD}✫" else "${ChatColor.GREEN}✔"
                     else
                         "${ChatColor.RED}✘"
 
