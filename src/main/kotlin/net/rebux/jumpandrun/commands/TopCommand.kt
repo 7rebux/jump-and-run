@@ -34,18 +34,21 @@ object TopCommand : CommandExecutor {
                 val bestTime = parkour.times.minOf { it.value }
 
                 sender.msgTemplate("commands.top.header", mapOf("name" to parkour.name))
+
                 parkour.times
                     .toList()
-                    .sortedBy { (_, value) -> value }
+                    .groupBy { it.second }
+                    .toSortedMap()
+                    .toList()
                     .take(5)
                     .toMap()
                     .asIterable()
-                    .forEachIndexed { i, (key, value) ->
+                    .forEachIndexed { i, (time, records) ->
                         sender.msgTemplate("commands.top.time", mapOf(
                             "rank" to i+1,
-                            "player" to Bukkit.getOfflinePlayer(key).name,
-                            "time" to TimeUtil.ticksToTime(value),
-                            "delta" to if (value - bestTime == 0) "${ChatColor.GREEN}✫" else "-" + TimeUtil.ticksToTime(value - bestTime)
+                            "player" to records.toMap().keys.joinToString(separator = ", ") { Bukkit.getOfflinePlayer(it).name },
+                            "time" to TimeUtil.ticksToTime(time),
+                            "delta" to if (time - bestTime == 0) "${ChatColor.GOLD}✫" else "-" + TimeUtil.ticksToTime(time - bestTime)
                         ))
                     }
             }
