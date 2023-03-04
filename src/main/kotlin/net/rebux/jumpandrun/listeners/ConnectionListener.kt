@@ -28,6 +28,6 @@ object ConnectionListener: Listener {
         // remove player
         plugin.active.remove(player)
         plugin.checkpoints.remove(player)
-        plugin.times.remove(player)
+        plugin.tickCounters.remove(player)
     }
 }

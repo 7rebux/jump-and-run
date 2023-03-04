@@ -1,7 +1,6 @@
 package net.rebux.jumpandrun.parkour
 
 import net.minecraft.server.v1_8_R3.IChatBaseComponent
-import net.minecraft.server.v1_8_R3.MinecraftServer
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat
 import net.rebux.jumpandrun.*
 import net.rebux.jumpandrun.database.entities.ParkourEntity
@@ -47,11 +46,11 @@ class Parkour(
 
         plugin.active[player] = this
         plugin.checkpoints[player] = location
-        plugin.times[player] = MinecraftServer.getServer().at()
+        plugin.tickCounters[player] = 0
     }
 
     fun finish(player: Player) {
-        val ticksNeeded = MinecraftServer.getServer().at() - plugin.times[player]!!
+        val ticksNeeded = plugin.tickCounters.remove(player)!!
         val globalBest = times.map { it.value }.minOrNull()
         val bar: String = template(
             "timer.bar",
@@ -110,11 +109,11 @@ class Parkour(
 
                     TimeEntity.new {
                         uuid = player.uniqueId
-                        time = ticksNeeded
+                        time = ticksNeeded.toInt()
                         date = LocalDateTime.now()
                         parkour = ParkourEntity.findById(this@Parkour.id)!!
                     }.also {
-                        times[player.uniqueId] = ticksNeeded
+                        times[player.uniqueId] = ticksNeeded.toInt()
                     }
                 }
             }

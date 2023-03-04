@@ -3,7 +3,6 @@
 package net.rebux.jumpandrun
 
 import net.minecraft.server.v1_8_R3.IChatBaseComponent.ChatSerializer
-import net.minecraft.server.v1_8_R3.MinecraftServer
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat
 import net.rebux.jumpandrun.commands.*
 import net.rebux.jumpandrun.config.PluginConfig
@@ -33,7 +32,7 @@ class Plugin : JavaPlugin() {
     val parkourManager = ParkourManager()
     val active = hashMapOf<Player, Parkour>()
     val checkpoints = hashMapOf<Player, Location>()
-    val times = hashMapOf<Player, Int>()
+    val tickCounters = hashMapOf<Player, Int>()
 
     override fun onEnable() {
         // connect to database
@@ -61,10 +60,10 @@ class Plugin : JavaPlugin() {
         Timer().scheduleAtFixedRate(object: TimerTask() {
             override fun run() {
                 active.keys.forEach { player ->
-                    val time: Int = times[player] ?: MinecraftServer.getServer().at()
+                    val ticks = tickCounters[player] ?: 0
                     val bar: String = template(
                         "timer.bar",
-                        mapOf("time" to TimeUtil.ticksToTime(MinecraftServer.getServer().at() - time))
+                        mapOf("time" to TimeUtil.ticksToTime(ticks))
                     )
 
                     (player as CraftPlayer).handle.playerConnection

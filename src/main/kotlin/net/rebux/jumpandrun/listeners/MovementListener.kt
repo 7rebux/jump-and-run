@@ -1,6 +1,5 @@
 package net.rebux.jumpandrun.listeners
 
-import net.minecraft.server.v1_8_R3.MinecraftServer
 import net.rebux.jumpandrun.Instance
 import net.rebux.jumpandrun.msgTemplate
 import org.bukkit.Material
@@ -31,9 +30,13 @@ object MovementListener: Listener {
         if (player !in plugin.active)
             return
 
+        // increment tick counters
+        if (player in plugin.tickCounters)
+            plugin.tickCounters[player] = plugin.tickCounters[player]!! + 1
+
         // start time if not running and player has moved
-        if (player !in plugin.times && event.hasMoved())
-            plugin.times[player] = MinecraftServer.getServer().at()
+        if (player !in plugin.tickCounters && event.hasMoved())
+            plugin.tickCounters[player] = 1
 
         // reset if player is underneath minimum height
         if (player.location.y <= plugin.config.getInt("resetHeight"))

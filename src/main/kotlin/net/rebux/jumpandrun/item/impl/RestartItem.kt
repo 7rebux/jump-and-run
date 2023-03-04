@@ -27,7 +27,7 @@ object RestartItem : Item() {
         val location = plugin.active[player]!!.location
 
         plugin.checkpoints[player] = location
-        plugin.times.remove(player)
+        plugin.tickCounters.remove(player)
 
         player.teleport(location)
     }

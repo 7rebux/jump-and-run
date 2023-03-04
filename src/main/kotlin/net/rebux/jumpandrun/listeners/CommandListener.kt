@@ -27,7 +27,7 @@ object CommandListener : Listener {
 
         plugin.active.remove(player)
         plugin.checkpoints.remove(player)
-        plugin.times.remove(player)
+        plugin.tickCounters.remove(player)
 
         // restore inventory
         InventoryUtil.loadInventory(player)
