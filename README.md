@@ -8,7 +8,7 @@ A minecraft parkour speedrunning plugin made for [AuraGames Network](https://lab
 
 > Depends on Multiverse-Core
 
-1. Download the latest [release]() and drag it into your plugins folder
+1. Download the latest [release](https://github.com/7rebux/jump-and-run/releases/download/2.0.0/JumpAndRun.jar) and drag it into your plugins folder
 2. Start your minecraft server
 3. Update the config with your SQL server credentials
 4. Reload the server
