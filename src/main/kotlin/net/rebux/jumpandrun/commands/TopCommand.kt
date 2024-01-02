@@ -25,28 +25,29 @@ object TopCommand : CommandExecutor {
             !in plugin.active -> sender.msgTemplate("commands.top.invalid")
             else -> {
                 val parkour = plugin.active[sender]!!
+                val entries = if (args.isNotEmpty() && args[0] == "all") 100 else 5
 
                 if (parkour.times.isEmpty()) {
                     sender.msgTemplate("commands.top.empty")
                     return true
                 }
 
-                val bestTime = parkour.times.minOf { it.value }
+                val bestTime = parkour.times.minOf { it.time }
 
                 sender.msgTemplate("commands.top.header", mapOf("name" to parkour.name))
 
                 parkour.times
                     .toList()
-                    .groupBy { it.second }
+                    .groupBy { it.time }
                     .toSortedMap()
                     .toList()
-                    .take(5)
+                    .take(entries)
                     .toMap()
                     .asIterable()
                     .forEachIndexed { i, (time, records) ->
                         sender.msgTemplate("commands.top.time", mapOf(
                             "rank" to i+1,
-                            "player" to records.toMap().keys.joinToString(separator = ", ") { Bukkit.getOfflinePlayer(it).name },
+                            "player" to records.map { it.uuid }.joinToString(separator = ", ") { Bukkit.getOfflinePlayer(it).name },
                             "time" to TimeUtil.ticksToTime(time),
                             "delta" to if (time - bestTime == 0) "${ChatColor.GOLD}✫" else "-" + TimeUtil.ticksToTime(time - bestTime)
                         ))

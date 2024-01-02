@@ -39,11 +39,11 @@ object MenuItem : Item() {
     }
 
     private fun countPersonalBest(player: Player) = plugin.parkourManager.parkours.count {
-        it.times.containsKey(player.uniqueId)
+        it.times.any { time -> time.uuid == player.uniqueId }
     }
 
     private fun countGlobalBest(player: Player) = plugin.parkourManager.parkours.count { parkour ->
-        parkour.times.getOrDefault(player.uniqueId, Int.MAX_VALUE) == parkour.times.minOfOrNull { it.value }
+        (parkour.times.firstOrNull { it.uuid == player.uniqueId }?.time ?: Int.MAX_VALUE) == parkour.times.minOfOrNull { it.time }
     }
 
     /**
@@ -81,8 +81,8 @@ object MenuItem : Item() {
                 break
 
             val parkour = parkours[index]
-            val personalBest = parkour.times.filter { it.key == player.uniqueId }.map { it.value }.singleOrNull()
-            val globalBest = parkour.times.map { it.value }.minOrNull()
+            val personalBest = parkour.times.filter { it.uuid == player.uniqueId }.map { it.time }.singleOrNull()
+            val globalBest = parkour.times.minOfOrNull { it.time }
             val lore = buildList {
                 add(template("menu.difficulty", mapOf("difficulty" to parkour.difficulty)))
                 add(template("menu.builder", mapOf("builder" to parkour.builder)))
@@ -98,9 +98,9 @@ object MenuItem : Item() {
                     add(template("menu.globalBest.time", mapOf("time" to TimeUtil.ticksToTime(globalBest))))
                     add(template("menu.globalBest.subtitle"))
                     parkour.times
-                        .filter { it.value == globalBest }
+                        .filter { it.time == globalBest }
                         .forEach { add(template("menu.globalBest.player",
-                            mapOf("player" to Bukkit.getOfflinePlayer(it.key).name)))
+                            mapOf("player" to Bukkit.getOfflinePlayer(it.uuid).name)))
                     }
                 }
                 else

@@ -18,7 +18,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
-import java.util.UUID
 
 class Parkour(
     val id: Int,
@@ -27,7 +26,7 @@ class Parkour(
     val difficulty: Difficulty,
     val material: Material,
     val location: Location,
-    var times: MutableMap<UUID, Int> = mutableMapOf()
+    var times: MutableList<ParkourTime> = mutableListOf()
 ) {
     private val plugin = Instance.plugin
 
@@ -54,7 +53,7 @@ class Parkour(
 
     fun finish(player: Player) {
         val ticksNeeded = plugin.tickCounters.remove(player)!!
-        val globalBest = times.map { it.value }.minOrNull()
+        val globalBest = times.minOfOrNull { it.time }
         val bar: String = template(
             "timer.bar",
             mapOf("time" to TimeUtil.ticksToTime(ticksNeeded))
@@ -73,7 +72,7 @@ class Parkour(
         Bukkit.getPluginManager().callEvent(ParkourFinishEvent(player))
 
         // handle time
-        if (!times.contains(player.uniqueId) || ticksNeeded < times[player.uniqueId]!!) {
+        if (!times.any { it.uuid == player.uniqueId } || ticksNeeded < times.first { it.uuid == player.uniqueId }.time) {
             // first global best
             if (globalBest == null) {
                 player.msgTemplate("parkour.firstGlobalBest")
@@ -84,9 +83,8 @@ class Parkour(
             else if (ticksNeeded < globalBest) {
                 val delta = globalBest - ticksNeeded
                 val holders = times
-                    .filter { it.value == globalBest }
-                    .map { Bukkit.getOfflinePlayer(it.key).name }
-                    .joinToString(", ")
+                    .filter { it.time == globalBest }
+                    .joinToString(", ") { Bukkit.getOfflinePlayer(it.uuid).name }
 
                 msgTemplateGlobal("parkour.globalBest", mapOf(
                     "player" to player.name,
@@ -112,11 +110,11 @@ class Parkour(
 
                     TimeEntity.new {
                         uuid = player.uniqueId
-                        time = ticksNeeded.toInt()
+                        time = ticksNeeded
                         date = LocalDateTime.now()
                         parkour = ParkourEntity.findById(this@Parkour.id)!!
                     }.also {
-                        times[player.uniqueId] = ticksNeeded.toInt()
+                        times.first { it.uuid == player.uniqueId }.time = ticksNeeded
                     }
                 }
             }

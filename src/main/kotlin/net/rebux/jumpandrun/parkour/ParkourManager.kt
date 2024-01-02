@@ -11,10 +11,10 @@ class ParkourManager {
     fun load() = transaction {
         parkours.addAll(ParkourEntity.all().map { parkourEntity ->
             parkourEntity.toParkour().apply {
-                times.putAll(
+                times.addAll(
                     TimeEntity.all()
                         .filter { it.parkour.id.value == this.id }
-                        .map { it.toMapEntry() }
+                        .map(TimeEntity::toParkourTime)
                 )
             }
         })
