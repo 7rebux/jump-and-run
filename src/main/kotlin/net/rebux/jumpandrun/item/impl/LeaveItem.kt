@@ -4,6 +4,7 @@ import net.rebux.jumpandrun.Instance
 import net.rebux.jumpandrun.item.Item
 import net.rebux.jumpandrun.item.ItemRegistry
 import org.bukkit.Bukkit
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
@@ -25,6 +26,8 @@ object LeaveItem : Item() {
     }
 
     override fun onInteract(player: Player) {
+        player.gameMode = GameMode.SURVIVAL
+
         // teleport to spawn
         player.performCommand("spawn")
         Bukkit.getPluginManager().callEvent(PlayerCommandPreprocessEvent(player, "/spawn"))

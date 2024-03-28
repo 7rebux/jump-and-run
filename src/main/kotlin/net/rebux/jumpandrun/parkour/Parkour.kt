@@ -35,6 +35,9 @@ class Parkour(
         // teleport
         player.teleport(location)
 
+        // set in adventure mode to prevent glitches with block breaking
+        player.gameMode = GameMode.ADVENTURE
+
         // save & clear inventory
         InventoryUtil.saveInventory(player)
         player.inventory.clear()
@@ -118,6 +121,8 @@ class Parkour(
                 }
             }
         }
+
+        player.gameMode = GameMode.SURVIVAL
 
         // teleport to spawn
         player.performCommand("spawn")
