@@ -7,6 +7,7 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 
+// TODO: Create a database schema for locations, instead of serializing this data
 object LocationSerializer {
     fun toBase64String(location: Location): String {
         val outputStream = ByteArrayOutputStream()

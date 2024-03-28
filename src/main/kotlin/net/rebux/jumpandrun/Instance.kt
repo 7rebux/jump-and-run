@@ -1,7 +1,6 @@
 package net.rebux.jumpandrun
 
 class Instance(javaPlugin: Plugin) {
-
     init {
         plugin = javaPlugin
     }

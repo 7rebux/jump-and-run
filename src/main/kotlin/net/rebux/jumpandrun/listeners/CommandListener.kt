@@ -1,6 +1,6 @@
 package net.rebux.jumpandrun.listeners
 
-import net.rebux.jumpandrun.Instance
+import net.rebux.jumpandrun.data
 import net.rebux.jumpandrun.utils.InventoryUtil
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -10,26 +10,17 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent
  * Contains event listeners for [PlayerCommandPreprocessEvent]
  */
 object CommandListener : Listener {
-
-    private val plugin = Instance.plugin
-
     @EventHandler
     fun onCommand(event: PlayerCommandPreprocessEvent) {
-        val player = event.player
-
-        // check if command is /spawn
-        if (event.message != "/spawn")
+        if (event.message != "/spawn" || event.player.data.parkour == null)
             return
 
-        // check if player is doing parkour
-        if (!plugin.active.contains(player))
-            return
+        event.player.data.apply {
+            parkour = null
+            checkpoint = null
+            timer.stop()
+        }
 
-        plugin.active.remove(player)
-        plugin.checkpoints.remove(player)
-        plugin.tickCounters.remove(player)
-
-        // restore inventory
-        InventoryUtil.loadInventory(player)
+        InventoryUtil.loadInventory(event.player)
     }
 }

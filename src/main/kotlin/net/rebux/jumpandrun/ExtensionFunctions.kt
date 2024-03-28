@@ -1,13 +1,20 @@
 package net.rebux.jumpandrun
 
+import net.minecraft.server.v1_8_R3.IChatBaseComponent
+import net.minecraft.server.v1_8_R3.PacketPlayOutChat
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandSender
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerMoveEvent
 import java.util.logging.Level
 
 private val plugin = Instance.plugin
 private val prefix = plugin.config.getString("messages.prefix")
+
+val Player.data
+    get() = plugin.players.find { it.uuid == this.uniqueId }!!
 
 fun error(message: String) {
     plugin.logger.log(Level.SEVERE, message)
@@ -40,4 +47,14 @@ fun CommandSender.msgTemplate(name: String, values: Map<String, Any> = mapOf()) 
 
 fun msgTemplateGlobal(name: String, values: Map<String, Any> = mapOf()) {
     Bukkit.broadcastMessage("$prefix ${template("messages.$name", values)}")
+}
+
+fun Player.sendActionBar(text: String) {
+    (this as CraftPlayer).handle.playerConnection.sendPacket(
+        PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\":\"$text\"}"), 2)
+    )
+}
+
+fun PlayerMoveEvent.hasMoved(): Boolean {
+    return this.from.x != this.to.x || this.from.y != this.to.y || this.from.z != this.to.z
 }

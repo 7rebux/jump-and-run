@@ -10,8 +10,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class SchemaInitializer {
 
     init {
-        TransactionManager.manager.defaultIsolationLevel =
-            Connection.TRANSACTION_SERIALIZABLE
+        TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
     }
 
     fun initialize() = transaction {

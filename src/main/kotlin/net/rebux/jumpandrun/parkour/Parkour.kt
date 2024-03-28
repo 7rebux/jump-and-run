@@ -1,7 +1,5 @@
 package net.rebux.jumpandrun.parkour
 
-import net.minecraft.server.v1_8_R3.IChatBaseComponent
-import net.minecraft.server.v1_8_R3.PacketPlayOutChat
 import net.rebux.jumpandrun.*
 import net.rebux.jumpandrun.database.entities.ParkourEntity
 import net.rebux.jumpandrun.database.entities.TimeEntity
@@ -11,13 +9,14 @@ import net.rebux.jumpandrun.item.impl.LeaveItem
 import net.rebux.jumpandrun.item.impl.RestartItem
 import net.rebux.jumpandrun.item.ItemRegistry
 import net.rebux.jumpandrun.utils.InventoryUtil
+import net.rebux.jumpandrun.utils.LocationSerializer
 import net.rebux.jumpandrun.utils.TimeUtil
 import org.bukkit.*
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
+import java.util.*
 
 class Parkour(
     val id: Int,
@@ -26,34 +25,58 @@ class Parkour(
     val difficulty: Difficulty,
     val material: Material,
     val location: Location,
-    var times: MutableList<ParkourTime> = mutableListOf()
+    var times: MutableList<Time> = mutableListOf()
 ) {
+    data class Time(val uuid: UUID, var ticks: Int, var version: MinecraftVersion)
+
     private val plugin = Instance.plugin
 
-    fun start(player: Player) {
-        // teleport
-        player.teleport(location)
+    fun toEntity() = ParkourEntity.new {
+        val parkour = this@Parkour
 
-        // set in adventure mode to prevent glitches with block breaking
+        name = parkour.name
+        builder = parkour.builder
+        difficulty = parkour.difficulty
+        material = parkour.material
+        location = LocationSerializer.toBase64String(parkour.location)
+    }
+
+    fun resetTime(uuid: UUID) {
+        transaction {
+            TimeEntity.all()
+                .find { it.parkour.id.value == this@Parkour.id && it.uuid == uuid }?.delete()
+        }
+        times.removeIf { it.uuid == uuid }
+    }
+
+    fun resetTimes() {
+        transaction {
+            TimeEntity.all()
+                .filter { it.parkour.id.value == this@Parkour.id }
+                .forEach(TimeEntity::delete)
+        }
+        times.clear()
+    }
+
+    fun start(player: Player) {
+        player.teleport(location)
         player.gameMode = GameMode.ADVENTURE
 
-        // save & clear inventory
         InventoryUtil.saveInventory(player)
         player.inventory.clear()
-
-        // add items
         player.inventory.setItem(0, ItemRegistry.getItemStack(CheckpointItem.id))
         player.inventory.setItem(1, ItemRegistry.getItemStack(RestartItem.id))
         player.inventory.setItem(8, ItemRegistry.getItemStack(LeaveItem.id))
 
-        plugin.active[player] = this
-        plugin.checkpoints[player] = location
-        plugin.tickCounters[player] = 0
+        player.data.apply {
+            parkour = this@Parkour
+            checkpoint = location
+        }
     }
 
     fun finish(player: Player) {
-        val ticksNeeded = plugin.tickCounters.remove(player)!!
-        val globalBest = times.minOfOrNull { it.time }
+        val ticksNeeded = player.data.timer.stop()
+        val globalBest = times.minOfOrNull { it.ticks }
         val bar: String = template(
             "timer.bar",
             mapOf("time" to TimeUtil.ticksToTime(ticksNeeded))
@@ -64,15 +87,11 @@ class Parkour(
             "time" to TimeUtil.ticksToTime(ticksNeeded))
         )
 
-        // display last tick
-        (player as CraftPlayer).handle.playerConnection
-            .sendPacket(PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\":\"$bar\"}"), 2))
-
         // call finish event
         Bukkit.getPluginManager().callEvent(ParkourFinishEvent(player))
 
         // handle time
-        if (!times.any { it.uuid == player.uniqueId } || ticksNeeded < times.first { it.uuid == player.uniqueId }.time) {
+        if (!times.any { it.uuid == player.uniqueId } || ticksNeeded < times.first { it.uuid == player.uniqueId }.ticks) {
             // first global best
             if (globalBest == null) {
                 player.msgTemplate("parkour.firstGlobalBest")
@@ -83,7 +102,7 @@ class Parkour(
             else if (ticksNeeded < globalBest) {
                 val delta = globalBest - ticksNeeded
                 val holders = times
-                    .filter { it.time == globalBest }
+                    .filter { it.ticks == globalBest }
                     .joinToString(", ") { Bukkit.getOfflinePlayer(it.uuid).name }
 
                 msgTemplateGlobal("parkour.globalBest", mapOf(
@@ -114,7 +133,7 @@ class Parkour(
                         date = LocalDateTime.now()
                         parkour = ParkourEntity.findById(this@Parkour.id)!!
                     }.also {
-                        times.first { it.uuid == player.uniqueId }.time = ticksNeeded
+                        times.first { it.uuid == player.uniqueId }.ticks = ticksNeeded
                     }
                 }
             }

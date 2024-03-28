@@ -5,7 +5,6 @@ import net.rebux.jumpandrun.database.entities.TimeEntity
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class ParkourManager {
-
     val parkours = arrayListOf<Parkour>()
 
     fun load() = transaction {
@@ -20,5 +19,17 @@ class ParkourManager {
         })
     }
 
-    fun getParkourById(id: Int): Parkour? = parkours.find { it.id == id }
+    fun add(parkour: Parkour) {
+        transaction { parkour.toEntity() }
+        parkours += parkour
+    }
+
+    fun remove(parkour: Parkour) {
+        transaction {
+            ParkourEntity.findById(parkour.id)?.let(ParkourEntity::delete)
+        }
+        parkours -= parkour
+    }
+
+    fun getParkourById(id: Int) = parkours.find { it.id == id }
 }

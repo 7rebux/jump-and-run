@@ -24,6 +24,8 @@ class ParkourEntity(id: EntityID<Int>) : IntEntity(id) {
         LocationSerializer.fromBase64String(location)
     )
 
+
+
     override fun delete() {
         TimeEntity.all().filter { it.parkour == this }.forEach { it.delete() }
         super.delete()

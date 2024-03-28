@@ -14,7 +14,6 @@ import org.bukkit.inventory.ItemStack
  * An [Item] implementation that leaves the current parkour
  */
 object LeaveItem : Item() {
-
     val id = ItemRegistry.register(this)
 
     override fun createItemStack(): ItemStack {
@@ -28,7 +27,7 @@ object LeaveItem : Item() {
     override fun onInteract(player: Player) {
         player.gameMode = GameMode.SURVIVAL
 
-        // teleport to spawn
+        // This will be caught inside CommandListener
         player.performCommand("spawn")
         Bukkit.getPluginManager().callEvent(PlayerCommandPreprocessEvent(player, "/spawn"))
     }

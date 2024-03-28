@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicInteger
  * A registry that stores custom [Item] instances and caches it's [ItemStack]s
  */
 object ItemRegistry {
-
     private val items = ConcurrentHashMap<Int, Item>()
     private val itemStacks = ConcurrentHashMap<Int, ItemStack>()
     private val nextId = AtomicInteger(1)

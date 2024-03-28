@@ -1,7 +1,7 @@
 package net.rebux.jumpandrun.listeners
 
-import net.rebux.jumpandrun.Instance
-import net.rebux.jumpandrun.msgTemplate
+import net.rebux.jumpandrun.*
+import net.rebux.jumpandrun.utils.TimeUtil
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.block.BlockFace
@@ -9,16 +9,20 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerMoveEvent
 
-/**
- * Contains event listeners for [PlayerMoveEvent]
- */
 object MovementListener: Listener {
-
     private val plugin = Instance.plugin
 
+    // TODO: Finish event should be called before ticks are incremented
+    // This event is manipulated through a custom spigot jar file to be called every tick,
+    // regardless if the player moved or not.
     @EventHandler
     fun onMove(event: PlayerMoveEvent) {
+        if (event.player.data.parkour == null)
+            return
+
         val player = event.player
+        val data = event.player.data
+        val timer = data.timer
         val block = player.location.block.location
         val blockLocation = block.add(
             if (block.x < 0) -0.5 else 0.5,
@@ -26,50 +30,28 @@ object MovementListener: Listener {
             if (block.z < 0) -0.5 else 0.5
         )
 
-        // check if player is doing parkour
-        if (player !in plugin.active)
-            return
+        if (!timer.started && event.hasMoved()) timer.start()
+        if (timer.started) timer.tick()
 
-        // increment tick counters
-        if (player in plugin.tickCounters)
-            plugin.tickCounters[player] = plugin.tickCounters[player]!! + 1
+        player.sendActionBar(template("timer.bar", mapOf("time" to TimeUtil.ticksToTime(timer.ticks))))
 
-        // start time if not running and player has moved
-        if (player !in plugin.tickCounters && event.hasMoved())
-            plugin.tickCounters[player] = 1
-
-        // reset if player is underneath minimum height
         if (player.location.y <= plugin.config.getInt("resetHeight"))
-            player.teleport(plugin.checkpoints[player])
+            player.teleport(data.checkpoint!!)
 
         when (player.location.block.getRelative(BlockFace.DOWN).type) {
-            // handle reset blocks
-            Material.REDSTONE_BLOCK -> {
-                player.teleport(plugin.checkpoints[player])
-            }
-
-            // handle checkpoints
+            Material.REDSTONE_BLOCK -> player.teleport(data.checkpoint)
             Material.IRON_BLOCK -> {
-                if (plugin.checkpoints[player]!!.block.location != blockLocation.block.location) {
+                if (data.checkpoint!!.block.location != blockLocation.block.location) {
                     blockLocation.yaw = player.location.yaw
                     blockLocation.pitch = player.location.pitch
 
-                    plugin.checkpoints[player] = blockLocation
+                    data.checkpoint = blockLocation
                     player.msgTemplate("parkour.checkpoint")
                     player.playSound(player.location, Sound.ORB_PICKUP, 1.0F, 1.0F)
                 }
             }
-
-            // handle finish
-            Material.EMERALD_BLOCK -> {
-                plugin.active[player]!!.finish(player)
-            }
-
+            Material.EMERALD_BLOCK -> data.parkour!!.finish(player)
             else -> {}
         }
-    }
-
-    private fun PlayerMoveEvent.hasMoved(): Boolean {
-        return this.from.x != this.to.x || this.from.y != this.to.y || this.from.z != this.to.z
     }
 }

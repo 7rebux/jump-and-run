@@ -20,7 +20,6 @@ import org.bukkit.inventory.ItemStack
  * An [Item] implementation that lists every parkour in an inventory
  */
 object MenuItem : Item() {
-
     val id = ItemRegistry.register(this)
 
     private val plugin = Instance.plugin
@@ -43,7 +42,7 @@ object MenuItem : Item() {
     }
 
     private fun countGlobalBest(player: Player) = plugin.parkourManager.parkours.count { parkour ->
-        (parkour.times.firstOrNull { it.uuid == player.uniqueId }?.time ?: Int.MAX_VALUE) == parkour.times.minOfOrNull { it.time }
+        (parkour.times.firstOrNull { it.uuid == player.uniqueId }?.ticks ?: Int.MAX_VALUE) == parkour.times.minOfOrNull { it.ticks }
     }
 
     /**
@@ -81,8 +80,8 @@ object MenuItem : Item() {
                 break
 
             val parkour = parkours[index]
-            val personalBest = parkour.times.filter { it.uuid == player.uniqueId }.map { it.time }.singleOrNull()
-            val globalBest = parkour.times.minOfOrNull { it.time }
+            val personalBest = parkour.times.filter { it.uuid == player.uniqueId }.map { it.ticks }.singleOrNull()
+            val globalBest = parkour.times.minOfOrNull { it.ticks }
             val lore = buildList {
                 add(template("menu.difficulty", mapOf("difficulty" to parkour.difficulty)))
                 add(template("menu.builder", mapOf("builder" to parkour.builder)))
@@ -98,7 +97,7 @@ object MenuItem : Item() {
                     add(template("menu.globalBest.time", mapOf("time" to TimeUtil.ticksToTime(globalBest))))
                     add(template("menu.globalBest.subtitle"))
                     parkour.times
-                        .filter { it.time == globalBest }
+                        .filter { it.ticks == globalBest }
                         .forEach { add(template("menu.globalBest.player",
                             mapOf("player" to Bukkit.getOfflinePlayer(it.uuid).name)))
                     }

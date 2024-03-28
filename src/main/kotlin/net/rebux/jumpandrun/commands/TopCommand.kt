@@ -1,7 +1,8 @@
 package net.rebux.jumpandrun.commands
 
-import net.rebux.jumpandrun.Instance
+import net.rebux.jumpandrun.data
 import net.rebux.jumpandrun.msgTemplate
+import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.utils.TimeUtil
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -11,49 +12,44 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 object TopCommand : CommandExecutor {
-
-    private val plugin = Instance.plugin
-
     override fun onCommand(
         sender: CommandSender,
         command: Command,
         label: String,
         args: Array<out String>
     ): Boolean {
-        when (sender) {
-            !is Player -> sender.msgTemplate("commands.playersOnly")
-            !in plugin.active -> sender.msgTemplate("commands.top.invalid")
-            else -> {
-                val parkour = plugin.active[sender]!!
-                val entries = if (args.isNotEmpty() && args[0] == "all") 100 else 5
+        if (sender !is Player) {
+            sender.msgTemplate("commands.playersOnly")
+            return true
+        }
 
-                if (parkour.times.isEmpty()) {
-                    sender.msgTemplate("commands.top.empty")
-                    return true
+        val entries = if (args.isNotEmpty() && args[0] == "all") 100 else 5
+
+        sender.data.parkour?.let { parkour ->
+            if (parkour.times.isEmpty()) {
+                sender.msgTemplate("commands.top.empty")
+                return true
+            }
+
+            val bestTime = parkour.times.minOf(Parkour.Time::ticks)
+
+            sender.msgTemplate("commands.top.header", mapOf("name" to parkour.name))
+
+            parkour.times
+                .groupBy(Parkour.Time::ticks)
+                .toSortedMap()
+                .asIterable()
+                .take(entries)
+                .forEachIndexed { i, (time, records) ->
+                    sender.msgTemplate("commands.top.time", mapOf(
+                        "rank" to i + 1,
+                        "player" to records.map(Parkour.Time::uuid).joinToString(", ") { Bukkit.getOfflinePlayer(it).name },
+                        "time" to TimeUtil.ticksToTime(time),
+                        "delta" to if (time - bestTime == 0) "${ChatColor.GOLD}✫" else "-" + TimeUtil.ticksToTime(time - bestTime)
+                    ))
                 }
 
-                val bestTime = parkour.times.minOf { it.time }
-
-                sender.msgTemplate("commands.top.header", mapOf("name" to parkour.name))
-
-                parkour.times
-                    .toList()
-                    .groupBy { it.time }
-                    .toSortedMap()
-                    .toList()
-                    .take(entries)
-                    .toMap()
-                    .asIterable()
-                    .forEachIndexed { i, (time, records) ->
-                        sender.msgTemplate("commands.top.time", mapOf(
-                            "rank" to i+1,
-                            "player" to records.map { it.uuid }.joinToString(separator = ", ") { Bukkit.getOfflinePlayer(it).name },
-                            "time" to TimeUtil.ticksToTime(time),
-                            "delta" to if (time - bestTime == 0) "${ChatColor.GOLD}✫" else "-" + TimeUtil.ticksToTime(time - bestTime)
-                        ))
-                    }
-            }
-        }
+        } ?: sender.msgTemplate("commands.top.invalid")
 
         return true
     }

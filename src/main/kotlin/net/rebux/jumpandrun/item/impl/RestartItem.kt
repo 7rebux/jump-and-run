@@ -1,6 +1,7 @@
 package net.rebux.jumpandrun.item.impl
 
 import net.rebux.jumpandrun.Instance
+import net.rebux.jumpandrun.data
 import net.rebux.jumpandrun.item.Item
 import net.rebux.jumpandrun.item.ItemRegistry
 import org.bukkit.Material
@@ -11,7 +12,6 @@ import org.bukkit.inventory.ItemStack
  * An [Item] implementation that restarts the current parkour
  */
 object RestartItem : Item() {
-
     val id = ItemRegistry.register(this)
 
     private val plugin = Instance.plugin
@@ -24,10 +24,10 @@ object RestartItem : Item() {
     }
 
     override fun onInteract(player: Player) {
-        val location = plugin.active[player]!!.location
+        val location = player.data.parkour!!.location
 
-        plugin.checkpoints[player] = location
-        plugin.tickCounters.remove(player)
+        player.data.checkpoint = location
+        player.data.timer.stop()
 
         player.teleport(location)
     }

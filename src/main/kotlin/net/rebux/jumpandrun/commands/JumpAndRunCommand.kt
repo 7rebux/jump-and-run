@@ -18,14 +18,13 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 object JumpAndRunCommand : CommandExecutor {
-
     private val plugin = Instance.plugin
 
-    private fun CommandSender.sendUsage() {
-        this.msg("/jnr list")
-        this.msg("/jnr add <name> <builder> <difficulty> <material>")
-        this.msg("/jnr remove <id>")
-        this.msg("/jnr reset <id> <uuid | all>")
+    private fun sendUsage(sender: CommandSender) {
+        sender.msg("/jnr list")
+        sender.msg("/jnr add <name> <builder> <difficulty> <material>")
+        sender.msg("/jnr remove <id>")
+        sender.msg("/jnr reset <id> <uuid | all>")
     }
 
     override fun onCommand(
@@ -35,112 +34,123 @@ object JumpAndRunCommand : CommandExecutor {
         args: Array<out String>
     ): Boolean {
         if (args.isEmpty()) {
-            sender.sendUsage()
+            sendUsage(sender)
             return true
         }
 
-        // list parkours
-        when (args[0].lowercase()) {
+        when (args.first().lowercase()) {
+            // jnr list
             "list" -> {
-                if (plugin.parkourManager.parkours.isEmpty())
+                if (plugin.parkourManager.parkours.isEmpty()) {
                     sender.msgTemplate("commands.jnr.list.empty")
-                else {
-                    sender.msgTemplate("commands.jnr.list.full", mapOf("size" to plugin.parkourManager.parkours.size))
-                    plugin.parkourManager.parkours.forEach {
-                        sender.msg("#${it.id}: ${ChatColor.GREEN}${it.name} ${ChatColor.GRAY}- ${it.difficulty}")
-                    }
+                    return true
+                }
+
+                sender.msgTemplate("commands.jnr.list.full", mapOf("size" to plugin.parkourManager.parkours.size))
+                plugin.parkourManager.parkours.forEach {
+                    sender.msg("#${it.id}: ${ChatColor.GREEN}${it.name} ${ChatColor.GRAY}- ${it.difficulty}")
                 }
             }
-
-            // add parkour
+            // jnr add <name> <builder> <difficulty> <material>
             "add" -> {
-                if (sender !is Player)
+                if (sender !is Player) {
                     sender.msgTemplate("commands.playersOnly")
-                else if (args.size != 5)
-                    sender.sendUsage()
-                else {
-                    val block = sender.location.block.location
-                    val location = block.add(
-                        if (block.x < 0) -0.5 else 0.5,
-                        0.0,
-                        if (block.z < 0) -0.5 else 0.5
-                    ).apply { yaw = 90F }
+                    return true
+                }
 
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin) {
-                        transaction {
-                            ParkourEntity.new {
-                                this.name = args[1]
-                                this.builder = args[2]
-                                this.difficulty = Difficulty.getDifficulty(args[3].uppercase())!!
-                                this.material = Material.getMaterial(args[4].uppercase())
-                                this.location = LocationSerializer.toBase64String(location)
-                            }.also {
-                                plugin.parkourManager.parkours += it.toParkour()
-                                sender.msgTemplate("commands.jnr.add.success", mapOf("name" to it.name))
-                            }
+                if (args.size != 5) {
+                    sendUsage(sender)
+                    return true
+                }
+
+                val block = sender.location.block.location
+                val location = block.add(
+                    if (block.x < 0) -0.5 else 0.5,
+                    0.0,
+                    if (block.z < 0) -0.5 else 0.5
+                ).apply { yaw = 90F }
+
+                Bukkit.getScheduler().runTaskAsynchronously(plugin) {
+                    transaction {
+                        ParkourEntity.new {
+                            this.name = args[1]
+                            this.builder = args[2]
+                            this.difficulty = Difficulty.getDifficulty(args[3].uppercase())!!
+                            this.material = Material.getMaterial(args[4].uppercase())
+                            this.location = LocationSerializer.toBase64String(location)
+                        }.also {
+                            plugin.parkourManager.parkours += it.toParkour()
+                            sender.msgTemplate("commands.jnr.add.success", mapOf("name" to it.name))
                         }
                     }
                 }
             }
-
-            // remove parkour
+            // jnr remove <id>
             "remove" -> {
-                if (args.size != 2)
-                    sender.sendUsage()
-                else {
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin) {
-                        transaction {
-                            ParkourEntity.findById(args[1].toInt())?.let {
-                                it.delete()
-                                plugin.parkourManager.parkours -= plugin.parkourManager.getParkourById(it.id.value)!!
-                                sender.msgTemplate("commands.jnr.remove.success", mapOf("name" to it.name))
-                            } ?: sender.msgTemplate("commands.jnr.remove.notFound")
-                        }
+                if (args.size != 2) {
+                    sendUsage(sender)
+                    return true
+                }
+
+                Bukkit.getScheduler().runTaskAsynchronously(plugin) {
+                    transaction {
+                        ParkourEntity.findById(args[1].toInt())?.let {
+                            it.delete()
+                            plugin.parkourManager.parkours -= plugin.parkourManager.getParkourById(it.id.value)!!
+                            sender.msgTemplate("commands.jnr.remove.success", mapOf("name" to it.name))
+                        } ?: sender.msgTemplate("commands.jnr.remove.notFound")
                     }
                 }
             }
-
-            // reset times
+            // jnr reset <id> <uuid | all>
             "reset" -> {
-                if (args.size != 3)
-                    sender.sendUsage()
-                else {
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin) {
-                        if (args[2].lowercase() != "all") {
-                            transaction {
-                                TimeEntity.all()
-                                    .singleOrNull { it.parkour.id.value == args[1].toInt() && it.uuid == UUID.fromString(args[2]) }?.let {
-                                        it.delete()
-                                        sender.msgTemplate("commands.jnr.reset.successSingle", mapOf(
-                                            "name" to it.parkour.name,
-                                            "player" to Bukkit.getOfflinePlayer(it.uuid).name)
+                if (args.size != 3) {
+                    sendUsage(sender)
+                    return true
+                }
+
+                Bukkit.getScheduler().runTaskAsynchronously(plugin) {
+                    if (args[2].lowercase() != "all") {
+                        transaction {
+                            TimeEntity.all()
+                                .singleOrNull {
+                                    it.parkour.id.value == args[1].toInt() && it.uuid == UUID.fromString(
+                                        args[2]
+                                    )
+                                }?.let { entity ->
+                                    entity.delete()
+                                    sender.msgTemplate(
+                                        "commands.jnr.reset.successSingle", mapOf(
+                                            "name" to entity.parkour.name,
+                                            "player" to Bukkit.getOfflinePlayer(entity.uuid).name
                                         )
-                                        plugin.parkourManager.getParkourById(args[1].toInt())!!.times
-                                            .remove(it.uuid)
-                                    } ?: sender.msgTemplate("commands.jnr.reset.notFound")
-                            }
-                        } else {
-                            transaction {
-                                TimeEntity.all()
-                                    .filter { it.parkour.id.value == args[1].toInt() }
-                                    .onEach {
-                                        it.delete()
-                                        plugin.parkourManager.getParkourById(args[1].toInt())!!.times
-                                            .remove(it.uuid)
-                                    }
-                                    .also {
-                                        sender.msgTemplate("commands.jnr.reset.successAll",
-                                            mapOf("name" to it.first().parkour.name))
-                                    }
-                            }
+                                    )
+                                    plugin.parkourManager.getParkourById(args[1].toInt())!!.times
+                                        .removeIf { entity.uuid == it.uuid }
+                                } ?: sender.msgTemplate("commands.jnr.reset.notFound")
+                        }
+                    } else {
+                        transaction {
+                            TimeEntity.all()
+                                .filter { it.parkour.id.value == args[1].toInt() }
+                                .onEach { entity ->
+                                    entity.delete()
+                                    plugin.parkourManager.getParkourById(args[1].toInt())!!.times
+                                        .removeIf { entity.uuid == it.uuid }
+                                }
+                                .also {
+                                    sender.msgTemplate(
+                                        "commands.jnr.reset.successAll",
+                                        mapOf("name" to it.first().parkour.name)
+                                    )
+                                }
                         }
                     }
                 }
             }
-
-            // if subcommand is not valid
-            else -> sender.sendUsage()
+            else -> sendUsage(sender)
         }
+
         return true
     }
 }

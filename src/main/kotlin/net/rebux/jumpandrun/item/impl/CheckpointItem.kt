@@ -1,6 +1,7 @@
 package net.rebux.jumpandrun.item.impl
 
 import net.rebux.jumpandrun.Instance
+import net.rebux.jumpandrun.data
 import net.rebux.jumpandrun.item.Item
 import net.rebux.jumpandrun.item.ItemRegistry
 import org.bukkit.Material
@@ -11,7 +12,6 @@ import org.bukkit.inventory.ItemStack
  * An [Item] implementation that puts the player back on his recent checkpoint
  */
 object CheckpointItem : Item() {
-
     val id = ItemRegistry.register(this)
 
     override fun createItemStack(): ItemStack {
@@ -23,6 +23,6 @@ object CheckpointItem : Item() {
     }
 
     override fun onInteract(player: Player) {
-        player.teleport(Instance.plugin.checkpoints[player])
+        player.teleport(player.data.checkpoint!!)
     }
 }

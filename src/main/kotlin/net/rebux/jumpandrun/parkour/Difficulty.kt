@@ -7,7 +7,6 @@ enum class Difficulty(
     private val displayName: String,
     private val color: ChatColor
 ) {
-
     EASY    (Instance.plugin.config.getString("difficulty.easy"), ChatColor.GREEN),
     MEDIUM  (Instance.plugin.config.getString("difficulty.medium"), ChatColor.GOLD),
     HARD    (Instance.plugin.config.getString("difficulty.hard"), ChatColor.RED),
