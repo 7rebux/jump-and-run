@@ -37,11 +37,11 @@ object MenuItem : Item() {
         openInventory(player, 0)
     }
 
-    private fun countPersonalBest(player: Player) = plugin.parkourManager.parkours.count {
+    private fun countPersonalBest(player: Player) = plugin.parkourManager.parkours.values.count {
         it.times.any { time -> time.uuid == player.uniqueId }
     }
 
-    private fun countGlobalBest(player: Player) = plugin.parkourManager.parkours.count { parkour ->
+    private fun countGlobalBest(player: Player) = plugin.parkourManager.parkours.values.count { parkour ->
         (parkour.times.firstOrNull { it.uuid == player.uniqueId }?.ticks ?: Int.MAX_VALUE) == parkour.times.minOfOrNull { it.ticks }
     }
 
@@ -66,7 +66,7 @@ object MenuItem : Item() {
     }
 
     private fun showMenu(inventory: Inventory, player: Player, page: Int) {
-        val parkours = plugin.parkourManager.parkours.sortedBy { it.difficulty }
+        val parkours = plugin.parkourManager.parkours.values.sortedBy { it.difficulty }
         val parkourCount = plugin.parkourManager.parkours.size
 
         // clear inventory

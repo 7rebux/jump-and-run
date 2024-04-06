@@ -47,7 +47,7 @@ object JumpAndRunCommand : CommandExecutor {
                 }
 
                 sender.msgTemplate("commands.jnr.list.full", mapOf("size" to plugin.parkourManager.parkours.size))
-                plugin.parkourManager.parkours.forEach {
+                plugin.parkourManager.parkours.values.forEach {
                     sender.msg("#${it.id}: ${ChatColor.GREEN}${it.name} ${ChatColor.GRAY}- ${it.difficulty}")
                 }
             }
@@ -79,7 +79,7 @@ object JumpAndRunCommand : CommandExecutor {
                             this.material = Material.getMaterial(args[4].uppercase())
                             this.location = LocationEntity.ofLocation(location)
                         }.also {
-                            plugin.parkourManager.parkours += it.toParkour()
+                            plugin.parkourManager.parkours[it.id.value] = it.toParkour()
                             sender.msgTemplate("commands.jnr.add.success", mapOf("name" to it.name))
                         }
                     }
@@ -96,7 +96,7 @@ object JumpAndRunCommand : CommandExecutor {
                     transaction {
                         ParkourEntity.findById(args[1].toInt())?.let {
                             it.delete()
-                            plugin.parkourManager.parkours -= plugin.parkourManager.getParkourById(it.id.value)!!
+                            plugin.parkourManager.parkours.remove(it.id.value)
                             sender.msgTemplate("commands.jnr.remove.success", mapOf("name" to it.name))
                         } ?: sender.msgTemplate("commands.jnr.remove.notFound")
                     }
@@ -108,6 +108,8 @@ object JumpAndRunCommand : CommandExecutor {
                     sendUsage(sender)
                     return true
                 }
+
+                val id = args[1].toInt()
 
                 Bukkit.getScheduler().runTaskAsynchronously(plugin) {
                     if (args[2].lowercase() != "all") {
@@ -125,7 +127,7 @@ object JumpAndRunCommand : CommandExecutor {
                                             "player" to Bukkit.getOfflinePlayer(entity.uuid).name
                                         )
                                     )
-                                    plugin.parkourManager.getParkourById(args[1].toInt())!!.times
+                                    plugin.parkourManager.parkours[id]!!.times
                                         .removeIf { entity.uuid == it.uuid }
                                 } ?: sender.msgTemplate("commands.jnr.reset.notFound")
                         }
@@ -135,7 +137,7 @@ object JumpAndRunCommand : CommandExecutor {
                                 .filter { it.parkour.id.value == args[1].toInt() }
                                 .onEach { entity ->
                                     entity.delete()
-                                    plugin.parkourManager.getParkourById(args[1].toInt())!!.times
+                                    plugin.parkourManager.parkours[id]!!.times
                                         .removeIf { entity.uuid == it.uuid }
                                 }
                                 .also {
