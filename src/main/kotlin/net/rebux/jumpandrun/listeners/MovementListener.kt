@@ -12,7 +12,6 @@ import org.bukkit.event.player.PlayerMoveEvent
 object MovementListener: Listener {
     private val plugin = Instance.plugin
 
-    // TODO: Finish event should be called before ticks are incremented
     // This event is manipulated through a custom spigot jar file to be called every tick,
     // regardless if the player moved or not.
     @EventHandler
