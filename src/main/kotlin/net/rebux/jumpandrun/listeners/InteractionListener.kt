@@ -65,7 +65,7 @@ object InteractionListener: Listener {
             // parkour items
             nmsCopy.tag.hasKey(Plugin.PARKOUR_TAG) -> {
                 val id = nmsCopy.tag.getInt(Plugin.PARKOUR_TAG)
-                val parkour = plugin.parkourManager.getParkourById(id)
+                val parkour = plugin.parkourManager.parkours[id]
 
                 parkour?.start(player) ?: error("Parkour #$id not found!")
                 event.isCancelled = true
@@ -74,8 +74,9 @@ object InteractionListener: Listener {
             // page items
             nmsCopy.tag.hasKey(Plugin.PAGE_TAG) -> {
                 val page = nmsCopy.tag.getInt(Plugin.PAGE_TAG)
+                val step = nmsCopy.tag.getInt(Plugin.PAGE_STEP_TAG)
 
-                MenuItem.openInventory(player, if (page >= 0) page + 1 else -page - 1)
+                MenuItem.openInventory(player, page + step)
                 event.isCancelled = true
             }
         }

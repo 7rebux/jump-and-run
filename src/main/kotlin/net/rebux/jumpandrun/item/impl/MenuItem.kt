@@ -4,6 +4,7 @@ import net.rebux.jumpandrun.Instance
 import net.rebux.jumpandrun.Plugin
 import net.rebux.jumpandrun.item.Item
 import net.rebux.jumpandrun.item.ItemRegistry
+import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.template
 import net.rebux.jumpandrun.utils.TimeUtil
 import org.bukkit.Bukkit
@@ -20,11 +21,11 @@ import org.bukkit.inventory.ItemStack
  * An [Item] implementation that lists every parkour in an inventory
  */
 object MenuItem : Item() {
+
     val id = ItemRegistry.register(this)
 
     private val plugin = Instance.plugin
-    private val parkoursPerPage = plugin.config.getInt("parkoursPerPage")
-    private val inventorySize = parkoursPerPage + 9
+    private val parkours = plugin.parkourManager.parkours.values.sortedBy(Parkour::difficulty)
 
     override fun createItemStack(): ItemStack {
         return Builder()
@@ -37,128 +38,165 @@ object MenuItem : Item() {
         openInventory(player, 0)
     }
 
-    private fun countPersonalBest(player: Player) = plugin.parkourManager.parkours.values.count {
-        it.times.any { time -> time.uuid == player.uniqueId }
-    }
-
-    private fun countGlobalBest(player: Player) = plugin.parkourManager.parkours.values.count { parkour ->
-        (parkour.times.firstOrNull { it.uuid == player.uniqueId }?.ticks ?: Int.MAX_VALUE) == parkour.times.minOfOrNull { it.ticks }
-    }
-
-    /**
-     * Opens the parkour menu inventory for the given [player] on the given [page]
-     *
-     * @param player the player to open the inventory
-     * @param page the initial page
-     */
     fun openInventory(player: Player, page: Int) {
-        showMenu(
-            Bukkit.createInventory(
-                null,
-                inventorySize,
-                template("menu.title", mapOf(
-                    "completed" to countPersonalBest(player),
-                    "quantity" to plugin.parkourManager.parkours.size,
-                    "records" to countGlobalBest(player)
-                ))
-            ), player, page
+        val inventory = Bukkit.createInventory(
+            null,
+            plugin.config.getInt("parkoursPerPage") + 9,
+            template("menu.title", mapOf(
+                "completed" to countParkoursPlayed(player),
+                "records" to countParkourRecords(player),
+                "quantity" to plugin.parkourManager.parkours.size
+            ))
         )
+
+        openMenu(inventory, player, page)
     }
 
-    private fun showMenu(inventory: Inventory, player: Player, page: Int) {
-        val parkours = plugin.parkourManager.parkours.values.sortedBy { it.difficulty }
-        val parkourCount = plugin.parkourManager.parkours.size
+    private fun openMenu(inventory: Inventory, player: Player, page: Int) {
+        val parkoursPerPage = inventory.size - 9
 
-        // clear inventory
+        // TODO: Is this necessary?
         inventory.clear()
 
-        // add parkours
         for (slot in 0 until parkoursPerPage) {
             val index = slot + page * parkoursPerPage
 
-            if (index >= parkourCount)
+            if (index == parkours.size) {
                 break
-
-            val parkour = parkours[index]
-            val personalBest = parkour.times.filter { it.uuid == player.uniqueId }.map { it.ticks }.singleOrNull()
-            val globalBest = parkour.times.minOfOrNull { it.ticks }
-            val lore = buildList {
-                add(template("menu.difficulty", mapOf("difficulty" to parkour.difficulty)))
-                add(template("menu.builder", mapOf("builder" to parkour.builder)))
-                add("")
-                add(template("menu.personalBest.title"))
-                if (personalBest != null)
-                    add(template("menu.personalBest.time", mapOf("time" to TimeUtil.ticksToTime(personalBest))))
-                else
-                    add(template("menu.noTime"))
-                add("")
-                add(template("menu.globalBest.title"))
-                if (globalBest != null) {
-                    add(template("menu.globalBest.time", mapOf("time" to TimeUtil.ticksToTime(globalBest))))
-                    add(template("menu.globalBest.subtitle"))
-                    parkour.times
-                        .filter { it.ticks == globalBest }
-                        .forEach { add(template("menu.globalBest.player",
-                            mapOf("player" to Bukkit.getOfflinePlayer(it.uuid).name)))
-                    }
-                }
-                else
-                    add(template("menu.noTime"))
-            }
-            val displayName = "${ChatColor.DARK_AQUA}${parkour.name} " +
-                    if (personalBest != null)
-                        if (personalBest == globalBest) "${ChatColor.GOLD}✫" else "${ChatColor.GREEN}✔"
-                    else
-                        "${ChatColor.RED}✘"
-
-            // create item
-            val itemStack = Builder()
-                .material(parkour.material)
-                .displayName(displayName)
-                .lore(lore)
-                .build()
-
-            // enchant item if player has personal best
-            personalBest?.run {
-                val itemMeta = itemStack.itemMeta
-
-                itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
-                itemStack.itemMeta = itemMeta
-                itemStack.addUnsafeEnchantment(Enchantment.KNOCKBACK, 10)
             }
 
-            val nmsCopy = CraftItemStack.asNMSCopy(itemStack)
-            nmsCopy.tag.setInt(Plugin.PARKOUR_TAG, parkour.id)
-
-            // add item to inventory
-            inventory.setItem(slot, CraftItemStack.asCraftMirror(nmsCopy))
+            inventory.setItem(slot, parkours[index].buildItem(player))
         }
 
-        // add navigation items
-        if (parkourCount > parkoursPerPage * (page + 1)) {
-            val itemStack = SkullBuilder()
-                .displayName(template("items.nextPage"))
-                .username("MHF_ArrowRight")
-                .build()
-
-            val nmsCopy = CraftItemStack.asNMSCopy(itemStack)
-            nmsCopy.tag.setInt(Plugin.PAGE_TAG, page)
-
-            inventory.setItem(inventorySize - 1, CraftItemStack.asCraftMirror(nmsCopy))
+        if (parkours.size > parkoursPerPage * (page + 1)) {
+            inventory.setItem(
+                inventory.size - 1,
+                buildPaginationItem(PaginationType.Next, page)
+            )
         }
+
         if (page > 0) {
-            val itemStack = SkullBuilder()
-                .displayName(template("items.previousPage"))
-                .username("MHF_ArrowLeft")
-                .build()
-
-            val nmsCopy = CraftItemStack.asNMSCopy(itemStack)
-            nmsCopy.tag.setInt(Plugin.PAGE_TAG, page * -1)
-
-            inventory.setItem(inventorySize - 9, CraftItemStack.asCraftMirror(nmsCopy))
+            inventory.setItem(
+                inventory.size - 9,
+                buildPaginationItem(PaginationType.Previous, page)
+            )
         }
 
-        // open inventory
         player.openInventory(inventory)
+    }
+
+    private fun Parkour.buildItem(player: Player): CraftItemStack {
+        val playerTime = this.times.firstOrNull { time ->
+            time.uuid == player.uniqueId
+        }?.ticks
+        val bestTime = this.times.minOfOrNull(Parkour.Time::ticks)
+        val playersWithBestTime = this.times.mapNotNull { time ->
+            if (time.ticks == bestTime) Bukkit.getOfflinePlayer(time.uuid) else null
+        }
+
+        val displayName = "${ChatColor.DARK_AQUA}${this.name} %s".format(
+            if (playerTime != null) {
+                if (playerTime == bestTime) {
+                    "${ChatColor.GOLD}✫"
+                } else {
+                    "${ChatColor.GREEN}✔"
+                }
+            } else {
+                "${ChatColor.RED}✘"
+            }
+        )
+
+        val lore = buildList {
+            val parkour = this@buildItem
+
+            add(template("menu.difficulty", mapOf("difficulty" to parkour.difficulty)))
+            add(template("menu.builder", mapOf("builder" to parkour.builder)))
+            add("")
+
+            add(template("menu.personalBest.title"))
+
+            if (playerTime != null) {
+                add(template("menu.personalBest.time", mapOf("time" to TimeUtil.ticksToTime(playerTime))))
+            } else {
+                add(template("menu.noTime"))
+            }
+
+            add("")
+
+            add(template("menu.globalBest.title"))
+
+            if (bestTime != null) {
+                add(template("menu.globalBest.time", mapOf("time" to TimeUtil.ticksToTime(bestTime))))
+                add(template("menu.globalBest.subtitle"))
+                playersWithBestTime.forEach { player ->
+                    add(template("menu.globalBest.player", mapOf("player" to player.name)))
+                }
+            } else {
+                add(template("menu.noTime"))
+            }
+        }
+
+        val itemStack = Builder()
+            .material(this.material)
+            .displayName(displayName)
+            .lore(lore)
+            .build()
+
+        if (playerTime != null) {
+            val itemMeta = itemStack.itemMeta
+
+            itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+            itemStack.addUnsafeEnchantment(Enchantment.KNOCKBACK, 10)
+
+            // TODO: Has this be to reassigned?
+            itemStack.itemMeta = itemMeta
+        }
+
+        val nmsCopy = CraftItemStack.asNMSCopy(itemStack)
+
+        nmsCopy.tag.setInt(Plugin.PARKOUR_TAG, this.id)
+
+        return CraftItemStack.asCraftMirror(nmsCopy)
+    }
+
+    private enum class PaginationType(
+        val skullName: String,
+        val displayName: String,
+        val step: Int
+    ) {
+        Next("MHF_ArrowRight", template("items.previousPage"), 1),
+        Previous("MHF_ArrowLeft", template("items.nextPage"), -1),
+    }
+
+    private fun buildPaginationItem(type: PaginationType, page: Int): CraftItemStack {
+        val itemStack = SkullBuilder()
+            .displayName(type.displayName)
+            .username(type.skullName)
+            .build()
+        val nmsCopy = CraftItemStack.asNMSCopy(itemStack)
+
+        nmsCopy.tag.setInt(Plugin.PAGE_TAG, page)
+        nmsCopy.tag.setInt(Plugin.PAGE_STEP_TAG, type.step)
+
+        return CraftItemStack.asCraftMirror(nmsCopy)
+    }
+
+    private fun countParkoursPlayed(player: Player): Int {
+        return parkours.count { parkour ->
+            parkour.times.any { time ->
+                time.uuid == player.uniqueId
+            }
+        }
+    }
+
+    private fun countParkourRecords(player: Player): Int {
+        return parkours.count { parkour ->
+            val recordTime = parkour.times.minOfOrNull(Parkour.Time::ticks)
+            val playerTime = parkour.times.firstOrNull { time ->
+                time.uuid == player.uniqueId
+            }?.ticks ?: Int.MAX_VALUE
+
+            return@count recordTime == playerTime
+        }
     }
 }
