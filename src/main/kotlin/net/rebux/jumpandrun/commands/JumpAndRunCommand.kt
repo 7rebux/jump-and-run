@@ -1,12 +1,12 @@
 package net.rebux.jumpandrun.commands
 
 import net.rebux.jumpandrun.Instance
+import net.rebux.jumpandrun.database.entities.LocationEntity
 import net.rebux.jumpandrun.database.entities.ParkourEntity
 import net.rebux.jumpandrun.database.entities.TimeEntity
 import net.rebux.jumpandrun.msg
 import net.rebux.jumpandrun.msgTemplate
 import net.rebux.jumpandrun.parkour.Difficulty
-import net.rebux.jumpandrun.utils.LocationSerializer
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.command.Command
@@ -77,7 +77,7 @@ object JumpAndRunCommand : CommandExecutor {
                             this.builder = args[2]
                             this.difficulty = Difficulty.getDifficulty(args[3].uppercase())!!
                             this.material = Material.getMaterial(args[4].uppercase())
-                            this.location = LocationSerializer.toBase64String(location)
+                            this.location = LocationEntity.ofLocation(location)
                         }.also {
                             plugin.parkourManager.parkours += it.toParkour()
                             sender.msgTemplate("commands.jnr.add.success", mapOf("name" to it.name))

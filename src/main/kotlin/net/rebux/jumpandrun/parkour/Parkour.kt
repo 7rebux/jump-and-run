@@ -9,7 +9,6 @@ import net.rebux.jumpandrun.item.impl.LeaveItem
 import net.rebux.jumpandrun.item.impl.RestartItem
 import net.rebux.jumpandrun.item.ItemRegistry
 import net.rebux.jumpandrun.utils.InventoryUtil
-import net.rebux.jumpandrun.utils.LocationSerializer
 import net.rebux.jumpandrun.utils.TimeUtil
 import org.bukkit.*
 import org.bukkit.entity.Player
@@ -30,16 +29,6 @@ class Parkour(
     data class Time(val uuid: UUID, var ticks: Int, var version: MinecraftVersion)
 
     private val plugin = Instance.plugin
-
-    fun toEntity() = ParkourEntity.new {
-        val parkour = this@Parkour
-
-        name = parkour.name
-        builder = parkour.builder
-        difficulty = parkour.difficulty
-        material = parkour.material
-        location = LocationSerializer.toBase64String(parkour.location)
-    }
 
     fun resetTime(uuid: UUID) {
         transaction {

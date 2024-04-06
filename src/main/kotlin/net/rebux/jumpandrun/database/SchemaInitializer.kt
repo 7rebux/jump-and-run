@@ -1,6 +1,7 @@
 package net.rebux.jumpandrun.database
 
 import com.mysql.jdbc.Connection
+import net.rebux.jumpandrun.database.models.Locations
 import net.rebux.jumpandrun.database.models.Parkours
 import net.rebux.jumpandrun.database.models.Times
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -16,7 +17,8 @@ class SchemaInitializer {
     fun initialize() = transaction {
         SchemaUtils.create(
             Parkours,
-            Times
+            Locations,
+            Times,
         )
     }
 }

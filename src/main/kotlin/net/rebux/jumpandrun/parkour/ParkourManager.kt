@@ -20,7 +20,7 @@ class ParkourManager {
     }
 
     fun add(parkour: Parkour) {
-        transaction { parkour.toEntity() }
+        transaction { ParkourEntity.ofParkour(parkour) }
         parkours += parkour
     }
 

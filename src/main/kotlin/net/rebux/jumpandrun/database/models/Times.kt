@@ -5,9 +5,10 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 
 object Times : IntIdTable() {
-    val uuid = uuid("uuid")
-    val time = integer("time")
+
+    val uuid    = uuid("uuid")
+    val time    = integer("time")
     val version = enumerationByName<MinecraftVersion>("version", 50)
-    val date = datetime("date")
+    val date    = datetime("date")
     val parkour = reference("parkour", Parkours)
 }

@@ -2,18 +2,17 @@ package net.rebux.jumpandrun.database.entities
 
 import net.rebux.jumpandrun.database.models.Parkours
 import net.rebux.jumpandrun.parkour.Parkour
-import net.rebux.jumpandrun.utils.LocationSerializer
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 
 class ParkourEntity(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<ParkourEntity>(Parkours)
+
     var name        by Parkours.name
     var builder     by Parkours.builder
     var difficulty  by Parkours.difficulty
     var material    by Parkours.material
-    var location    by Parkours.location
+    var location    by LocationEntity referencedOn Parkours.location
 
     fun toParkour() = Parkour(
         id.value,
@@ -21,13 +20,25 @@ class ParkourEntity(id: EntityID<Int>) : IntEntity(id) {
         builder,
         difficulty,
         material,
-        LocationSerializer.fromBase64String(location)
+        location.toLocation()
     )
 
-
-
     override fun delete() {
-        TimeEntity.all().filter { it.parkour == this }.forEach { it.delete() }
+        TimeEntity.all()
+            .filter { entity -> entity.parkour == this }
+            .forEach(TimeEntity::delete)
+
         super.delete()
+    }
+
+    companion object : IntEntityClass<ParkourEntity>(Parkours) {
+
+        fun ofParkour(parkour: Parkour) = new {
+            this.name = parkour.name
+            this.builder = parkour.builder
+            this.difficulty = parkour.difficulty
+            this.material = parkour.material
+            this.location = LocationEntity.ofLocation(parkour.location)
+        }
     }
 }
