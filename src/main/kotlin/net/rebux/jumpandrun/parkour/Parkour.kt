@@ -69,12 +69,12 @@ class Parkour(
         val globalBest = times.minOfOrNull { it.ticks }
         val bar: String = template(
             "timer.bar",
-            mapOf("time" to TimeUtil.ticksToTime(ticksNeeded))
+            mapOf("time" to TimeUtil.formatTicks(ticksNeeded))
         )
 
         player.msgTemplate("parkour.completed", mapOf(
             "name" to name,
-            "time" to TimeUtil.ticksToTime(ticksNeeded))
+            "time" to TimeUtil.formatTicks(ticksNeeded))
         )
 
         // call finish event
@@ -99,7 +99,7 @@ class Parkour(
                     "player" to player.name,
                     "name" to name,
                     "holders" to holders,
-                    "time" to TimeUtil.ticksToTime(delta))
+                    "time" to TimeUtil.formatTicks(delta))
                 )
                 Bukkit.getOnlinePlayers().forEach { it.playSound(player.location, Sound.ANVIL_LAND, 1.0F, 1.0F) }
             }

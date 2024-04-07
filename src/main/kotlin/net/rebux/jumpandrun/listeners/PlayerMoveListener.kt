@@ -38,7 +38,7 @@ class PlayerMoveListener(private val plugin: Plugin) : Listener {
             timer.tick()
         }
 
-        player.sendActionBar(template("timer.bar", mapOf("time" to TimeUtil.ticksToTime(timer.ticks))))
+        player.sendActionBar(template("timer.bar", mapOf("time" to TimeUtil.formatTicks(timer.ticks))))
 
         if (player.location.y <= plugin.config.getInt("resetHeight")) {
             player.teleport(data.checkpoint!!)

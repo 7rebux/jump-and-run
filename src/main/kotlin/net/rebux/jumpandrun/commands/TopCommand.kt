@@ -49,8 +49,8 @@ class TopCommand : CommandExecutor {
                 sender.msgTemplate("commands.top.time", mapOf(
                     "rank" to i + 1,
                     "player" to records.map(Parkour.Time::uuid).joinToString(", ") { Bukkit.getOfflinePlayer(it).name },
-                    "time" to TimeUtil.ticksToTime(time),
-                    "delta" to if (time - bestTime == 0) "${ChatColor.GOLD}✫" else "-" + TimeUtil.ticksToTime(time - bestTime)
+                    "time" to TimeUtil.formatTicks(time),
+                    "delta" to if (time - bestTime == 0) "${ChatColor.GOLD}✫" else "-" + TimeUtil.formatTicks(time - bestTime)
                 ))
             }
 

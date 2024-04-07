@@ -3,7 +3,9 @@ package net.rebux.jumpandrun.utils
 import net.rebux.jumpandrun.template
 
 object TimeUtil {
-    fun ticksToTime(ticks: Int): String {
+
+    // TODO: This can be done cleaner with patterns
+    fun formatTicks(ticks: Int): String {
         val millis = ticks * 1000 / 20
 
         val m = (millis / 60000)

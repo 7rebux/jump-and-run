@@ -116,7 +116,7 @@ object MenuItem : Item() {
             add(template("menu.personalBest.title"))
 
             if (playerTime != null) {
-                add(template("menu.personalBest.time", mapOf("time" to TimeUtil.ticksToTime(playerTime))))
+                add(template("menu.personalBest.time", mapOf("time" to TimeUtil.formatTicks(playerTime))))
             } else {
                 add(template("menu.noTime"))
             }
@@ -126,7 +126,7 @@ object MenuItem : Item() {
             add(template("menu.globalBest.title"))
 
             if (bestTime != null) {
-                add(template("menu.globalBest.time", mapOf("time" to TimeUtil.ticksToTime(bestTime))))
+                add(template("menu.globalBest.time", mapOf("time" to TimeUtil.formatTicks(bestTime))))
                 add(template("menu.globalBest.subtitle"))
                 playersWithBestTime.forEach { player ->
                     add(template("menu.globalBest.player", mapOf("player" to player.name)))
