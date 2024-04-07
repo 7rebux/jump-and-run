@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin
 
 // Sadly this can't be an object due to bukkit implementation
 class Plugin : JavaPlugin() {
+
     private val instance = Instance(this)
     private val config = PluginConfig()
     private val databaseConnector = DatabaseConnector()
@@ -34,8 +35,8 @@ class Plugin : JavaPlugin() {
             CommandListener,
         )
         registerCommands(
-            "jumpandrun" to JumpAndRunCommand,
-            "top" to TopCommand
+            "jumpandrun" to JumpAndRunCommand(this),
+            "top" to TopCommand()
         )
     }
 

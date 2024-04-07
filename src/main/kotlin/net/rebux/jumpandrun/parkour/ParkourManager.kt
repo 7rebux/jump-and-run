@@ -24,4 +24,8 @@ class ParkourManager {
                 parkours[parkour.id] = parkour
             }
     }
+
+    fun add(parkourEntity: ParkourEntity) {
+        parkours[parkourEntity.id.value] = parkourEntity.toParkour()
+    }
 }

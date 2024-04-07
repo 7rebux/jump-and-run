@@ -11,7 +11,8 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-object TopCommand : CommandExecutor {
+class TopCommand : CommandExecutor {
+
     override fun onCommand(
         sender: CommandSender,
         command: Command,
@@ -23,33 +24,35 @@ object TopCommand : CommandExecutor {
             return true
         }
 
-        val entries = if (args.isNotEmpty() && args[0] == "all") 100 else 5
+        val entries = if (args.getOrNull(0) == "all") 100 else 5
+        val parkour = sender.data.parkour
 
-        sender.data.parkour?.let { parkour ->
-            if (parkour.times.isEmpty()) {
-                sender.msgTemplate("commands.top.empty")
-                return true
+        if (parkour == null) {
+            sender.msgTemplate("commands.top.invalid")
+            return true
+        }
+
+        if (parkour.times.isEmpty()) {
+            sender.msgTemplate("commands.top.empty")
+            return true
+        }
+
+        val bestTime = parkour.times.minOf(Parkour.Time::ticks)
+
+        sender.msgTemplate("commands.top.header", mapOf("name" to parkour.name))
+        parkour.times
+            .groupBy(Parkour.Time::ticks)
+            .toSortedMap()
+            .asIterable()
+            .take(entries)
+            .forEachIndexed { i, (time, records) ->
+                sender.msgTemplate("commands.top.time", mapOf(
+                    "rank" to i + 1,
+                    "player" to records.map(Parkour.Time::uuid).joinToString(", ") { Bukkit.getOfflinePlayer(it).name },
+                    "time" to TimeUtil.ticksToTime(time),
+                    "delta" to if (time - bestTime == 0) "${ChatColor.GOLD}✫" else "-" + TimeUtil.ticksToTime(time - bestTime)
+                ))
             }
-
-            val bestTime = parkour.times.minOf(Parkour.Time::ticks)
-
-            sender.msgTemplate("commands.top.header", mapOf("name" to parkour.name))
-
-            parkour.times
-                .groupBy(Parkour.Time::ticks)
-                .toSortedMap()
-                .asIterable()
-                .take(entries)
-                .forEachIndexed { i, (time, records) ->
-                    sender.msgTemplate("commands.top.time", mapOf(
-                        "rank" to i + 1,
-                        "player" to records.map(Parkour.Time::uuid).joinToString(", ") { Bukkit.getOfflinePlayer(it).name },
-                        "time" to TimeUtil.ticksToTime(time),
-                        "delta" to if (time - bestTime == 0) "${ChatColor.GOLD}✫" else "-" + TimeUtil.ticksToTime(time - bestTime)
-                    ))
-                }
-
-        } ?: sender.msgTemplate("commands.top.invalid")
 
         return true
     }

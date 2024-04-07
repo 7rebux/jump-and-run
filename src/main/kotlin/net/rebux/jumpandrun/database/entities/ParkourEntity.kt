@@ -31,14 +31,5 @@ class ParkourEntity(id: EntityID<Int>) : IntEntity(id) {
         super.delete()
     }
 
-    companion object : IntEntityClass<ParkourEntity>(Parkours) {
-
-        fun ofParkour(parkour: Parkour) = new {
-            this.name = parkour.name
-            this.builder = parkour.builder
-            this.difficulty = parkour.difficulty
-            this.material = parkour.material
-            this.location = LocationEntity.ofLocation(parkour.location)
-        }
-    }
+    companion object : IntEntityClass<ParkourEntity>(Parkours)
 }

@@ -21,9 +21,10 @@ class Parkour(
     val id: Int,
     val name: String,
     val builder: String,
-    val difficulty: Difficulty,
+    val difficulty: ParkourDifficulty,
     val material: Material,
     val location: Location,
+    // TODO: Times should be a Map of uuid -> time
     var times: MutableList<Time> = mutableListOf()
 ) {
     data class Time(val uuid: UUID, var ticks: Int, var version: MinecraftVersion)
