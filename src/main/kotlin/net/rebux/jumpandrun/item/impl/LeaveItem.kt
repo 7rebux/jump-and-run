@@ -25,9 +25,6 @@ object LeaveItem : Item() {
     }
 
     override fun onInteract(player: Player) {
-        player.gameMode = GameMode.SURVIVAL
-
-        // This will be caught inside CommandListener
         player.performCommand("spawn")
         Bukkit.getPluginManager().callEvent(PlayerCommandPreprocessEvent(player, "/spawn"))
     }

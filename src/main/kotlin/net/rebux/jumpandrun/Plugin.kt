@@ -21,6 +21,7 @@ class Plugin : JavaPlugin() {
     private val databaseConnector = DatabaseConnector()
     private val schemaInitializer = SchemaInitializer()
     val parkourManager = ParkourManager()
+    // TODO: This should be a map of uuid -> PlayerData
     val players = mutableListOf<PlayerData>()
 
     override fun onEnable() {
@@ -29,11 +30,13 @@ class Plugin : JavaPlugin() {
         parkourManager.load()
 
         registerListeners(
-            ConnectionListener,
-            MovementListener,
-            InteractionListener,
-            CommandListener,
+            PlayerConnectionListener(this),
+            PlayerMoveListener(this),
+            PlayerInteractListener(this),
+            InventoryClickListener(this),
+            CommandPreprocessListener(),
         )
+
         registerCommands(
             "jumpandrun" to JumpAndRunCommand(this),
             "top" to TopCommand()
