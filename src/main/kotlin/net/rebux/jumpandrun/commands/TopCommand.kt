@@ -24,13 +24,13 @@ class TopCommand : CommandExecutor {
             return true
         }
 
-        val entries = if (args.getOrNull(0) == "all") 100 else 5
-        val parkour = sender.data.parkour
-
-        if (parkour == null) {
+        if (!sender.data.isInParkour()) {
             sender.msgTemplate("commands.top.invalid")
             return true
         }
+
+        val entries = if (args.getOrNull(0) == "all") 100 else 5
+        val parkour = sender.data.parkour!!
 
         if (parkour.times.isEmpty()) {
             sender.msgTemplate("commands.top.empty")

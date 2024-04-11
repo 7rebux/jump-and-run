@@ -10,4 +10,6 @@ data class PlayerData(
     var parkour: Parkour? = null,
     var checkpoint: Location? = null,
     var timer: TickCounter = TickCounter(),
-)
+) {
+    fun isInParkour() = parkour != null
+}

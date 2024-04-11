@@ -8,12 +8,11 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-/**
- * An [Item] implementation that restarts the current parkour
- */
 object RestartItem : Item() {
+
     val id = ItemRegistry.register(this)
 
+    // TODO: find a way to remove this
     private val plugin = Instance.plugin
 
     override fun createItemStack(): ItemStack {
@@ -24,11 +23,14 @@ object RestartItem : Item() {
     }
 
     override fun onInteract(player: Player) {
-        val location = player.data.parkour!!.location
+        if (!player.data.isInParkour()) {
+            return
+        }
 
-        player.data.checkpoint = location
+        val startLocation = player.data.parkour!!.location
+
+        player.data.checkpoint = startLocation
         player.data.timer.stop()
-
-        player.teleport(location)
+        player.teleport(startLocation)
     }
 }

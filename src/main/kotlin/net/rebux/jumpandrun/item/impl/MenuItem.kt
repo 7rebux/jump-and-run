@@ -17,13 +17,11 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
-/**
- * An [Item] implementation that lists every parkour in an inventory
- */
 object MenuItem : Item() {
 
     val id = ItemRegistry.register(this)
 
+    // TODO: get rid of plugin and also parkourmanager could be an object class
     private val plugin = Instance.plugin
     private val parkours = plugin.parkourManager.parkours.values.sortedBy(Parkour::difficulty)
 

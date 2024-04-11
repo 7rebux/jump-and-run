@@ -11,7 +11,7 @@ class CommandPreprocessListener : Listener {
 
     @EventHandler
     fun onCommand(event: PlayerCommandPreprocessEvent) {
-        if (event.message != "/spawn" || event.player.data.parkour == null) {
+        if (event.message != "/spawn" || !event.player.data.isInParkour()) {
             return
         }
 

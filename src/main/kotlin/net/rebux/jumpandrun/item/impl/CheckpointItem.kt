@@ -8,10 +8,8 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-/**
- * An [Item] implementation that puts the player back on his recent checkpoint
- */
 object CheckpointItem : Item() {
+
     val id = ItemRegistry.register(this)
 
     override fun createItemStack(): ItemStack {
@@ -23,6 +21,8 @@ object CheckpointItem : Item() {
     }
 
     override fun onInteract(player: Player) {
-        player.teleport(player.data.checkpoint!!)
+        if (player.data.isInParkour()) {
+            player.teleport(player.data.checkpoint)
+        }
     }
 }
