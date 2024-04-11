@@ -14,11 +14,8 @@ private val plugin = Instance.plugin
 private val prefix = plugin.config.getString("messages.prefix")
 
 val Player.data
-    get() = plugin.players.find { it.uuid == this.uniqueId }!!
-
-fun error(message: String) {
-    plugin.logger.log(Level.SEVERE, message)
-}
+    get() = plugin.playerData[this.uniqueId]
+        ?: error("Player data not found for ${this.uniqueId}")
 
 fun template(name: String, values: Map<String, Any> = mapOf()): String {
     val template: String? = plugin.config.getString(name)
@@ -28,7 +25,7 @@ fun template(name: String, values: Map<String, Any> = mapOf()): String {
         message = it
         values.forEach { entry -> message = message.replace("{${entry.key}}", entry.value.toString()) }
         return message
-    } ?: error("Template '${name}' not found!")
+    } ?: plugin.logger.log(Level.SEVERE, "Template '${name}' not found!\"")
 
     return "${ChatColor.RED}Not found"
 }

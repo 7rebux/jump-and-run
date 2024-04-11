@@ -12,6 +12,7 @@ import net.rebux.jumpandrun.parkour.ParkourManager
 import org.bukkit.command.CommandExecutor
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
+import java.util.UUID
 
 // Sadly this can't be an object due to bukkit implementation
 class Plugin : JavaPlugin() {
@@ -20,9 +21,9 @@ class Plugin : JavaPlugin() {
     private val config = PluginConfig()
     private val databaseConnector = DatabaseConnector()
     private val schemaInitializer = SchemaInitializer()
+    // TODO: This can be a object class
     val parkourManager = ParkourManager()
-    // TODO: This should be a map of uuid -> PlayerData
-    val players = mutableListOf<PlayerData>()
+    val playerData = hashMapOf<UUID, PlayerData>()
 
     override fun onEnable() {
         databaseConnector.connect()

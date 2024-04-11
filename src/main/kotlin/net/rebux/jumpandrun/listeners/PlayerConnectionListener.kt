@@ -13,14 +13,12 @@ class PlayerConnectionListener(private val plugin: Plugin) : Listener {
 
     @EventHandler
     fun onJoin(event: PlayerJoinEvent) {
-        plugin.players += PlayerData(event.player.uniqueId)
+        plugin.playerData[event.player.uniqueId] = PlayerData()
         event.player.inventory.setItem(4, ItemRegistry.getItemStack(MenuItem.id))
     }
 
     @EventHandler
     fun onQuit(event: PlayerQuitEvent) {
-        plugin.players.removeIf { player ->
-            player.uuid == event.player.uniqueId
-        }
+        plugin.playerData.remove(event.player.uniqueId)
     }
 }
