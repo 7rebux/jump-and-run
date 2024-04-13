@@ -9,5 +9,6 @@ data class PlayerData(
     var checkpoint: Location? = null,
     var timer: TickCounter = TickCounter(),
 ) {
+
     fun isInParkour() = parkour != null
 }

@@ -7,7 +7,7 @@ import org.bukkit.event.HandlerList
 /**
  * An [Event] that is being called when a [player] finishes a parkour
  */
-class ParkourFinishEvent(val player: Player) : Event() {
+class ParkourFinishEvent(val player: Player, val ticks: Int) : Event() {
 
     @Override
     override fun getHandlers(): HandlerList {

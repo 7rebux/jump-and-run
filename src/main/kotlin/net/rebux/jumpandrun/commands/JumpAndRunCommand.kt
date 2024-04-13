@@ -127,9 +127,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
                     }
                     .forEach { entity ->
                         entity.delete()
-                        parkour.times.removeIf { time ->
-                            entity.uuid == time.uuid
-                        }
+                        parkour.times.remove(entity.uuid)
                     }
             }
             sender.msgTemplate("commands.jnr.reset.successAll", mapOf("name" to parkour.name))
@@ -145,9 +143,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
                 }
 
                 timeEntity.delete()
-                parkour.times.removeIf { time ->
-                    time.uuid == timeEntity.uuid
-                }
+                parkour.times.remove(timeEntity.uuid)
                 sender.msgTemplate(
                     "commands.jnr.reset.successSingle", mapOf(
                         "name" to parkour.name,

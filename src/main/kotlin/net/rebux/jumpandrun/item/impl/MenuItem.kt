@@ -84,13 +84,11 @@ object MenuItem : Item() {
     }
 
     private fun Parkour.buildItem(player: Player): CraftItemStack {
-        val playerTime = this.times.firstOrNull { time ->
-            time.uuid == player.uniqueId
-        }?.ticks
-        val bestTime = this.times.minOfOrNull(Parkour.Time::ticks)
-        val playersWithBestTime = this.times.mapNotNull { time ->
-            if (time.ticks == bestTime) Bukkit.getOfflinePlayer(time.uuid) else null
-        }
+        val playerTime = this.times[player.uniqueId]
+        val bestTime = this.times.values.minOrNull()
+        val playersWithBestTime = this.times.entries
+            .filter { it.value == bestTime }
+            .map { Bukkit.getOfflinePlayer(it.key) }
 
         val displayName = "${ChatColor.DARK_AQUA}${this.name} %s".format(
             if (playerTime != null) {
@@ -181,18 +179,15 @@ object MenuItem : Item() {
 
     private fun countParkoursPlayed(player: Player): Int {
         return parkours.count { parkour ->
-            parkour.times.any { time ->
-                time.uuid == player.uniqueId
-            }
+            parkour.times.contains(player.uniqueId)
         }
     }
 
     private fun countParkourRecords(player: Player): Int {
         return parkours.count { parkour ->
-            val recordTime = parkour.times.minOfOrNull(Parkour.Time::ticks)
-            val playerTime = parkour.times.firstOrNull { time ->
-                time.uuid == player.uniqueId
-            }?.ticks ?: Int.MAX_VALUE
+            val recordTime = parkour.times.values.minOrNull()
+            val playerTime = parkour.times[player.uniqueId]
+                ?: Int.MAX_VALUE
 
             return@count recordTime == playerTime
         }

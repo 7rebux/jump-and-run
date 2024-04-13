@@ -17,36 +17,18 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 import java.util.*
 
-class Parkour(
+data class Parkour(
     val id: Int,
     val name: String,
     val builder: String,
     val difficulty: ParkourDifficulty,
     val material: Material,
     val location: Location,
-    // TODO: Times should be a Map of uuid -> time
-    var times: MutableList<Time> = mutableListOf()
+    // TODO: This should be a long
+    val times: HashMap<UUID, Int> = hashMapOf()
 ) {
-    data class Time(val uuid: UUID, var ticks: Int, var version: MinecraftVersion)
-
+    // TODO: Get rid of this
     private val plugin = Instance.plugin
-
-    fun resetTime(uuid: UUID) {
-        transaction {
-            TimeEntity.all()
-                .find { it.parkour.id.value == this@Parkour.id && it.uuid == uuid }?.delete()
-        }
-        times.removeIf { it.uuid == uuid }
-    }
-
-    fun resetTimes() {
-        transaction {
-            TimeEntity.all()
-                .filter { it.parkour.id.value == this@Parkour.id }
-                .forEach(TimeEntity::delete)
-        }
-        times.clear()
-    }
 
     fun start(player: Player) {
         player.teleport(location)
@@ -66,34 +48,26 @@ class Parkour(
 
     fun finish(player: Player) {
         val ticksNeeded = player.data.timer.stop()
-        val globalBest = times.minOfOrNull { it.ticks }
-        val bar: String = template(
-            "timer.bar",
-            mapOf("time" to TimeUtil.formatTicks(ticksNeeded))
-        )
+        val globalBest = times.values.minOrNull()
 
+        Bukkit.getPluginManager().callEvent(ParkourFinishEvent(player, ticksNeeded))
         player.msgTemplate("parkour.completed", mapOf(
             "name" to name,
             "time" to TimeUtil.formatTicks(ticksNeeded))
         )
 
-        // call finish event
-        Bukkit.getPluginManager().callEvent(ParkourFinishEvent(player))
-
-        // handle time
-        if (!times.any { it.uuid == player.uniqueId } || ticksNeeded < times.first { it.uuid == player.uniqueId }.ticks) {
-            // first global best
+        if (!times.contains(player.uniqueId) || ticksNeeded < times[player.uniqueId]!!) {
+            // First global best
             if (globalBest == null) {
                 player.msgTemplate("parkour.firstGlobalBest")
                 player.playSound(player.location, Sound.LEVEL_UP, 1.0F, 1.0F)
             }
-
-            // new global best
+            // New global best
             else if (ticksNeeded < globalBest) {
                 val delta = globalBest - ticksNeeded
-                val holders = times
-                    .filter { it.ticks == globalBest }
-                    .joinToString(", ") { Bukkit.getOfflinePlayer(it.uuid).name }
+                val holders = times.entries
+                    .filter { it.value == globalBest }
+                    .joinToString(", ") { Bukkit.getOfflinePlayer(it.key).name }
 
                 msgTemplateGlobal("parkour.globalBest", mapOf(
                     "player" to player.name,
@@ -101,16 +75,17 @@ class Parkour(
                     "holders" to holders,
                     "time" to TimeUtil.formatTicks(delta))
                 )
-                Bukkit.getOnlinePlayers().forEach { it.playSound(player.location, Sound.ANVIL_LAND, 1.0F, 1.0F) }
+                Bukkit.getOnlinePlayers().forEach { onlinePlayer ->
+                    onlinePlayer.playSound(player.location, Sound.ANVIL_LAND, 1.0F, 1.0F)
+                }
             }
-
-            // new personal best
+            // New personal best
             else {
                 player.msgTemplate("parkour.personalBest")
                 player.playSound(player.location, Sound.LEVEL_UP, 1.0F, 1.0F)
             }
 
-            // update best time
+            // TODO: Extract this?
             Bukkit.getScheduler().runTaskAsynchronously(plugin) {
                 transaction {
                     TimeEntity.all()
@@ -123,7 +98,7 @@ class Parkour(
                         date = LocalDateTime.now()
                         parkour = ParkourEntity.findById(this@Parkour.id)!!
                     }.also {
-                        times.first { it.uuid == player.uniqueId }.ticks = ticksNeeded
+                        times[player.uniqueId] = ticksNeeded
                     }
                 }
             }
@@ -131,7 +106,6 @@ class Parkour(
 
         player.gameMode = GameMode.SURVIVAL
 
-        // teleport to spawn
         player.performCommand("spawn")
         Bukkit.getPluginManager().callEvent(PlayerCommandPreprocessEvent(player, "/spawn"))
     }

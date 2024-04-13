@@ -14,9 +14,9 @@ class ParkourManager {
                 val parkour = entity.toParkour()
                 val parkourTimes = TimeEntity.all()
                     .filter { time -> time.parkour.id.value == parkour.id }
-                    .map(TimeEntity::toParkourTime)
+                    .map { time -> time.uuid to time.time }
 
-                parkour.times.addAll(parkourTimes)
+                parkour.times.putAll(parkourTimes)
 
                 return@map parkour
             }

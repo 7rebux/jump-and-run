@@ -2,7 +2,6 @@ package net.rebux.jumpandrun.commands
 
 import net.rebux.jumpandrun.data
 import net.rebux.jumpandrun.msgTemplate
-import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.utils.TimeUtil
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -37,23 +36,31 @@ class TopCommand : CommandExecutor {
             return true
         }
 
-        val bestTime = parkour.times.minOf(Parkour.Time::ticks)
+        val bestTime = parkour.times.values.min()
 
         sender.msgTemplate("commands.top.header", mapOf("name" to parkour.name))
-        parkour.times
-            .groupBy(Parkour.Time::ticks)
+        parkour.times.entries
+            .groupBy { it.value }
             .toSortedMap()
             .asIterable()
             .take(entries)
             .forEachIndexed { i, (time, records) ->
                 sender.msgTemplate("commands.top.time", mapOf(
                     "rank" to i + 1,
-                    "player" to records.map(Parkour.Time::uuid).joinToString(", ") { Bukkit.getOfflinePlayer(it).name },
+                    "player" to records.joinToString(", ") { Bukkit.getOfflinePlayer(it.key).name },
                     "time" to TimeUtil.formatTicks(time),
-                    "delta" to if (time - bestTime == 0) "${ChatColor.GOLD}✫" else "-" + TimeUtil.formatTicks(time - bestTime)
+                    "delta" to formatDelta(time, bestTime)
                 ))
             }
 
         return true
+    }
+
+    private fun formatDelta(time: Int, bestTime: Int): String {
+        return if (time - bestTime == 0) {
+            "${ChatColor.GOLD}✫"
+        } else {
+            "-" + TimeUtil.formatTicks(time - bestTime)
+        }
     }
 }
