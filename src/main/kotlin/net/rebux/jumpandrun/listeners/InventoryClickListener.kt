@@ -17,7 +17,7 @@ class InventoryClickListener(private val plugin: Plugin) : Listener {
             return
         }
 
-        val nmsCopy = CraftItemStack.asNMSCopy(event.currentItem)
+        val nmsCopy = CraftItemStack.asNMSCopy(event.currentItem) ?: return
 
         if (nmsCopy.hasTag()) {
             when {

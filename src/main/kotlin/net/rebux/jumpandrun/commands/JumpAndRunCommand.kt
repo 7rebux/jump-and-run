@@ -28,10 +28,8 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
         Bukkit.getScheduler().runTaskAsynchronously(plugin) {
             when (args.firstOrNull()?.lowercase()) {
                 "list" -> handleListCommand(sender)
-                // TODO: What happens when there is only 1 argument?
                 "add" -> handleAddCommand(sender, args.copyOfRange(1, args.size))
                 "remove" -> handleRemoveCommand(sender, args.getOrNull(1)?.toIntOrNull())
-                // TODO: What happens when there is only 1 argument?
                 "reset" -> handleResetCommand(sender, args.copyOfRange(1, args.size))
                 else -> sendUsage(sender)
             }

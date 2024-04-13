@@ -27,6 +27,7 @@ class ParkourEntity(id: EntityID<Int>) : IntEntity(id) {
         TimeEntity.all()
             .filter { entity -> entity.parkour == this }
             .forEach(TimeEntity::delete)
+        location.delete()
 
         super.delete()
     }

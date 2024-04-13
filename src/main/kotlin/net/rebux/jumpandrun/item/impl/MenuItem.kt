@@ -23,6 +23,7 @@ object MenuItem : Item() {
 
     // TODO: get rid of plugin and also parkourmanager could be an object class
     private val plugin = Instance.plugin
+    // TODO: This causes a bug when adding a new parkour this is not updated
     private val parkours = plugin.parkourManager.parkours.values.sortedBy(Parkour::difficulty)
 
     override fun createItemStack(): ItemStack {
@@ -52,9 +53,6 @@ object MenuItem : Item() {
 
     private fun openMenu(inventory: Inventory, player: Player, page: Int) {
         val parkoursPerPage = inventory.size - 9
-
-        // TODO: Is this necessary?
-        inventory.clear()
 
         for (slot in 0 until parkoursPerPage) {
             val index = slot + page * parkoursPerPage
@@ -144,7 +142,6 @@ object MenuItem : Item() {
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
             itemStack.addUnsafeEnchantment(Enchantment.KNOCKBACK, 10)
 
-            // TODO: Has this be to reassigned?
             itemStack.itemMeta = itemMeta
         }
 
