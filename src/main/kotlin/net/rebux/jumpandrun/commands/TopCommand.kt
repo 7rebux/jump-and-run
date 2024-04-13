@@ -56,8 +56,8 @@ class TopCommand : CommandExecutor {
         return true
     }
 
-    private fun formatDelta(time: Int, bestTime: Int): String {
-        return if (time - bestTime == 0) {
+    private fun formatDelta(time: Long, bestTime: Long): String {
+        return if (time - bestTime == 0L) {
             "${ChatColor.GOLD}✫"
         } else {
             "-" + TimeUtil.formatTicks(time - bestTime)

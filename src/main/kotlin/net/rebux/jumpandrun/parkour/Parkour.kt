@@ -25,7 +25,7 @@ data class Parkour(
     val material: Material,
     val location: Location,
     // TODO: This should be a long
-    val times: HashMap<UUID, Int> = hashMapOf()
+    val times: HashMap<UUID, Long> = hashMapOf()
 ) {
     // TODO: Get rid of this
     private val plugin = Instance.plugin

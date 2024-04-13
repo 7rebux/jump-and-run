@@ -5,14 +5,14 @@ import net.rebux.jumpandrun.template
 object TimeUtil {
 
     // TODO: This can be done cleaner with patterns
-    fun formatTicks(ticks: Int): String {
+    fun formatTicks(ticks: Long): String {
         val millis = ticks * 1000 / 20
 
         val m = (millis / 60000)
         val s = (millis / 1000) % 60
         val ms = millis % 1000
 
-        return if (m == 0)
+        return if (m == 0L)
             "${String.format("%02d", s)}.${String.format("%03d", ms)} ${template("timer.units.seconds")}"
         else
             "${String.format("%02d", m)}.${String.format("%02d", s)}.${String.format("%03d", ms)} ${template("timer.units.minutes")}"

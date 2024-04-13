@@ -1,7 +1,7 @@
 package net.rebux.jumpandrun.utils
 
 class TickCounter {
-    var ticks = 0
+    var ticks = 0L
     var started = false
 
     fun start() {
@@ -12,9 +12,9 @@ class TickCounter {
         ticks++
     }
 
-    fun stop(): Int {
+    fun stop(): Long {
         started = false
         return ticks
-            .also { ticks = 0 }
+            .also { ticks = 0L }
     }
 }

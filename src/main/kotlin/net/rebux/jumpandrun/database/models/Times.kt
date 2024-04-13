@@ -6,7 +6,7 @@ import org.jetbrains.exposed.sql.javatime.datetime
 object Times : IntIdTable() {
 
     val uuid    = uuid("uuid")
-    val time    = integer("time")
+    val time    = long("time")
     val date    = datetime("date")
     val parkour = reference("parkour", Parkours)
 }
