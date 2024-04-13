@@ -1,6 +1,7 @@
 package net.rebux.jumpandrun.listeners
 
 import net.rebux.jumpandrun.Plugin
+import net.rebux.jumpandrun.data
 import net.rebux.jumpandrun.item.ItemRegistry
 import org.bukkit.entity.Minecart
 import org.bukkit.event.EventHandler
@@ -25,13 +26,11 @@ class PlayerInteractListener(private val plugin: Plugin) : Listener {
         item?.let { ItemRegistry.onInteract(it, player) }
     }
 
-    // This is only needed to fix a bug on "auragames.de"
-    // TODO: Is this still needed?
+    // The lobby plugin of "auragames.de" prevents interacting with mine carts
+    // So we allow the interaction again when the player is in a parkour
     @EventHandler(priority = EventPriority.HIGH)
     fun onEntityInteract(event: PlayerInteractEntityEvent) {
-        if (event.player.world.name == plugin.config.getString("worldName")
-            && event.rightClicked is Minecart) {
-
+        if (event.player.data.isInParkour() && event.rightClicked is Minecart) {
             event.rightClicked.setPassenger(event.player)
         }
     }

@@ -13,7 +13,6 @@ class PluginConfig {
     init {
         // values
         config.addDefault("resetHeight", 70)
-        config.addDefault("worldName", "lobby2020")
         config.addDefault("parkoursPerPage", 45)
 
         // database

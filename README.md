@@ -19,7 +19,6 @@ A minecraft parkour speedrunning plugin made for [AuraGames Network](https://lab
 Name | Type | Description | Variables
 --- | --- | --- | ---
 resetHeight | Int | If the player falls below this height he will be teleported back to the last checkpoint | -
-worldName | String | The name of the world | -
 parkoursPerPage | Int | Amount of parkours that show on one page
 database.* | * | SQL server credentials | -
 timer.bar | String | Timer action bar text | `{time}`
