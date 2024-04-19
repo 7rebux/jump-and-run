@@ -23,8 +23,8 @@ object MenuItem : Item() {
 
     // TODO: get rid of plugin and also parkourmanager could be an object class
     private val plugin = Instance.plugin
-    // TODO: This causes a bug when adding a new parkour this is not updated
-    private val parkours = plugin.parkourManager.parkours.values.sortedBy(Parkour::difficulty)
+    private val parkours: List<Parkour>
+        get() = plugin.parkourManager.parkours.values.sortedBy(Parkour::difficulty)
 
     override fun createItemStack(): ItemStack {
         return Builder()
