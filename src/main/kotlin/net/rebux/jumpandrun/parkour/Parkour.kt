@@ -24,7 +24,6 @@ data class Parkour(
     val difficulty: ParkourDifficulty,
     val material: Material,
     val location: Location,
-    // TODO: This should be a long
     val times: HashMap<UUID, Long> = hashMapOf()
 ) {
     // TODO: Get rid of this

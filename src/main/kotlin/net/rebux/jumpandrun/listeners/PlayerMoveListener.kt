@@ -45,8 +45,10 @@ class PlayerMoveListener(private val plugin: Plugin) : Listener {
         }
 
         when (player.location.block.getRelative(BlockFace.DOWN).type) {
-            // TODO: Send message to the player
-            Material.REDSTONE_BLOCK -> player.teleport(data.checkpoint)
+            Material.REDSTONE_BLOCK -> {
+                player.teleport(data.checkpoint)
+                player.msgTemplate("parkour.resetBlock")
+            }
             Material.IRON_BLOCK -> {
                 if (data.checkpoint!!.block.location != blockLocation.block.location) {
                     blockLocation.yaw = player.location.yaw

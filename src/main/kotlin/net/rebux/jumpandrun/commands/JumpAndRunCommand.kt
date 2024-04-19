@@ -52,7 +52,6 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
         }
     }
 
-    // TODO: Handle invalid enum values
     private fun handleAddCommand(sender: CommandSender, args: Array<String>) {
         if (sender !is Player) {
             sender.msgTemplate("commands.playersOnly")
@@ -65,19 +64,25 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
             return
         }
 
-//        val block = sender.location.block.location
-//        val location = block.add(
-//            if (block.x < 0) -0.5 else 0.5,
-//            0.0,
-//            if (block.z < 0) -0.5 else 0.5
-//        ).apply { yaw = 90F }
+        val difficulty = ParkourDifficulty.values().find { it.name == args[2].uppercase() }
+        val material: Material? = Material.getMaterial(args[3].uppercase())
+
+        if (difficulty == null) {
+            sender.msgTemplate("commands.jnr.add.invalidDifficulty")
+            return
+        }
+
+        if (material == null) {
+            sender.msgTemplate("commands.jnr.add.invalidMaterial")
+            return
+        }
 
         transaction {
             val entity = ParkourEntity.new {
                 this.name = args[0]
                 this.builder = args[1]
-                this.difficulty = ParkourDifficulty.valueOf(args[2].uppercase())
-                this.material = Material.getMaterial(args[3].uppercase())
+                this.difficulty = difficulty
+                this.material = material
                 this.location = LocationEntity.ofLocation(sender.location)
             }
 
@@ -97,15 +102,14 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
             return
         }
 
-        plugin.parkourManager.parkours.remove(id)
+        val removed = plugin.parkourManager.parkours.remove(id)!!
         transaction {
             ParkourEntity.findById(id)?.delete()
         }
 
-        // TODO: Send message when successfully removed
+        sender.msgTemplate("commands.jnr.remove.success", mapOf("name" to removed.name))
     }
 
-    // TODO: Handle non integer values for id
     private fun handleResetCommand(sender: CommandSender, args: Array<String>) {
         // [Id, UUID/All]
         if (args.size != 2) {
@@ -113,9 +117,19 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
             return
         }
 
-        val id = args[0].toInt()
-        // TODO: Handle parkour id not found
-        val parkour = plugin.parkourManager.parkours[id] ?: return
+        val id = args[0].toIntOrNull()
+
+        if (id == null) {
+            sender.msgTemplate("commands.jnr.reset.idNotNumeric")
+            return
+        }
+
+        val parkour = plugin.parkourManager.parkours.get(id)
+
+        if (parkour == null) {
+            sender.msgTemplate("commands.jnr.reset.notFound")
+            return
+        }
 
         if (args[1].lowercase() == "all") {
             transaction {
