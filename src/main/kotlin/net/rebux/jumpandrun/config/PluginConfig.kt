@@ -13,7 +13,6 @@ class PluginConfig {
     init {
         // values
         config.addDefault("resetHeight", 70)
-        config.addDefault("worldName", "lobby2020")
         config.addDefault("parkoursPerPage", 45)
 
         // database
@@ -30,6 +29,7 @@ class PluginConfig {
 
         // messages
         config.addDefault("messages.prefix", "${ChatColor.GRAY}[${ChatColor.YELLOW}Jump&Run${ChatColor.GRAY}]")
+        config.addDefault("messages.parkour.resetBlock", "Du wurdest zurückgesetzt, da du einen ${ChatColor.RED}Redstone Block ${ChatColor.GRAY}betreten hast")
         config.addDefault("messages.parkour.completed", "Du hast das Jump and Run ${ChatColor.GREEN}{name} ${ChatColor.GRAY}in ${ChatColor.GREEN}{time} ${ChatColor.GRAY}geschafft")
         config.addDefault("messages.parkour.checkpoint", "Du hast einen neuen ${ChatColor.GREEN}Checkpoint ${ChatColor.GRAY}erreicht!")
         config.addDefault("messages.parkour.firstGlobalBest", "Du hast die ${ChatColor.GREEN}Erste Globale Bestzeit ${ChatColor.GRAY}erzielt!")
@@ -39,11 +39,14 @@ class PluginConfig {
         config.addDefault("messages.commands.jnr.list.empty", "Es sind ${ChatColor.RED}keine ${ChatColor.GRAY}Jump and Runs vorhanden!")
         config.addDefault("messages.commands.jnr.list.full", "Es wurden ${ChatColor.GREEN}{size} ${ChatColor.GRAY}Jump and Runs gefunden:")
         config.addDefault("messages.commands.jnr.add.success", "Jump and Run ${ChatColor.GREEN}{name} ${ChatColor.GRAY}erfolgreich hinzugefügt")
+        config.addDefault("messages.commands.jnr.add.invalidDifficulty", "${ChatColor.RED}Bitte gib eine gültige Schwierigkeit an!")
+        config.addDefault("messages.commands.jnr.add.invalidMaterial", "${ChatColor.RED}Bitte gib ein gültiges Material an")
         config.addDefault("messages.commands.jnr.remove.success", "Jump and Run ${ChatColor.RED}{name} ${ChatColor.GRAY}erfolgreich entfernt")
         config.addDefault("messages.commands.jnr.remove.notFound", "${ChatColor.RED}Dieses Jump and Run existiert nicht!")
         config.addDefault("messages.commands.jnr.reset.successAll", "Erfolgreich ${ChatColor.GREEN}alle ${ChatColor.GRAY}Bestzeiten für ${ChatColor.GREEN}{name} ${ChatColor.GRAY}entfernt")
         config.addDefault("messages.commands.jnr.reset.successSingle", "Erfolgreich Bestzeit für ${ChatColor.GREEN}{name} ${ChatColor.GRAY}von ${ChatColor.GREEN}{player} ${ChatColor.GRAY}entfernt")
         config.addDefault("messages.commands.jnr.reset.notFound", "${ChatColor.RED}Dieser Spieler hat keine Bestzeit!")
+        config.addDefault("messages.commands.jnr.reset.idNotNumeric", "${ChatColor.RED}Bitte gebe eine gültige ID an!")
         config.addDefault("messages.commands.top.invalid", "${ChatColor.RED}Du musst dich in einem Jump and Run befinden!")
         config.addDefault("messages.commands.top.empty", "${ChatColor.RED}Dieses Jump and Run hat noch keine Bestzeiten!")
         config.addDefault("messages.commands.top.header", "${ChatColor.YELLOW}Top 5 Zeiten für ${ChatColor.DARK_AQUA}{name}${ChatColor.YELLOW}:")

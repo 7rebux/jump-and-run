@@ -2,24 +2,17 @@
 
 package net.rebux.jumpandrun
 
-import net.minecraft.server.v1_8_R3.IChatBaseComponent.ChatSerializer
-import net.minecraft.server.v1_8_R3.PacketPlayOutChat
+import net.rebux.jumpandrun.api.PlayerData
 import net.rebux.jumpandrun.commands.*
 import net.rebux.jumpandrun.config.PluginConfig
 import net.rebux.jumpandrun.database.DatabaseConnector
 import net.rebux.jumpandrun.database.SchemaInitializer
 import net.rebux.jumpandrun.listeners.*
-import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.parkour.ParkourManager
-import net.rebux.jumpandrun.utils.TimeUtil
-import org.bukkit.Location
 import org.bukkit.command.CommandExecutor
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
-import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.Timer
-import java.util.TimerTask
+import java.util.UUID
 
 // Sadly this can't be an object due to bukkit implementation
 class Plugin : JavaPlugin() {
@@ -28,62 +21,41 @@ class Plugin : JavaPlugin() {
     private val config = PluginConfig()
     private val databaseConnector = DatabaseConnector()
     private val schemaInitializer = SchemaInitializer()
-
+    // TODO: This can be a object class
     val parkourManager = ParkourManager()
-    val active = hashMapOf<Player, Parkour>()
-    val checkpoints = hashMapOf<Player, Location>()
-    val tickCounters = hashMapOf<Player, Int>()
+    val playerData = hashMapOf<UUID, PlayerData>()
 
     override fun onEnable() {
-        // connect to database
         databaseConnector.connect()
         schemaInitializer.initialize()
-
-        // load data
         parkourManager.load()
 
-        // register listeners
         registerListeners(
-            ConnectionListener,
-            MovementListener,
-            InteractionListener,
-            CommandListener,
+            PlayerConnectionListener(this),
+            PlayerMoveListener(this),
+            PlayerInteractListener(this),
+            InventoryClickListener(this),
+            CommandPreprocessListener(),
         )
 
-        // register commands
-        registerCommands(mapOf(
-            "jumpandrun" to JumpAndRunCommand,
-            "top" to TopCommand
-        ))
-
-        // add bar scheduler
-        Timer().scheduleAtFixedRate(object: TimerTask() {
-            override fun run() {
-                active.keys.forEach { player ->
-                    val ticks = tickCounters[player] ?: 0
-                    val bar: String = template(
-                        "timer.bar",
-                        mapOf("time" to TimeUtil.ticksToTime(ticks))
-                    )
-
-                    (player as CraftPlayer).handle.playerConnection
-                        .sendPacket(PacketPlayOutChat(ChatSerializer.a("{\"text\":\"$bar\"}"), 2))
-                }
-            }
-        }, 0, 50)
+        registerCommands(
+            "jumpandrun" to JumpAndRunCommand(this),
+            "top" to TopCommand()
+        )
     }
 
     private fun registerListeners(vararg listener: Listener) {
         listener.forEach { server.pluginManager.registerEvents(it, this) }
     }
 
-    private fun registerCommands(commands: Map<String, CommandExecutor>) {
-        commands.forEach { this.getCommand(it.key).executor = it.value }
+    private fun registerCommands(vararg commands: Pair<String, CommandExecutor>) {
+        commands.forEach { this.getCommand(it.first).executor = it.second }
     }
 
     companion object {
         const val ID_TAG = "net.rebux.jumpandrun.id"
         const val PARKOUR_TAG = "net.rebux.jumpandrun.parkour"
         const val PAGE_TAG = "net.rebux.jumpandrun.page"
+        const val PAGE_STEP_TAG = "net.rebux.jumpandrun.page.step"
     }
 }

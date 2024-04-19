@@ -6,19 +6,26 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class ParkourManager {
 
-    val parkours = arrayListOf<Parkour>()
+    val parkours = hashMapOf<Int, Parkour>()
 
     fun load() = transaction {
-        parkours.addAll(ParkourEntity.all().map { parkourEntity ->
-            parkourEntity.toParkour().apply {
-                times.putAll(
-                    TimeEntity.all()
-                        .filter { it.parkour.id.value == this.id }
-                        .map { it.toMapEntry() }
-                )
+        ParkourEntity.all()
+            .map { entity ->
+                val parkour = entity.toParkour()
+                val parkourTimes = TimeEntity.all()
+                    .filter { time -> time.parkour.id.value == parkour.id }
+                    .map { time -> time.uuid to time.time }
+
+                parkour.times.putAll(parkourTimes)
+
+                return@map parkour
             }
-        })
+            .forEach { parkour ->
+                parkours[parkour.id] = parkour
+            }
     }
 
-    fun getParkourById(id: Int): Parkour? = parkours.find { it.id == id }
+    fun add(parkourEntity: ParkourEntity) {
+        parkours[parkourEntity.id.value] = parkourEntity.toParkour()
+    }
 }

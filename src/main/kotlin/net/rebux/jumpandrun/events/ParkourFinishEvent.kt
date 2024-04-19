@@ -5,9 +5,9 @@ import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
 /**
- * An [Event] that is being called when the [player] finishes a parkour
+ * An [Event] that is being called when a [player] finishes a parkour
  */
-class ParkourFinishEvent(val player: Player) : Event() {
+class ParkourFinishEvent(val player: Player, val ticks: Long) : Event() {
 
     @Override
     override fun getHandlers(): HandlerList {
@@ -17,7 +17,7 @@ class ParkourFinishEvent(val player: Player) : Event() {
     companion object {
         private val HANDLERS_LIST = HandlerList()
 
-        // required from bukkit to find event handlers
+        // Required from bukkit to find event handlers
         @Suppress("unused")
         @JvmStatic
         fun getHandlerList(): HandlerList {
