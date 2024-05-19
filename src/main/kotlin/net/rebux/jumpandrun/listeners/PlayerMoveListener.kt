@@ -32,6 +32,7 @@ class PlayerMoveListener(private val plugin: Plugin) : Listener {
 
         if (!timer.started && event.hasMoved()) {
             timer.start()
+            player.playSound(player.location, Sound.NOTE_PLING, 1.0F, 1.0F)
         }
 
         if (timer.started) {
@@ -45,10 +46,13 @@ class PlayerMoveListener(private val plugin: Plugin) : Listener {
         }
 
         when (player.location.block.getRelative(BlockFace.DOWN).type) {
+            // Reset
             Material.REDSTONE_BLOCK -> {
                 player.teleport(data.checkpoint)
                 player.msgTemplate("parkour.resetBlock")
+                player.playSound(player.location, Sound.SPIDER_DEATH, 1.0F, 1.0F)
             }
+            // Checkpoint
             Material.IRON_BLOCK -> {
                 if (data.checkpoint!!.block.location != blockLocation.block.location) {
                     blockLocation.yaw = player.location.yaw
@@ -59,6 +63,7 @@ class PlayerMoveListener(private val plugin: Plugin) : Listener {
                     player.playSound(player.location, Sound.ORB_PICKUP, 1.0F, 1.0F)
                 }
             }
+            // Finish
             Material.EMERALD_BLOCK -> data.parkour!!.finish(player)
             else -> {}
         }
