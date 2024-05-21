@@ -23,14 +23,14 @@ data class Parkour(
     val builder: String,
     val difficulty: ParkourDifficulty,
     val material: Material,
-    val location: Location,
+    val location: String,
     val times: HashMap<UUID, Long> = hashMapOf()
 ) {
     // TODO: Get rid of this
     private val plugin = Instance.plugin
 
     fun start(player: Player) {
-        player.teleport(location)
+        // player.teleport(location)
         player.gameMode = GameMode.ADVENTURE
 
         InventoryUtil.saveInventory(player)
@@ -41,7 +41,7 @@ data class Parkour(
 
         player.data.apply {
             parkour = this@Parkour
-            checkpoint = location
+            // checkpoint = location
         }
     }
 

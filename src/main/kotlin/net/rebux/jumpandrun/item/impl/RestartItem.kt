@@ -22,15 +22,15 @@ object RestartItem : Item() {
             .build()
     }
 
-    override fun onInteract(player: Player) {
-        if (!player.data.isInParkour()) {
-            return
-        }
-
-        val startLocation = player.data.parkour!!.location
-
-        player.data.checkpoint = startLocation
-        player.data.timer.stop()
-        player.teleport(startLocation)
-    }
+//    override fun onInteract(player: Player) {
+//        if (!player.data.isInParkour()) {
+//            return
+//        }
+//
+//        val startLocation = player.data.parkour!!.location
+//
+//        player.data.checkpoint = startLocation
+//        player.data.timer.stop()
+//        player.teleport(startLocation)
+//    }
 }

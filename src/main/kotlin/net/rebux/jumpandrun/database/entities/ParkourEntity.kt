@@ -1,5 +1,6 @@
 package net.rebux.jumpandrun.database.entities
 
+import net.rebux.jumpandrun.database.models.Locations.nullable
 import net.rebux.jumpandrun.database.models.Parkours
 import net.rebux.jumpandrun.parkour.Parkour
 import org.jetbrains.exposed.dao.IntEntity
@@ -12,7 +13,8 @@ class ParkourEntity(id: EntityID<Int>) : IntEntity(id) {
     var builder     by Parkours.builder
     var difficulty  by Parkours.difficulty
     var material    by Parkours.material
-    var location    by LocationEntity referencedOn Parkours.location
+    var location    by Parkours.location
+    var newLocation by Parkours.newLocation.nullable()
 
     fun toParkour() = Parkour(
         id.value,
@@ -20,14 +22,13 @@ class ParkourEntity(id: EntityID<Int>) : IntEntity(id) {
         builder,
         difficulty,
         material,
-        location.toLocation()
+        location
     )
 
     override fun delete() {
         TimeEntity.all()
             .filter { entity -> entity.parkour == this }
             .forEach(TimeEntity::delete)
-        location.delete()
 
         super.delete()
     }

@@ -10,5 +10,6 @@ object Parkours : IntIdTable() {
     val builder     = text("builder")
     val difficulty  = enumerationByName<ParkourDifficulty>("difficulty", 10)
     val material    = enumerationByName<Material>("material", 50)
-    val location    = reference("location", Locations)
+    val location    = text("location")
+    val newLocation = reference("newLocation", Locations)
 }
