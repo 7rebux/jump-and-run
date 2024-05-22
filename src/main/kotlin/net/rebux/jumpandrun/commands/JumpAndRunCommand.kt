@@ -83,7 +83,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
                 this.builder = args[1]
                 this.difficulty = difficulty
                 this.material = material
-                this.location = LocationEntity.ofLocation(sender.location)
+                this.location = "yes"
             }
 
             plugin.parkourManager.add(entity)
