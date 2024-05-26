@@ -22,7 +22,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
     override fun onCommand(
         sender: CommandSender,
         command: Command,
-        abel: String,
+        label: String,
         args: Array<String>
     ): Boolean {
         Bukkit.getScheduler().runTaskAsynchronously(plugin) {

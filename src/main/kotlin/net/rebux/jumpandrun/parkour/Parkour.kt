@@ -39,14 +39,14 @@ data class Parkour(
         player.inventory.setItem(1, ItemRegistry.getItemStack(RestartItem.id))
         player.inventory.setItem(8, ItemRegistry.getItemStack(LeaveItem.id))
 
-        player.data.apply {
+        player.data.parkourData.apply {
             parkour = this@Parkour
             checkpoint = location
         }
     }
 
     fun finish(player: Player) {
-        val ticksNeeded = player.data.timer.stop()
+        val ticksNeeded = player.data.parkourData.timer.stop()
         val globalBest = times.values.minOrNull()
 
         Bukkit.getPluginManager().callEvent(ParkourFinishEvent(player, ticksNeeded))

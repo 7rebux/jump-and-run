@@ -23,14 +23,17 @@ object RestartItem : Item() {
     }
 
     override fun onInteract(player: Player) {
-        if (!player.data.isInParkour()) {
+        // Prevent restarting parkour when in practice mode
+        if (player.data.isInPracticeMode()) {
+            // TODO: message template
+            player.sendMessage("Can't restart parkour while in practice mode")
             return
         }
 
-        val startLocation = player.data.parkour!!.location
+        val startLocation = player.data.parkourData.parkour!!.location
 
-        player.data.checkpoint = startLocation
-        player.data.timer.stop()
+        player.data.parkourData.checkpoint = startLocation
+        player.data.parkourData.timer.stop()
         player.teleport(startLocation)
     }
 }
