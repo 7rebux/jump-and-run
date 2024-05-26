@@ -29,7 +29,7 @@ class TopCommand : CommandExecutor {
         }
 
         val entries = if (args.getOrNull(0) == "all") 100 else 5
-        val parkour = sender.data.parkour!!
+        val parkour = sender.data.parkourData.parkour!!
 
         if (parkour.times.isEmpty()) {
             sender.msgTemplate("commands.top.empty")

@@ -15,7 +15,7 @@ class CommandPreprocessListener : Listener {
             return
         }
 
-        event.player.data.apply {
+        event.player.data.parkourData.apply {
             this.parkour = null
             this.checkpoint = null
             this.timer.stop()

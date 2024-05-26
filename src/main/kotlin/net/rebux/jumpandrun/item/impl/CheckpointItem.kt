@@ -21,8 +21,11 @@ object CheckpointItem : Item() {
     }
 
     override fun onInteract(player: Player) {
-        if (player.data.isInParkour()) {
-            player.teleport(player.data.checkpoint)
+        if (player.data.isInParkour() && !player.data.isInPracticeMode()) {
+            player.teleport(player.data.parkourData.checkpoint)
+        } else if (player.data.isInPracticeMode()) {
+            player.teleport(player.data.practiceData.startLocation)
+            player.data.practiceData.timer.stop()
         }
     }
 }
