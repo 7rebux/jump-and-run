@@ -4,6 +4,7 @@ import net.rebux.jumpandrun.Instance
 import net.rebux.jumpandrun.data
 import net.rebux.jumpandrun.item.Item
 import net.rebux.jumpandrun.item.ItemRegistry
+import net.rebux.jumpandrun.safeTeleport
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -22,7 +23,7 @@ object CheckpointItem : Item() {
 
     override fun onInteract(player: Player) {
         if (player.data.isInParkour()) {
-            player.teleport(player.data.checkpoint)
+            player.safeTeleport(player.data.checkpoint)
         }
     }
 }

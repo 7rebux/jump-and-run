@@ -42,13 +42,13 @@ class PlayerMoveListener(private val plugin: Plugin) : Listener {
         player.sendActionBar(template("timer.bar", mapOf("time" to TimeUtil.formatTicks(timer.ticks))))
 
         if (player.location.y <= plugin.config.getInt("resetHeight")) {
-            player.teleport(data.checkpoint!!)
+            player.safeTeleport(data.checkpoint)
         }
 
         when (player.location.block.getRelative(BlockFace.DOWN).type) {
             // Reset
             Material.REDSTONE_BLOCK -> {
-                player.teleport(data.checkpoint)
+                player.safeTeleport(data.checkpoint)
                 player.msgTemplate("parkour.resetBlock")
                 player.playSound(player.location, Sound.SPIDER_DEATH, 1.0F, 1.0F)
             }
