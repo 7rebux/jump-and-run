@@ -8,6 +8,7 @@ import net.rebux.jumpandrun.item.impl.CheckpointItem
 import net.rebux.jumpandrun.item.impl.LeaveItem
 import net.rebux.jumpandrun.item.impl.RestartItem
 import net.rebux.jumpandrun.item.ItemRegistry
+import net.rebux.jumpandrun.item.impl.HiderItem
 import net.rebux.jumpandrun.utils.InventoryUtil
 import net.rebux.jumpandrun.utils.TimeUtil
 import org.bukkit.*
@@ -37,6 +38,7 @@ data class Parkour(
         player.inventory.clear()
         player.inventory.setItem(0, ItemRegistry.getItemStack(CheckpointItem.id))
         player.inventory.setItem(1, ItemRegistry.getItemStack(RestartItem.id))
+        player.inventory.setItem(4, ItemRegistry.getItemStack(HiderItem.id))
         player.inventory.setItem(8, ItemRegistry.getItemStack(LeaveItem.id))
 
         player.data.apply {
