@@ -30,7 +30,7 @@ data class Parkour(
     private val plugin = Instance.plugin
 
     fun start(player: Player) {
-        player.teleport(location)
+        player.safeTeleport(location)
         player.gameMode = GameMode.ADVENTURE
 
         InventoryUtil.saveInventory(player)

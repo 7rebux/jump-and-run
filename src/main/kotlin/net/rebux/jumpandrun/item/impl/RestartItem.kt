@@ -4,6 +4,7 @@ import net.rebux.jumpandrun.Instance
 import net.rebux.jumpandrun.data
 import net.rebux.jumpandrun.item.Item
 import net.rebux.jumpandrun.item.ItemRegistry
+import net.rebux.jumpandrun.safeTeleport
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -31,6 +32,6 @@ object RestartItem : Item() {
 
         player.data.checkpoint = startLocation
         player.data.timer.stop()
-        player.teleport(startLocation)
+        player.safeTeleport(startLocation)
     }
 }

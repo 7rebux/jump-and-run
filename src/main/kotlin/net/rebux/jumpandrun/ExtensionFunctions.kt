@@ -4,6 +4,7 @@ import net.minecraft.server.v1_8_R3.IChatBaseComponent
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.Location
 import org.bukkit.command.CommandSender
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
 import org.bukkit.entity.Player
@@ -54,4 +55,9 @@ fun Player.sendActionBar(text: String) {
 
 fun PlayerMoveEvent.hasMoved(): Boolean {
     return this.from.x != this.to.x || this.from.y != this.to.y || this.from.z != this.to.z
+}
+
+fun Player.safeTeleport(location: Location?) {
+    player.fallDistance = 0.0F
+    player.teleport(location)
 }
