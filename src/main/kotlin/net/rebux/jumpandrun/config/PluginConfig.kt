@@ -77,7 +77,6 @@ class PluginConfig {
         config.addDefault("items.checkpoint", "${ChatColor.RED}Zurück zum Checkpoint")
         config.addDefault("items.restart", "${ChatColor.RED}Neustart")
         config.addDefault("items.leave", "${ChatColor.RED}Verlassen ${ChatColor.GRAY}(/spawn)")
-        config.addDefault("items.hider", "${ChatColor.RED}Spieler anzeigen/verstecken")
 
         save()
     }
