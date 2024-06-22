@@ -2,7 +2,6 @@ package net.rebux.jumpandrun.listeners
 
 import net.rebux.jumpandrun.data
 import net.rebux.jumpandrun.utils.InventoryUtil
-import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -24,7 +23,5 @@ class CommandPreprocessListener : Listener {
 
         event.player.gameMode = GameMode.SURVIVAL
         InventoryUtil.loadInventory(event.player)
-
-        Bukkit.getOnlinePlayers().forEach(event.player::showPlayer)
     }
 }

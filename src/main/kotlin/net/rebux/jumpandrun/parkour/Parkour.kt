@@ -45,10 +45,6 @@ data class Parkour(
             parkour = this@Parkour
             checkpoint = location
         }
-
-        if (player.data.playersHidden) {
-            Bukkit.getOnlinePlayers().forEach(player::hidePlayer)
-        }
     }
 
     fun finish(player: Player) {
