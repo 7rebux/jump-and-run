@@ -29,6 +29,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
     implementation("org.slf4j:slf4j-nop:2.0.3")
+    implementation("org.mariadb.jdbc:mariadb-java-client:3.4.0")
 
     shadow("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 }

@@ -20,8 +20,7 @@ class DatabaseConnector {
 
     fun connect() {
         Database.connect(
-            "jdbc:mysql://${credentials.host}:${credentials.port}/${credentials.name}?characterEncoding=utf8",
-            driver = "com.mysql.jdbc.Driver",
+            "jdbc:mariadb://${credentials.host}:${credentials.port}/${credentials.name}?characterEncoding=utf8",
             user = credentials.user ?: "root",
             password = credentials.pass ?: ""
         )
