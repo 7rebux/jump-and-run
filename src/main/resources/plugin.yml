@@ -2,9 +2,12 @@ name: JumpAndRun
 version: 2.1
 author: Rebux
 description: Jump and Run Plugin
+
 main: net.rebux.jumpandrun.Plugin
-softdepend:
-  - Multiverse-Core
+
+# This is only here to make sure this plugin is loaded after Multiverse-Core
+# It is not a direct dependency
+softdepend: [Multiverse-Core]
 
 commands:
   jumpandrun:

@@ -25,7 +25,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
         abel: String,
         args: Array<String>
     ): Boolean {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin) { ->
             when (args.firstOrNull()?.lowercase()) {
                 "list" -> handleListCommand(sender)
                 "add" -> handleAddCommand(sender, args.copyOfRange(1, args.size))
@@ -159,7 +159,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
                 sender.msgTemplate(
                     "commands.jnr.reset.successSingle", mapOf(
                         "name" to parkour.name,
-                        "player" to Bukkit.getOfflinePlayer(timeEntity.uuid).name
+                        "player" to Bukkit.getOfflinePlayer(timeEntity.uuid).name!!
                     )
                 )
             }

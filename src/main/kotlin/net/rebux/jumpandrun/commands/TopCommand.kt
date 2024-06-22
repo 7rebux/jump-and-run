@@ -47,7 +47,7 @@ class TopCommand : CommandExecutor {
             .forEachIndexed { i, (time, records) ->
                 sender.msgTemplate("commands.top.time", mapOf(
                     "rank" to i + 1,
-                    "player" to records.joinToString(", ") { Bukkit.getOfflinePlayer(it.key).name },
+                    "player" to records.joinToString(", ") { Bukkit.getOfflinePlayer(it.key).name!! },
                     "time" to TimeUtil.formatTicks(time),
                     "delta" to formatDelta(time, bestTime)
                 ))

@@ -59,14 +59,14 @@ data class Parkour(
             // First global best
             if (globalBest == null) {
                 player.msgTemplate("parkour.firstGlobalBest")
-                player.playSound(player.location, Sound.LEVEL_UP, 1.0F, 1.0F)
+                player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F)
             }
             // New global best
             else if (ticksNeeded < globalBest) {
                 val delta = globalBest - ticksNeeded
                 val holders = times.entries
                     .filter { it.value == globalBest }
-                    .joinToString(", ") { Bukkit.getOfflinePlayer(it.key).name }
+                    .joinToString(", ") { Bukkit.getOfflinePlayer(it.key).name!! }
 
                 msgTemplateGlobal("parkour.globalBest", mapOf(
                     "player" to player.name,
@@ -75,17 +75,17 @@ data class Parkour(
                     "time" to TimeUtil.formatTicks(delta))
                 )
                 Bukkit.getOnlinePlayers().forEach { onlinePlayer ->
-                    onlinePlayer.playSound(player.location, Sound.ANVIL_LAND, 1.0F, 1.0F)
+                    onlinePlayer.playSound(player.location, Sound.BLOCK_ANVIL_LAND, 1.0F, 1.0F)
                 }
             }
             // New personal best
             else {
                 player.msgTemplate("parkour.personalBest")
-                player.playSound(player.location, Sound.LEVEL_UP, 1.0F, 1.0F)
+                player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F)
             }
 
             // TODO: Extract this?
-            Bukkit.getScheduler().runTaskAsynchronously(plugin) {
+            Bukkit.getScheduler().runTaskAsynchronously(plugin) { ->
                 transaction {
                     TimeEntity.all()
                         .find { it.parkour.id.value == this@Parkour.id && it.uuid == player.uniqueId }

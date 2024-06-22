@@ -49,7 +49,7 @@ class Plugin : JavaPlugin() {
     }
 
     private fun registerCommands(vararg commands: Pair<String, CommandExecutor>) {
-        commands.forEach { this.getCommand(it.first).executor = it.second }
+        commands.forEach { this.getCommand(it.first)!!.setExecutor(it.second) }
     }
 
     companion object {

@@ -31,11 +31,11 @@ abstract class Item {
 
         fun build(): ItemStack {
             val itemStack = ItemStack(material)
-            val itemMeta = itemStack.itemMeta
+            val itemMeta = itemStack.itemMeta!!
 
-            durability?.let { itemStack.durability = it }
-            displayName?.let { itemMeta.displayName = it }
-            lore?.let { itemMeta.lore = it }
+            durability?.let(itemStack::setDurability)
+            displayName?.let(itemMeta::setDisplayName)
+            lore?.let(itemMeta::setLore)
 
             itemStack.itemMeta = itemMeta
 
@@ -53,11 +53,11 @@ abstract class Item {
         fun username(username: String) = apply { this.username = username }
 
         fun build(): ItemStack {
-            val itemStack = ItemStack(Material.SKULL_ITEM, 1, 3)
+            val itemStack = ItemStack(Material.PLAYER_HEAD, 1, 3)
             val itemMeta = itemStack.itemMeta as SkullMeta
 
-            displayName?.let { itemMeta.displayName = it }
-            username?.let { itemMeta.owner = it }
+            displayName?.let(itemMeta::setDisplayName)
+            username?.let(itemMeta::setOwner)
 
             itemStack.itemMeta = itemMeta
 

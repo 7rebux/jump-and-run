@@ -15,7 +15,7 @@ object InventoryUtil {
                     continue
                 }
 
-                this[i] = player.inventory.getItem(i).clone()
+                this[i] = player.inventory.getItem(i)!!.clone()
             }
         }
     }

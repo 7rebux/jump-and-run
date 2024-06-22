@@ -1,5 +1,6 @@
 package net.rebux.jumpandrun.item.impl
 
+import de.tr7zw.changeme.nbtapi.NBT
 import net.rebux.jumpandrun.Instance
 import net.rebux.jumpandrun.Plugin
 import net.rebux.jumpandrun.item.Item
@@ -10,7 +11,6 @@ import net.rebux.jumpandrun.utils.TimeUtil
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -29,7 +29,7 @@ object MenuItem : Item() {
     override fun createItemStack(): ItemStack {
         return Builder()
             .material(Material.PAPER)
-            .displayName(plugin.config.getString("items.menu"))
+            .displayName(plugin.config.getString("items.menu")!!)
             .build()
     }
 
@@ -81,7 +81,7 @@ object MenuItem : Item() {
         player.openInventory(inventory)
     }
 
-    private fun Parkour.buildItem(player: Player): CraftItemStack {
+    private fun Parkour.buildItem(player: Player): ItemStack {
         val playerTime = this.times[player.uniqueId]
         val bestTime = this.times.values.minOrNull()
         val playersWithBestTime = this.times.entries
@@ -123,7 +123,7 @@ object MenuItem : Item() {
                 add(template("menu.globalBest.time", mapOf("time" to TimeUtil.formatTicks(bestTime))))
                 add(template("menu.globalBest.subtitle"))
                 playersWithBestTime.forEach { player ->
-                    add(template("menu.globalBest.player", mapOf("player" to player.name)))
+                    add(template("menu.globalBest.player", mapOf("player" to player.name!!)))
                 }
             } else {
                 add(template("menu.noTime"))
@@ -139,17 +139,17 @@ object MenuItem : Item() {
         if (playerTime != null) {
             val itemMeta = itemStack.itemMeta
 
-            itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+            itemMeta!!.addItemFlags(ItemFlag.HIDE_ENCHANTS)
             itemStack.addUnsafeEnchantment(Enchantment.KNOCKBACK, 10)
 
             itemStack.itemMeta = itemMeta
         }
 
-        val nmsCopy = CraftItemStack.asNMSCopy(itemStack)
+        NBT.modify(itemStack) { nbt ->
+            nbt.setInteger(Plugin.PARKOUR_TAG, this.id)
+        }
 
-        nmsCopy.tag.setInt(Plugin.PARKOUR_TAG, this.id)
-
-        return CraftItemStack.asCraftMirror(nmsCopy)
+        return itemStack
     }
 
     private enum class PaginationType(
@@ -161,17 +161,18 @@ object MenuItem : Item() {
         Previous("MHF_ArrowLeft", template("items.nextPage"), -1),
     }
 
-    private fun buildPaginationItem(type: PaginationType, page: Int): CraftItemStack {
+    private fun buildPaginationItem(type: PaginationType, page: Int): ItemStack {
         val itemStack = SkullBuilder()
             .displayName(type.displayName)
             .username(type.skullName)
             .build()
-        val nmsCopy = CraftItemStack.asNMSCopy(itemStack)
 
-        nmsCopy.tag.setInt(Plugin.PAGE_TAG, page)
-        nmsCopy.tag.setInt(Plugin.PAGE_STEP_TAG, type.step)
+        NBT.modify(itemStack) { nbt ->
+            nbt.setInteger(Plugin.PAGE_TAG, page)
+            nbt.setInteger(Plugin.PAGE_STEP_TAG, type.step)
+        }
 
-        return CraftItemStack.asCraftMirror(nmsCopy)
+        return itemStack
     }
 
     private fun countParkoursPlayed(player: Player): Int {

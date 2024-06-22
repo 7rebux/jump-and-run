@@ -1,12 +1,9 @@
 package net.rebux.jumpandrun
 
-import net.minecraft.server.v1_8_R3.IChatBaseComponent
-import net.minecraft.server.v1_8_R3.PacketPlayOutChat
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerMoveEvent
 import java.util.logging.Level
@@ -47,17 +44,24 @@ fun msgTemplateGlobal(name: String, values: Map<String, Any> = mapOf()) {
     Bukkit.broadcastMessage("$prefix ${template("messages.$name", values)}")
 }
 
-fun Player.sendActionBar(text: String) {
-    (this as CraftPlayer).handle.playerConnection.sendPacket(
-        PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\":\"$text\"}"), 2)
-    )
-}
+// 1.8 Action Bar
+//fun Player.sendActionBar(text: String) {
+//    (this as CraftPlayer).handle.playerConnection.sendPacket(
+//        PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\":\"$text\"}"), 2)
+//    )
+//}
 
 fun PlayerMoveEvent.hasMoved(): Boolean {
-    return this.from.x != this.to.x || this.from.y != this.to.y || this.from.z != this.to.z
+    if (this.to == null) {
+        return false
+    }
+
+    return this.from.x != this.to!!.x
+      || this.from.y != this.to!!.y
+      || this.from.z != this.to!!.z
 }
 
-fun Player.safeTeleport(location: Location?) {
-    player.fallDistance = 0.0F
-    player.teleport(location)
+fun Player.safeTeleport(location: Location) {
+    this.fallDistance = 0.0F
+    this.teleport(location)
 }

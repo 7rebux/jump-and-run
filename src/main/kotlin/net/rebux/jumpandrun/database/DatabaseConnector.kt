@@ -10,9 +10,9 @@ class DatabaseConnector {
 
     init {
         credentials = DatabaseCredentials(
-            plugin.config.getString("database.host"),
-            plugin.config.getString("database.port"),
-            plugin.config.getString("database.name"),
+            plugin.config.getString("database.host")!!,
+            plugin.config.getString("database.port")!!,
+            plugin.config.getString("database.name")!!,
             plugin.config.getString("database.user"),
             plugin.config.getString("database.pass")
         )

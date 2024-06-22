@@ -15,15 +15,15 @@ object CheckpointItem : Item() {
 
     override fun createItemStack(): ItemStack {
         return Builder()
-            .material(Material.INK_SACK)
+            .material(Material.INK_SAC)
             .durability(1)
-            .displayName(Instance.plugin.config.getString("items.checkpoint"))
+            .displayName(Instance.plugin.config.getString("items.checkpoint")!!)
             .build()
     }
 
     override fun onInteract(player: Player) {
         if (player.data.isInParkour()) {
-            player.safeTeleport(player.data.checkpoint)
+            player.safeTeleport(player.data.checkpoint!!)
         }
     }
 }

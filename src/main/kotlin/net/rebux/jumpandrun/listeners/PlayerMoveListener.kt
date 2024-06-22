@@ -1,6 +1,7 @@
 package net.rebux.jumpandrun.listeners
 
 import net.rebux.jumpandrun.*
+import net.rebux.jumpandrun.utils.ActionBarUtil.sendActionBar
 import net.rebux.jumpandrun.utils.TimeUtil
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -32,7 +33,8 @@ class PlayerMoveListener(private val plugin: Plugin) : Listener {
 
         if (!timer.started && event.hasMoved()) {
             timer.start()
-            player.playSound(player.location, Sound.NOTE_PLING, 1.0F, 1.0F)
+            // TODO: Does this still work in 1.8?
+            player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_PLING, 1.0F, 1.0F)
         }
 
         if (timer.started) {
@@ -42,15 +44,15 @@ class PlayerMoveListener(private val plugin: Plugin) : Listener {
         player.sendActionBar(template("timer.bar", mapOf("time" to TimeUtil.formatTicks(timer.ticks))))
 
         if (player.location.y <= plugin.config.getInt("resetHeight")) {
-            player.safeTeleport(data.checkpoint)
+            player.safeTeleport(data.checkpoint!!)
         }
 
         when (player.location.block.getRelative(BlockFace.DOWN).type) {
             // Reset
             Material.REDSTONE_BLOCK -> {
-                player.safeTeleport(data.checkpoint)
+                player.safeTeleport(data.checkpoint!!)
                 player.msgTemplate("parkour.resetBlock")
-                player.playSound(player.location, Sound.SPIDER_DEATH, 1.0F, 1.0F)
+                player.playSound(player.location, Sound.ENTITY_SPIDER_DEATH, 1.0F, 1.0F)
             }
             // Checkpoint
             Material.IRON_BLOCK -> {
@@ -60,7 +62,7 @@ class PlayerMoveListener(private val plugin: Plugin) : Listener {
                     data.checkpoint = blockLocation
 
                     player.msgTemplate("parkour.checkpoint")
-                    player.playSound(player.location, Sound.ORB_PICKUP, 1.0F, 1.0F)
+                    player.playSound(player.location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F)
                 }
             }
             // Finish

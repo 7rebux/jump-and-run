@@ -19,7 +19,7 @@ object RestartItem : Item() {
     override fun createItemStack(): ItemStack {
         return Builder()
             .material(Material.REDSTONE)
-            .displayName(plugin.config.getString("items.restart"))
+            .displayName(plugin.config.getString("items.restart")!!)
             .build()
     }
 

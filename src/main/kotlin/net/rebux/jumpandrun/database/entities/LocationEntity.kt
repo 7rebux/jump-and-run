@@ -30,7 +30,7 @@ class LocationEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<LocationEntity>(Locations) {
 
         fun ofLocation(location: Location) = new {
-            world = location.world.name
+            world = location.world!!.name
             x = location.x
             y = location.y
             z = location.z

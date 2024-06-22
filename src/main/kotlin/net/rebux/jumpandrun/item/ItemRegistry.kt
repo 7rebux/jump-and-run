@@ -1,8 +1,7 @@
 package net.rebux.jumpandrun.item
 
-import net.minecraft.server.v1_8_R3.NBTTagCompound
+import de.tr7zw.changeme.nbtapi.NBT
 import net.rebux.jumpandrun.Plugin
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.ConcurrentHashMap
@@ -23,24 +22,24 @@ object ItemRegistry {
         }
     }
 
+    // TODO: Use let expression
     fun onInteract(itemStack: ItemStack, player: Player) {
-        val tag = CraftItemStack.asNMSCopy(itemStack)?.tag
-            ?: return
+        val id: Int? = NBT.get<Int>(itemStack) { nbt -> nbt.getInteger(Plugin.ID_TAG) }
 
-        if (tag.hasKey(Plugin.ID_TAG)) {
-            items[tag.getInt(Plugin.ID_TAG)]?.onInteract(player)
+        if (id != null) {
+            items[id]?.onInteract(player)
         }
     }
 
     fun getItemStack(id: Int): ItemStack {
         return itemStacks.getOrPut(id) {
             val itemStack = items[id]!!.createItemStack()
-            val nmsCopy = CraftItemStack.asNMSCopy(itemStack)
 
-            nmsCopy.tag = nmsCopy.tag ?: NBTTagCompound()
-            nmsCopy.tag.setInt(Plugin.ID_TAG, id)
+            NBT.modify(itemStack) { nbt ->
+                nbt.setInteger(Plugin.ID_TAG, id)
+            }
 
-            return@getOrPut CraftItemStack.asCraftMirror(nmsCopy)
+            return@getOrPut itemStack
         }
     }
 }
