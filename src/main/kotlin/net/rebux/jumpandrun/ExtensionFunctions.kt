@@ -70,6 +70,6 @@ fun Player.safeTeleport(location: Location) {
 
 fun ItemStack.getTag(name: String): Int? {
   return NBT.get<Int?>(this) { nbt ->
-    nbt.getOrNull(name, Int.javaClass)
+    nbt.getOrNull(name, Integer.TYPE)
   }
 }
