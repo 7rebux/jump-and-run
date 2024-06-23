@@ -4,7 +4,7 @@ import org.bukkit.entity.Player
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
-object InventoryUtil {
+object InventoryCache {
 
     private val inventories = hashMapOf<Player, Map<Int, ItemStack>>()
 

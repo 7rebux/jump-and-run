@@ -1,7 +1,7 @@
 package net.rebux.jumpandrun.listeners
 
 import net.rebux.jumpandrun.data
-import net.rebux.jumpandrun.utils.InventoryUtil
+import net.rebux.jumpandrun.utils.InventoryCache
 import org.bukkit.GameMode
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -22,6 +22,6 @@ class CommandPreprocessListener : Listener {
         }
 
         event.player.gameMode = GameMode.SURVIVAL
-        InventoryUtil.loadInventory(event.player)
+        InventoryCache.loadInventory(event.player)
     }
 }

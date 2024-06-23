@@ -17,45 +17,47 @@ import java.util.UUID
 // Sadly this can't be an object due to bukkit implementation
 class Plugin : JavaPlugin() {
 
-    private val instance = Instance(this)
-    private val config = PluginConfig()
-    private val databaseConnector = DatabaseConnector()
-    private val schemaInitializer = SchemaInitializer()
-    // TODO: This can be a object class
-    val parkourManager = ParkourManager()
-    val playerData = hashMapOf<UUID, PlayerData>()
+  private val instance = Instance(this)
+  private val config = PluginConfig()
+  private val databaseConnector = DatabaseConnector()
+  private val schemaInitializer = SchemaInitializer()
+  // TODO: This can be a object class
+  val parkourManager = ParkourManager()
+  val playerData = hashMapOf<UUID, PlayerData>()
 
-    override fun onEnable() {
-        databaseConnector.connect()
-        schemaInitializer.initialize()
-        parkourManager.load()
+  override fun onEnable() {
+    databaseConnector.connect()
+    schemaInitializer.initialize()
+    parkourManager.load()
 
-        registerListeners(
-            PlayerConnectionListener(this),
-            PlayerMoveListener(this),
-            PlayerInteractListener(this),
-            InventoryClickListener(this),
-            CommandPreprocessListener(),
-        )
+    registerListeners(
+      PlayerConnectionListener(this),
+      PlayerMoveListener(this),
+      PlayerInteractListener(this),
+      InventoryClickListener(this),
+      CommandPreprocessListener(),
+      ParkourFinishListener(this),
+      ParkourJoinListener(),
+    )
 
-        registerCommands(
-            "jumpandrun" to JumpAndRunCommand(this),
-            "top" to TopCommand()
-        )
-    }
+    registerCommands(
+      "jumpandrun" to JumpAndRunCommand(this),
+      "top" to TopCommand()
+    )
+  }
 
-    private fun registerListeners(vararg listener: Listener) {
-        listener.forEach { server.pluginManager.registerEvents(it, this) }
-    }
+  private fun registerListeners(vararg listener: Listener) {
+    listener.forEach { server.pluginManager.registerEvents(it, this) }
+  }
 
-    private fun registerCommands(vararg commands: Pair<String, CommandExecutor>) {
-        commands.forEach { this.getCommand(it.first)!!.setExecutor(it.second) }
-    }
+  private fun registerCommands(vararg commands: Pair<String, CommandExecutor>) {
+    commands.forEach { this.getCommand(it.first)!!.setExecutor(it.second) }
+  }
 
-    companion object {
-        const val ID_TAG = "net.rebux.jumpandrun.id"
-        const val PARKOUR_TAG = "net.rebux.jumpandrun.parkour"
-        const val PAGE_TAG = "net.rebux.jumpandrun.page"
-        const val PAGE_STEP_TAG = "net.rebux.jumpandrun.page.step"
-    }
+  companion object {
+    const val ID_TAG = "net.rebux.jumpandrun.id"
+    const val PARKOUR_TAG = "net.rebux.jumpandrun.parkour"
+    const val PAGE_TAG = "net.rebux.jumpandrun.page"
+    const val PAGE_STEP_TAG = "net.rebux.jumpandrun.page.step"
+  }
 }

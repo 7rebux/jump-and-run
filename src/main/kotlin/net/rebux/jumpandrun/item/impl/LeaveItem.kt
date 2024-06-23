@@ -11,17 +11,17 @@ import org.bukkit.inventory.ItemStack
 
 object LeaveItem : Item() {
 
-    val id = ItemRegistry.register(this)
+  val id = ItemRegistry.register(this)
 
-    override fun createItemStack(): ItemStack {
-        return Builder()
-            .material(Material.GRAY_DYE)
-            .displayName(Instance.plugin.config.getString("items.leave")!!)
-            .build()
-    }
+  override fun createItemStack(): ItemStack {
+    return Builder()
+      .material(Material.GRAY_DYE)
+      .displayName(Instance.plugin.config.getString("items.leave")!!)
+      .build()
+  }
 
-    override fun onInteract(player: Player) {
-        player.performCommand("spawn")
-        Bukkit.getPluginManager().callEvent(PlayerCommandPreprocessEvent(player, "/spawn"))
-    }
+  override fun onInteract(player: Player) {
+    player.performCommand("spawn")
+    Bukkit.getPluginManager().callEvent(PlayerCommandPreprocessEvent(player, "/spawn"))
+  }
 }
