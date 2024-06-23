@@ -15,8 +15,7 @@ object CheckpointItem : Item() {
 
     override fun createItemStack(): ItemStack {
         return Builder()
-            .material(Material.INK_SAC)
-            .durability(1)
+            .material(Material.RED_DYE)
             .displayName(Instance.plugin.config.getString("items.checkpoint")!!)
             .build()
     }

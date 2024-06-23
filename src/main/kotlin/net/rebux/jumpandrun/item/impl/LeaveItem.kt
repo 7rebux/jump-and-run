@@ -15,8 +15,7 @@ object LeaveItem : Item() {
 
     override fun createItemStack(): ItemStack {
         return Builder()
-            .material(Material.INK_SAC)
-            .durability(8)
+            .material(Material.GRAY_DYE)
             .displayName(Instance.plugin.config.getString("items.leave")!!)
             .build()
     }
