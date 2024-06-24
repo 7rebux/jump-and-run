@@ -1,7 +1,7 @@
 package net.rebux.jumpandrun.item.impl
 
+import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.Instance
-import net.rebux.jumpandrun.data
 import net.rebux.jumpandrun.item.Item
 import net.rebux.jumpandrun.item.ItemRegistry
 import net.rebux.jumpandrun.msgTemplate
@@ -17,7 +17,7 @@ object HiderItem : Item() {
   override fun createItemStack(): ItemStack {
     return Builder()
       .material(Material.STICK)
-      .displayName(Instance.plugin.config.getString("items.hider"))
+      .displayName(Instance.plugin.config.getString("items.hider")!!)
       .build()
   }
 

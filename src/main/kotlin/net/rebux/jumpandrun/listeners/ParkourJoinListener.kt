@@ -4,10 +4,12 @@ import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.events.ParkourJoinEvent
 import net.rebux.jumpandrun.item.ItemRegistry
 import net.rebux.jumpandrun.item.impl.CheckpointItem
+import net.rebux.jumpandrun.item.impl.HiderItem
 import net.rebux.jumpandrun.item.impl.LeaveItem
 import net.rebux.jumpandrun.item.impl.RestartItem
 import net.rebux.jumpandrun.safeTeleport
 import net.rebux.jumpandrun.utils.InventoryCache
+import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -39,6 +41,11 @@ class ParkourJoinListener : Listener {
     player.inventory.clear()
     player.inventory.setItem(0, ItemRegistry.getItemStack(CheckpointItem.id))
     player.inventory.setItem(1, ItemRegistry.getItemStack(RestartItem.id))
+    player.inventory.setItem(4, ItemRegistry.getItemStack(HiderItem.id))
     player.inventory.setItem(8, ItemRegistry.getItemStack(LeaveItem.id))
+
+    if (player.data.playersHidden) {
+      Bukkit.getOnlinePlayers().forEach(player::hidePlayer)
+    }
   }
 }
