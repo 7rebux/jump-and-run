@@ -1,0 +1,28 @@
+# Outside of parkour
+menu:
+  enabled: true
+  name: '§bParkours'
+  material: 'PAPER'
+  slot: 4
+
+# While in parkour
+restart:
+  enabled: true
+  name: '§cRestart'
+  material: 'REDSTONE'
+  slot: 0
+reset:
+  enabled: true
+  name: '§cBack to checkpoint'
+  material: 'RED_DYE'
+  slot: 1
+hider:
+  enabled: true
+  name: '§cShow/Hide others'
+  material: 'STICK'
+  slot: 4
+leave:
+  enabled: true
+  name: '§cLeave §7(/spawn)'
+  material: 'GRAY_DYE'
+  slot: 8

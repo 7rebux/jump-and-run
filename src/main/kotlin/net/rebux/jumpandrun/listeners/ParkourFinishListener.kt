@@ -53,7 +53,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
         val ticksDelta = globalBest - ticks
         val previousHolders = parkour.times.entries
           .filter { it.value == globalBest }
-          .mapNotNull { Bukkit.getOfflinePlayer(it.key) }
+          .mapNotNull { Bukkit.getOfflinePlayer(it.key).name }
           .joinToString(", ")
 
         msgTemplateGlobal("parkour.globalBest", mapOf(

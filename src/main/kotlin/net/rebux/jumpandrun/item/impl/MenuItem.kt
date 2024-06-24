@@ -4,35 +4,24 @@ import de.tr7zw.changeme.nbtapi.NBT
 import net.rebux.jumpandrun.Instance
 import net.rebux.jumpandrun.Plugin
 import net.rebux.jumpandrun.item.Item
-import net.rebux.jumpandrun.item.ItemRegistry
 import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.parkour.ParkourManager
 import net.rebux.jumpandrun.template
 import net.rebux.jumpandrun.utils.TickFormatter
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
-import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
-object MenuItem : Item() {
-
-  val id = ItemRegistry.register(this)
+object MenuItem : Item("menu") {
 
   // TODO: get rid of plugin
   private val plugin = Instance.plugin
   private val parkours: List<Parkour>
     get() = ParkourManager.parkours.values.sortedBy(Parkour::difficulty)
-
-  override fun createItemStack(): ItemStack {
-    return Builder()
-      .material(Material.PAPER)
-      .displayName(plugin.config.getString("items.menu")!!)
-      .build()
-  }
 
   override fun onInteract(player: Player) {
     openInventory(player, 0)

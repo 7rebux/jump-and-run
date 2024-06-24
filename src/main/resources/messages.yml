@@ -1,0 +1,9 @@
+prefix: '§7[§eParkour§7]'
+
+# Parkour events
+event:
+  checkpoint: 'You reached a new checkpoint!'
+
+# Commands
+command:
+  top:

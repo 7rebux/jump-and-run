@@ -3,6 +3,8 @@
 package net.rebux.jumpandrun
 
 import net.rebux.jumpandrun.commands.*
+import net.rebux.jumpandrun.config.ItemsConfig
+import net.rebux.jumpandrun.config.MessagesConfig
 import net.rebux.jumpandrun.config.PluginConfig
 import net.rebux.jumpandrun.database.DatabaseConnector
 import net.rebux.jumpandrun.database.SchemaInitializer
@@ -21,9 +23,15 @@ class Plugin : JavaPlugin() {
 
   @Override
   override fun onEnable() {
-    databaseConnector.connect()
+    this.logger.info("Loading configurations...")
+    MessagesConfig.createOrLoad(this)
+    ItemsConfig.createOrLoad(this)
 
+    this.logger.info("Connecting to database...")
+    databaseConnector.connect()
     SchemaInitializer.initialize()
+
+    this.logger.info("Loading parkours from database...")
     ParkourManager.load()
 
     registerListeners(

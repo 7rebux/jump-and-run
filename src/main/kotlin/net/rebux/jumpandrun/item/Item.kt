@@ -1,5 +1,6 @@
 package net.rebux.jumpandrun.item
 
+import net.rebux.jumpandrun.config.ItemsConfig
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -8,11 +9,33 @@ import org.bukkit.inventory.meta.SkullMeta
 /**
  * A wrapper class that contains a [ItemStack] and an interact event
  */
-abstract class Item {
+// TODO: Config error handling
+abstract class Item(private val configName: String) {
 
-  abstract fun createItemStack(): ItemStack
+  private val itemsConfig = ItemsConfig.config
+
+  val id = ItemRegistry.register(this)
+  val enabled = itemsConfig.getBoolean("$configName.enabled")
+  val name = itemsConfig.getString("$configName.name")!!
+  val material = itemsConfig.getString("$configName.material")!!
+  val slot = itemsConfig.getInt("$configName.slot")
 
   open fun onInteract(player: Player) { }
+
+  fun createItemStack(): ItemStack {
+    return Builder()
+      .displayName(name)
+      .material(Material.getMaterial(material)!!)
+      .build()
+  }
+
+  fun addToInventory(player: Player) {
+    if (!enabled) {
+      return
+    }
+
+    player.inventory.setItem(slot, ItemRegistry.getItemStack(id))
+  }
 
   data class Builder(
     private var material: Material = Material.AIR,
