@@ -38,6 +38,8 @@ class PluginConfig {
     config.addDefault("messages.commands.playersOnly", "${ChatColor.RED}Dieser Befehl kann nur als Spieler ausgeführt werden!")
     config.addDefault("messages.commands.jnr.list.empty", "Es sind ${ChatColor.RED}keine ${ChatColor.GRAY}Jump and Runs vorhanden!")
     config.addDefault("messages.commands.jnr.list.full", "Es wurden ${ChatColor.GREEN}{size} ${ChatColor.GRAY}Jump and Runs gefunden:")
+    config.addDefault("messages.commands.jnr.join.inParkour", "${ChatColor.RED}Du befindest dich bereits in einem Jump and Run!")
+    config.addDefault("messages.commands.jnr.join.notFound", "${ChatColor.RED}Dieses Jump and Run existiert nicht!")
     config.addDefault("messages.commands.jnr.add.success", "Jump and Run ${ChatColor.GREEN}{name} ${ChatColor.GRAY}erfolgreich hinzugefügt")
     config.addDefault("messages.commands.jnr.add.invalidDifficulty", "${ChatColor.RED}Bitte gib eine gültige Schwierigkeit an!")
     config.addDefault("messages.commands.jnr.add.invalidMaterial", "${ChatColor.RED}Bitte gib ein gültiges Material an")
