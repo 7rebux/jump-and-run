@@ -3,7 +3,7 @@ package net.rebux.jumpandrun.listeners
 import net.rebux.jumpandrun.*
 import net.rebux.jumpandrun.events.ParkourFinishEvent
 import net.rebux.jumpandrun.utils.ActionBarUtil.sendActionBar
-import net.rebux.jumpandrun.utils.TimeUtil
+import net.rebux.jumpandrun.utils.TickFormatter
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -11,6 +11,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerMoveEvent
+import net.rebux.jumpandrun.api.PlayerDataManager.data
 
 class PlayerMoveListener(private val plugin: Plugin) : Listener {
 
@@ -44,7 +45,7 @@ class PlayerMoveListener(private val plugin: Plugin) : Listener {
       timer.tick()
     }
 
-    player.sendActionBar(template("timer.bar", mapOf("time" to TimeUtil.formatTicks(timer.ticks))))
+    player.sendActionBar(template("timer.bar", mapOf("time" to TickFormatter.format(timer.ticks))))
 
     if (player.location.y <= plugin.config.getInt("resetHeight")) {
       player.safeTeleport(data.checkpoint!!)

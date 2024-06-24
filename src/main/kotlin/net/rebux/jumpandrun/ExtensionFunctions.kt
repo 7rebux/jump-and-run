@@ -13,10 +13,6 @@ import java.util.logging.Level
 private val plugin = Instance.plugin
 private val prefix = plugin.config.getString("messages.prefix")
 
-val Player.data
-  get() = plugin.playerData[this.uniqueId]
-    ?: error("Player data not found for ${this.uniqueId}")
-
 fun template(name: String, values: Map<String, Any> = mapOf()): String {
   val template: String? = plugin.config.getString(name)
   var message: String

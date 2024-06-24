@@ -7,6 +7,7 @@ import net.rebux.jumpandrun.database.entities.TimeEntity
 import net.rebux.jumpandrun.msg
 import net.rebux.jumpandrun.msgTemplate
 import net.rebux.jumpandrun.parkour.ParkourDifficulty
+import net.rebux.jumpandrun.parkour.ParkourManager
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.command.Command
@@ -17,6 +18,7 @@ import org.bukkit.entity.Player
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
+// TODO: Autocompletion
 class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
 
     override fun onCommand(
@@ -39,7 +41,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
     }
 
     private fun handleListCommand(sender: CommandSender) {
-        val parkours = plugin.parkourManager.parkours.values
+        val parkours = ParkourManager.parkours.values
 
         if (parkours.isEmpty()) {
             sender.msgTemplate("commands.jnr.list.empty")
@@ -86,7 +88,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
                 this.location = LocationEntity.ofLocation(sender.location)
             }
 
-            plugin.parkourManager.add(entity)
+            ParkourManager.add(entity)
             sender.msgTemplate("commands.jnr.add.success", mapOf("name" to entity.name))
         }
     }
@@ -97,12 +99,12 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
             return
         }
 
-        if (plugin.parkourManager.parkours[id] == null) {
+        if (ParkourManager.parkours[id] == null) {
             sender.msgTemplate("commands.jnr.remove.notFound")
             return
         }
 
-        val removed = plugin.parkourManager.parkours.remove(id)!!
+        val removed = ParkourManager.parkours.remove(id)!!
         transaction {
             ParkourEntity.findById(id)?.delete()
         }
@@ -124,7 +126,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
             return
         }
 
-        val parkour = plugin.parkourManager.parkours.get(id)
+        val parkour = ParkourManager.parkours.get(id)
 
         if (parkour == null) {
             sender.msgTemplate("commands.jnr.reset.notFound")

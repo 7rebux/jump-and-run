@@ -1,7 +1,7 @@
 package net.rebux.jumpandrun.listeners
 
 import net.rebux.jumpandrun.Plugin
-import net.rebux.jumpandrun.data
+import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.database.entities.ParkourEntity
 import net.rebux.jumpandrun.database.entities.TimeEntity
 import net.rebux.jumpandrun.database.models.Times
@@ -9,7 +9,7 @@ import net.rebux.jumpandrun.events.ParkourFinishEvent
 import net.rebux.jumpandrun.msgTemplate
 import net.rebux.jumpandrun.msgTemplateGlobal
 import net.rebux.jumpandrun.parkour.Parkour
-import net.rebux.jumpandrun.utils.TimeUtil
+import net.rebux.jumpandrun.utils.TickFormatter
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Sound
@@ -35,7 +35,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
 
     player.msgTemplate("parkour.completed", mapOf(
       "name" to parkour.name,
-      "time" to TimeUtil.formatTicks(ticks))
+      "time" to TickFormatter.format(ticks))
     )
 
     if (!parkour.times.contains(player.uniqueId) ||
@@ -60,7 +60,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
           "player" to player.name,
           "name" to parkour.name,
           "holders" to previousHolders,
-          "time" to TimeUtil.formatTicks(ticksDelta))
+          "time" to TickFormatter.format(ticksDelta))
         )
         Bukkit.getOnlinePlayers().forEach {
           it.playSound(it.location, Sound.BLOCK_ANVIL_LAND, 1.0F, 1.0F)

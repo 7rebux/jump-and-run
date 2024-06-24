@@ -4,6 +4,7 @@ import net.rebux.jumpandrun.Plugin
 import net.rebux.jumpandrun.events.ParkourJoinEvent
 import net.rebux.jumpandrun.getTag
 import net.rebux.jumpandrun.item.impl.MenuItem
+import net.rebux.jumpandrun.parkour.ParkourManager
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -11,7 +12,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 
-class InventoryClickListener(private val plugin: Plugin) : Listener {
+class InventoryClickListener : Listener {
 
   @EventHandler
   fun onClick(event: InventoryClickEvent) {
@@ -31,7 +32,7 @@ class InventoryClickListener(private val plugin: Plugin) : Listener {
   private fun handleParkourTag(itemStack: ItemStack, event: InventoryClickEvent) {
     val player = event.whoClicked as Player
     val id = itemStack.getTag(Plugin.PARKOUR_TAG)!!
-    val parkour = plugin.parkourManager.parkours[id]
+    val parkour = ParkourManager.parkours[id]
       ?: error("Parkour with id=$id could not be found!")
 
     Bukkit.getPluginManager().callEvent(ParkourJoinEvent(player, parkour))

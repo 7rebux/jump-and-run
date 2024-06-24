@@ -1,6 +1,6 @@
 package net.rebux.jumpandrun.listeners
 
-import net.rebux.jumpandrun.data
+import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.events.ParkourJoinEvent
 import net.rebux.jumpandrun.item.ItemRegistry
 import net.rebux.jumpandrun.item.impl.CheckpointItem
