@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 
-class PlayerInteractListener : Listener {
+object PlayerInteractListener : Listener {
 
   @EventHandler
   fun onInteract(event: PlayerInteractEvent) {

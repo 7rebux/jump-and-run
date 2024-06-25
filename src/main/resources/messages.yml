@@ -1,9 +1,21 @@
-prefix: '§7[§eParkour§7]'
+prefix: "§7[§eParkour§7] "
 
-# Parkour events
 event:
-  checkpoint: 'You reached a new checkpoint!'
+  checkpoint: "§7You reached a new checkpoint!"
+  resetBlock: "§7You were reset to your last checkpoint"
+  completed: "§7You finished §a{name} §7in §a{time} {unit}§7!"
+  globalBest: ""
+  firstGlobalBest: ""
+  personalBest: ""
 
-# Commands
 command:
   top:
+    invalid: "You have to be in a parkour to do this!"
+    empty: "This parkour does not have any completions!"
+    header: "§eTop {amount} times for §3{name} §e:"
+    entry: "§a#{rank} §9{player} §7» §a{time} §7(§a{delta}§7)"
+
+item:
+  hider:
+    hidePlayers: ""
+    showPlayers: ""

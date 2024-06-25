@@ -3,8 +3,11 @@
 package net.rebux.jumpandrun
 
 import net.rebux.jumpandrun.commands.*
+import net.rebux.jumpandrun.config.DatabaseConfig
 import net.rebux.jumpandrun.config.ItemsConfig
+import net.rebux.jumpandrun.config.MenuConfig
 import net.rebux.jumpandrun.config.MessagesConfig
+import net.rebux.jumpandrun.config.ParkourConfig
 import net.rebux.jumpandrun.config.PluginConfig
 import net.rebux.jumpandrun.database.DatabaseConnector
 import net.rebux.jumpandrun.database.SchemaInitializer
@@ -19,29 +22,31 @@ class Plugin : JavaPlugin() {
 
   private val instance = Instance(this)
   private val config = PluginConfig()
-  private val databaseConnector = DatabaseConnector(this)
 
   @Override
   override fun onEnable() {
     this.logger.info("Loading configurations...")
     MessagesConfig.createOrLoad(this)
     ItemsConfig.createOrLoad(this)
+    MenuConfig.createOrLoad(this)
+    ParkourConfig.createOrLoad(this)
+    DatabaseConfig.createOrLoad(this)
 
     this.logger.info("Connecting to database...")
-    databaseConnector.connect()
+    DatabaseConnector.connect()
     SchemaInitializer.initialize()
 
     this.logger.info("Loading parkours from database...")
     ParkourManager.load()
 
     registerListeners(
-      PlayerConnectionListener(),
-      PlayerMoveListener(this),
-      PlayerInteractListener(),
-      InventoryClickListener(),
-      CommandPreprocessListener(),
+      PlayerConnectionListener,
+      PlayerMoveListener,
+      PlayerInteractListener,
+      InventoryClickListener,
+      CommandPreprocessListener,
+      ParkourJoinListener,
       ParkourFinishListener(this),
-      ParkourJoinListener(),
     )
 
     registerCommands(

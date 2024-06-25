@@ -6,12 +6,9 @@ import net.rebux.jumpandrun.database.entities.LocationEntity
 import net.rebux.jumpandrun.database.entities.ParkourEntity
 import net.rebux.jumpandrun.database.entities.TimeEntity
 import net.rebux.jumpandrun.events.ParkourJoinEvent
-import net.rebux.jumpandrun.msg
-import net.rebux.jumpandrun.msgTemplate
 import net.rebux.jumpandrun.parkour.ParkourDifficulty
 import net.rebux.jumpandrun.parkour.ParkourManager
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
@@ -47,31 +44,31 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
     val parkours = ParkourManager.parkours.values
 
     if (parkours.isEmpty()) {
-      sender.msgTemplate("commands.jnr.list.empty")
+      sender.sendMessage("No parkours found!")
       return
     }
 
-    sender.msgTemplate("commands.jnr.list.full", mapOf("size" to parkours.size))
+    sender.sendMessage("Found ${parkours.size} parkours:")
     parkours.forEach { parkour ->
-      sender.msg("#${parkour.id}: ${ChatColor.GREEN}${parkour.name} ${ChatColor.GRAY}- ${parkour.difficulty}")
+      sender.sendMessage("#${parkour.id}: ${parkour.name} - ${parkour.difficulty}")
     }
   }
 
   private fun handleJoinCommand(sender: CommandSender, id: Int?) {
     if (sender !is Player) {
-      sender.msgTemplate("commands.playersOnly")
+      sender.sendMessage("This command can only be called as a player!")
       return
     }
 
     if (sender.data.isInParkour()) {
-      sender.msgTemplate("commands.jnr.join.inParkour")
+      sender.sendMessage("You are already in a parkour!")
       return
     }
 
     val parkour = ParkourManager.parkours[id]
 
     if (parkour == null) {
-      sender.msgTemplate("commands.jnr.join.notFound")
+      sender.sendMessage("Parkour not found!")
       return
     }
 
@@ -80,7 +77,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
 
   private fun handleAddCommand(sender: CommandSender, args: Array<String>) {
     if (sender !is Player) {
-      sender.msgTemplate("commands.playersOnly")
+      sender.sendMessage("This command can only be called as a player!")
       return
     }
 
@@ -94,12 +91,12 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
     val material: Material? = Material.getMaterial(args[3].uppercase())
 
     if (difficulty == null) {
-      sender.msgTemplate("commands.jnr.add.invalidDifficulty")
+      sender.sendMessage("Difficulty not found!")
       return
     }
 
     if (material == null) {
-      sender.msgTemplate("commands.jnr.add.invalidMaterial")
+      sender.sendMessage("Material not found!")
       return
     }
 
@@ -113,7 +110,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
       }
 
       ParkourManager.add(entity)
-      sender.msgTemplate("commands.jnr.add.success", mapOf("name" to entity.name))
+      sender.sendMessage("Successfully added new parkour")
     }
   }
 
@@ -124,16 +121,16 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
     }
 
     if (ParkourManager.parkours[id] == null) {
-      sender.msgTemplate("commands.jnr.remove.notFound")
+      sender.sendMessage("Parkour not found!")
       return
     }
 
-    val removed = ParkourManager.parkours.remove(id)!!
     transaction {
       ParkourEntity.findById(id)?.delete()
-    }
 
-    sender.msgTemplate("commands.jnr.remove.success", mapOf("name" to removed.name))
+      ParkourManager.parkours.remove(id)
+      sender.sendMessage("Successfully removed parkour")
+    }
   }
 
   private fun handleResetCommand(sender: CommandSender, args: Array<String>) {
@@ -146,14 +143,14 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
     val id = args[0].toIntOrNull()
 
     if (id == null) {
-      sender.msgTemplate("commands.jnr.reset.idNotNumeric")
+      sender.sendMessage("Id must be an Integer!")
       return
     }
 
     val parkour = ParkourManager.parkours.get(id)
 
     if (parkour == null) {
-      sender.msgTemplate("commands.jnr.reset.notFound")
+      sender.sendMessage("Parkour not found!")
       return
     }
 
@@ -168,7 +165,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
             parkour.times.remove(entity.uuid)
           }
       }
-      sender.msgTemplate("commands.jnr.reset.successAll", mapOf("name" to parkour.name))
+      sender.sendMessage("Successfully reset all times!")
     } else {
       transaction {
         val timeEntity = TimeEntity.all().singleOrNull { entity ->
@@ -176,27 +173,22 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
         }
 
         if (timeEntity == null) {
-          sender.msgTemplate("commands.jnr.reset.notFound")
+          sender.sendMessage("No time for specified UUID found!")
           return@transaction
         }
 
         timeEntity.delete()
         parkour.times.remove(timeEntity.uuid)
-        sender.msgTemplate(
-          "commands.jnr.reset.successSingle", mapOf(
-            "name" to parkour.name,
-            "player" to Bukkit.getOfflinePlayer(timeEntity.uuid).name!!
-          )
-        )
+        sender.sendMessage("Successfully reset time for player ${Bukkit.getOfflinePlayer(timeEntity.uuid).name}")
       }
     }
   }
 
   private fun sendUsage(sender: CommandSender) {
-    sender.msg("/jnr list")
-    sender.msg("/jnr join <id>")
-    sender.msg("/jnr add <name> <builder> <difficulty> <material>")
-    sender.msg("/jnr remove <id>")
-    sender.msg("/jnr reset <id> <uuid | all>")
+    sender.sendMessage("/jnr list")
+    sender.sendMessage("/jnr join <id>")
+    sender.sendMessage("/jnr add <name> <builder> <difficulty> <material>")
+    sender.sendMessage("/jnr remove <id>")
+    sender.sendMessage("/jnr reset <id> <uuid | all>")
   }
 }

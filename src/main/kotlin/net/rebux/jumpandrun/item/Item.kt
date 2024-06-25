@@ -9,23 +9,22 @@ import org.bukkit.inventory.meta.SkullMeta
 /**
  * A wrapper class that contains a [ItemStack] and an interact event
  */
-// TODO: Config error handling
 abstract class Item(private val configName: String) {
 
-  private val itemsConfig = ItemsConfig.config
-
   val id = ItemRegistry.register(this)
-  val enabled = itemsConfig.getBoolean("$configName.enabled")
-  val name = itemsConfig.getString("$configName.name")!!
-  val material = itemsConfig.getString("$configName.material")!!
-  val slot = itemsConfig.getInt("$configName.slot")
+  val enabled = ItemsConfig.isEnabled(configName)
+  val name = ItemsConfig.getName(configName)
+  val material = ItemsConfig.getMaterial(configName)
+  val slot = ItemsConfig.getSlot(configName)
 
   open fun onInteract(player: Player) { }
 
   fun createItemStack(): ItemStack {
     return Builder()
       .displayName(name)
-      .material(Material.getMaterial(material)!!)
+      .material(
+        Material.getMaterial(material) ?: error("Material with $name is invalid!")
+      )
       .build()
   }
 

@@ -1,16 +1,16 @@
 package net.rebux.jumpandrun.database
 
-import net.rebux.jumpandrun.Plugin
+import net.rebux.jumpandrun.config.DatabaseConfig
 import org.jetbrains.exposed.sql.Database
 
-class DatabaseConnector(private val plugin: Plugin) {
+object DatabaseConnector {
 
   private val credentials: DatabaseCredentials = DatabaseCredentials(
-    plugin.config.getString("database.host")!!,
-    plugin.config.getString("database.port")!!,
-    plugin.config.getString("database.name")!!,
-    plugin.config.getString("database.user"),
-    plugin.config.getString("database.pass")
+    DatabaseConfig.hostname,
+    DatabaseConfig.port,
+    DatabaseConfig.database,
+    DatabaseConfig.username,
+    DatabaseConfig.password
   )
 
   fun connect() {

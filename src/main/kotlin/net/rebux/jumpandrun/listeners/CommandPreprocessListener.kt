@@ -8,7 +8,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 
-class CommandPreprocessListener : Listener {
+object CommandPreprocessListener : Listener {
 
   @EventHandler
   fun onCommand(event: PlayerCommandPreprocessEvent) {

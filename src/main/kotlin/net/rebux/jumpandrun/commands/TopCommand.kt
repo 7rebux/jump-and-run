@@ -1,8 +1,9 @@
 package net.rebux.jumpandrun.commands
 
-import net.rebux.jumpandrun.msgTemplate
 import net.rebux.jumpandrun.utils.TickFormatter
 import net.rebux.jumpandrun.api.PlayerDataManager.data
+import net.rebux.jumpandrun.config.MessagesConfig
+import net.rebux.jumpandrun.utils.MessageBuilder
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.command.Command
@@ -11,7 +12,10 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 // TODO: Autocomplete
+// TODO: Entry argument > actual entries
 class TopCommand : CommandExecutor {
+
+  private val messages = MessagesConfig.Command.Top
 
   override fun onCommand(
     sender: CommandSender,
@@ -20,38 +24,63 @@ class TopCommand : CommandExecutor {
     args: Array<out String>
   ): Boolean {
     if (sender !is Player) {
-      sender.msgTemplate("commands.playersOnly")
+      sender.sendMessage("This command can only be called as a player!")
       return true
     }
 
-    if (!sender.data.isInParkour()) {
-      sender.msgTemplate("commands.top.invalid")
+    val parkour = sender.data.parkour
+
+    if (parkour == null) {
+      MessageBuilder()
+        .template(messages.invalid)
+        .error()
+        .buildAndSend(sender)
       return true
     }
 
     val entries = if (args.getOrNull(0) == "all") 100 else 5
-    val parkour = sender.data.parkour!!
 
     if (parkour.times.isEmpty()) {
-      sender.msgTemplate("commands.top.empty")
+      MessageBuilder()
+        .template(messages.empty)
+        .error()
+        .buildAndSend(sender)
       return true
     }
 
     val bestTime = parkour.times.values.min()
 
-    sender.msgTemplate("commands.top.header", mapOf("name" to parkour.name))
+    MessageBuilder()
+      .template(messages.header)
+      .values(
+        mapOf(
+          "name" to parkour.name,
+          "amount" to entries
+        )
+      )
+      .buildAndSend(sender)
+
     parkour.times.entries
       .groupBy { it.value }
       .toSortedMap()
       .asIterable()
       .take(entries)
       .forEachIndexed { i, (time, records) ->
-        sender.msgTemplate("commands.top.time", mapOf(
-          "rank" to i + 1,
-          "player" to records.joinToString(", ") { Bukkit.getOfflinePlayer(it.key).name!! },
-          "time" to TickFormatter.format(time),
-          "delta" to formatDelta(time, bestTime)
-        ))
+        val holders = records
+          .mapNotNull { Bukkit.getOfflinePlayer(it.key).name }
+          .joinToString(", ")
+
+        MessageBuilder()
+          .template(messages.entry)
+          .values(
+            mapOf(
+              "rank" to i + 1,
+              "player" to holders,
+              "time" to TickFormatter.format(time),
+              "delta" to formatDelta(time, bestTime)
+            )
+          )
+          .buildAndSend(sender)
       }
 
     return true

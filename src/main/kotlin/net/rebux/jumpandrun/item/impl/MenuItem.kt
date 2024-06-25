@@ -1,8 +1,8 @@
 package net.rebux.jumpandrun.item.impl
 
 import de.tr7zw.changeme.nbtapi.NBT
-import net.rebux.jumpandrun.Instance
 import net.rebux.jumpandrun.Plugin
+import net.rebux.jumpandrun.config.MenuConfig
 import net.rebux.jumpandrun.item.Item
 import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.parkour.ParkourManager
@@ -18,19 +18,17 @@ import org.bukkit.inventory.ItemStack
 
 object MenuItem : Item("menu") {
 
-  // TODO: get rid of plugin
-  private val plugin = Instance.plugin
   private val parkours: List<Parkour>
     get() = ParkourManager.parkours.values.sortedBy(Parkour::difficulty)
 
   override fun onInteract(player: Player) {
-    openInventory(player, 0)
+    this.openInventory(player, 0)
   }
 
   fun openInventory(player: Player, page: Int) {
     val inventory = Bukkit.createInventory(
       null,
-      plugin.config.getInt("parkoursPerPage") + 9,
+      MenuConfig.parkoursPerPage + 9,
       template("menu.title", mapOf(
         "completed" to countParkoursPlayed(player),
         "records" to countParkourRecords(player),
@@ -38,14 +36,12 @@ object MenuItem : Item("menu") {
       ))
     )
 
-    openMenu(inventory, player, page)
+    this.openMenu(inventory, player, page)
   }
 
   private fun openMenu(inventory: Inventory, player: Player, page: Int) {
-    val parkoursPerPage = inventory.size - 9
-
-    for (slot in 0 until parkoursPerPage) {
-      val index = slot + page * parkoursPerPage
+    for (slot in 0 until MenuConfig.parkoursPerPage) {
+      val index = slot + page * MenuConfig.parkoursPerPage
 
       if (index == parkours.size) {
         break
@@ -54,7 +50,7 @@ object MenuItem : Item("menu") {
       inventory.setItem(slot, parkours[index].buildItem(player))
     }
 
-    if (parkours.size > parkoursPerPage * (page + 1)) {
+    if (parkours.size > MenuConfig.parkoursPerPage * (page + 1)) {
       inventory.setItem(
         inventory.size - 1,
         buildPaginationItem(PaginationType.Next, page)

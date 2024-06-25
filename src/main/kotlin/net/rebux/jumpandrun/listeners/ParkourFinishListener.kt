@@ -2,13 +2,13 @@ package net.rebux.jumpandrun.listeners
 
 import net.rebux.jumpandrun.Plugin
 import net.rebux.jumpandrun.api.PlayerDataManager.data
+import net.rebux.jumpandrun.config.MessagesConfig
 import net.rebux.jumpandrun.database.entities.ParkourEntity
 import net.rebux.jumpandrun.database.entities.TimeEntity
 import net.rebux.jumpandrun.database.models.Times
 import net.rebux.jumpandrun.events.ParkourFinishEvent
-import net.rebux.jumpandrun.msgTemplate
-import net.rebux.jumpandrun.msgTemplateGlobal
 import net.rebux.jumpandrun.parkour.Parkour
+import net.rebux.jumpandrun.utils.MessageBuilder
 import net.rebux.jumpandrun.utils.TickFormatter
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
@@ -32,11 +32,18 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
     val player = event.player
     val parkour = event.parkour
     val ticks = player.data.timer.stop()
+    val (time, unit) = TickFormatter.format(ticks)
 
-    player.msgTemplate("parkour.completed", mapOf(
-      "name" to parkour.name,
-      "time" to TickFormatter.format(ticks))
-    )
+    MessageBuilder()
+      .template(MessagesConfig.Event.completed)
+      .values(
+        mapOf(
+          "name" to parkour.name,
+          "time" to time,
+          "unit" to unit
+        )
+      )
+      .buildAndSend(player)
 
     if (!parkour.times.contains(player.uniqueId) ||
       ticks < parkour.times[player.uniqueId]!!) {
@@ -45,31 +52,52 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
 
       // First global best
       if (globalBest == null) {
-        player.msgTemplate("parkour.firstGlobalBest")
-        player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F)
+        MessageBuilder()
+          .template(MessagesConfig.Event.firstGlobalBest)
+          .values(
+            mapOf(
+              "name" to parkour.name,
+              "time" to time,
+              "unit" to unit
+            )
+          )
+          .buildAndSendGlobally()
+
+        player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F) // TODO: Config entry for this?
       }
       // New global best
       else if (ticks < globalBest) {
         val ticksDelta = globalBest - ticks
+        val (deltaTime, deltaUnit) = TickFormatter.format(ticksDelta)
         val previousHolders = parkour.times.entries
           .filter { it.value == globalBest }
           .mapNotNull { Bukkit.getOfflinePlayer(it.key).name }
           .joinToString(", ")
 
-        msgTemplateGlobal("parkour.globalBest", mapOf(
-          "player" to player.name,
-          "name" to parkour.name,
-          "holders" to previousHolders,
-          "time" to TickFormatter.format(ticksDelta))
-        )
+        MessageBuilder()
+          .template(MessagesConfig.Event.globalBest)
+          .values(
+            mapOf(
+              "player" to player.name,
+              "name" to parkour.name,
+              "holders" to previousHolders,
+              "time" to deltaTime,
+              "unit" to deltaUnit
+            )
+          )
+          .buildAndSendGlobally()
+
         Bukkit.getOnlinePlayers().forEach {
-          it.playSound(it.location, Sound.BLOCK_ANVIL_LAND, 1.0F, 1.0F)
+          it.playSound(it.location, Sound.BLOCK_ANVIL_LAND, 1.0F, 1.0F) // TODO: Config entry for this?
         }
       }
       // New personal best
       else {
-        player.msgTemplate("parkour.personalBest")
-        player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F)
+        MessageBuilder()
+          .template(MessagesConfig.Event.personalBest)
+          .buildAndSend(player)
+
+        player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F) // TODO: Config entry for this?
       }
 
       updateDatabaseEntry(parkour, player, ticks)

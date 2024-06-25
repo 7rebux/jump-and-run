@@ -1,0 +1,10 @@
+resetHeight: 70
+
+feature:
+  checkpoint: true
+  resetBlock: true
+
+block:
+  checkpoint: "IRON_BLOCK"
+  reset: "REDSTONE_BLOCK"
+  finish: "GOLD_BLOCK"

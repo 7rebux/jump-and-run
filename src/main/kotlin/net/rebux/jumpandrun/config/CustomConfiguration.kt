@@ -9,7 +9,7 @@ import java.io.InputStreamReader
 abstract class CustomConfiguration(private val fileName: String) {
 
   private lateinit var file: File
-  lateinit var config: FileConfiguration
+  protected lateinit var config: FileConfiguration
 
   fun createOrLoad(plugin: Plugin) {
     this.file = File(plugin.dataFolder, fileName)
