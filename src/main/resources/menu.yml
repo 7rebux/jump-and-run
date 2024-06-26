@@ -1,1 +1,17 @@
 parkoursPerPage: 45
+title: "§bParkours §7(§e{completed}/{quantity}§7) §a{records}✫"
+nextPage: "§7Next page §a»"
+previousPage: "§a« §7Previous page"
+
+entry:
+  difficulty: "§7» §eDifficulty: {difficulty}"
+  builder: "§7» §eBuilder: §9{builder}"
+  noTime: "§c--.--.---"
+  personalBest:
+    title: "§7» §Personal best:"
+    time: "§9{time} {unit}"
+  globalBest:
+    title: "§7» §6Global best:"
+    subtitle: "§7of:"
+    time: "§9{time} {unit}"
+    player: "§9{player}"

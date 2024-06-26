@@ -31,7 +31,7 @@ data class MessageBuilder(
     build().forEach(Bukkit::broadcastMessage)
   }
 
-  private fun build(): List<String> {
+  fun build(): List<String> {
     return template?.let {
       if (it.contains("\n")) {
         return it.split("\n").map(::replaceValues)
@@ -39,6 +39,10 @@ data class MessageBuilder(
         return listOf(replaceValues(it))
       }
     } ?: error("Message must be specified!")
+  }
+
+  fun buildSingle(): String {
+    return build().first()
   }
 
   private fun replaceValues(line: String): String {

@@ -6,7 +6,7 @@ import net.rebux.jumpandrun.config.MenuConfig
 import net.rebux.jumpandrun.item.Item
 import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.parkour.ParkourManager
-import net.rebux.jumpandrun.template
+import net.rebux.jumpandrun.utils.MessageBuilder
 import net.rebux.jumpandrun.utils.TickFormatter
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -26,15 +26,18 @@ object MenuItem : Item("menu") {
   }
 
   fun openInventory(player: Player, page: Int) {
-    val inventory = Bukkit.createInventory(
-      null,
-      MenuConfig.parkoursPerPage + 9,
-      template("menu.title", mapOf(
-        "completed" to countParkoursPlayed(player),
-        "records" to countParkourRecords(player),
-        "quantity" to ParkourManager.parkours.size
-      ))
-    )
+    val title = MessageBuilder()
+      .template(MenuConfig.tile)
+      .values(
+        mapOf(
+          "completed" to countParkoursPlayed(player),
+          "records" to countParkourRecords(player),
+          "quantity" to ParkourManager.parkours.size
+        )
+      )
+      .buildSingle()
+    val size = MenuConfig.parkoursPerPage + 9
+    val inventory = Bukkit.createInventory(null, size, title)
 
     this.openMenu(inventory, player, page)
   }
@@ -89,30 +92,105 @@ object MenuItem : Item("menu") {
     val lore = buildList {
       val parkour = this@buildItem
 
-      add(template("menu.difficulty", mapOf("difficulty" to parkour.difficulty)))
-      add(template("menu.builder", mapOf("builder" to parkour.builder)))
+      add(
+        MessageBuilder()
+          .template(MenuConfig.Entry.difficulty)
+          .values(
+            mapOf(
+              "difficulty" to parkour.difficulty
+            )
+          )
+          .buildSingle()
+      )
+
+      add(
+        MessageBuilder()
+          .template(MenuConfig.Entry.builder)
+          .values(
+            mapOf(
+              "builder" to parkour.builder
+            )
+          )
+          .buildSingle()
+      )
+
       add("")
 
-      add(template("menu.personalBest.title"))
+      add(
+        MessageBuilder()
+          .template(MenuConfig.Entry.PersonalBest.title)
+          .buildSingle()
+      )
 
       if (playerTime != null) {
-        add(template("menu.personalBest.time", mapOf("time" to TickFormatter.format(playerTime))))
+        val (time, unit) = TickFormatter.format(playerTime)
+
+        add(
+          MessageBuilder()
+            .template(MenuConfig.Entry.PersonalBest.time)
+            .values(
+              mapOf(
+                "time" to time,
+                "unit" to unit
+              )
+            )
+            .buildSingle()
+        )
       } else {
-        add(template("menu.noTime"))
+        add(
+          MessageBuilder()
+            .template(MenuConfig.Entry.noTime)
+            .buildSingle()
+        )
       }
 
       add("")
 
-      add(template("menu.globalBest.title"))
+      add(
+        MessageBuilder()
+          .template(MenuConfig.Entry.GlobalBest.title)
+          .buildSingle()
+      )
 
       if (bestTime != null) {
-        add(template("menu.globalBest.time", mapOf("time" to TickFormatter.format(bestTime))))
-        add(template("menu.globalBest.subtitle"))
+        val (time, unit) = TickFormatter.format(bestTime)
+
+        add(
+          MessageBuilder()
+            .template(MenuConfig.Entry.GlobalBest.time)
+            .values(
+              mapOf(
+                "time" to time,
+                "unit" to unit
+              )
+            )
+            .buildSingle()
+        )
+
+        add(
+          MessageBuilder()
+            .template(MenuConfig.Entry.GlobalBest.subtitle)
+            .buildSingle()
+        )
+
         playersWithBestTime.forEach { player ->
-          add(template("menu.globalBest.player", mapOf("player" to player.name!!)))
+          add(
+            MessageBuilder()
+              .template(MenuConfig.Entry.GlobalBest.player)
+              .values(
+                mapOf(
+                  "player" to player.name!!
+                )
+              )
+              .buildSingle()
+          )
         }
       } else {
-        add(template("menu.noTime"))
+        add(
+          MessageBuilder()
+            .template(MenuConfig.Entry.noTime)
+            .buildSingle()
+        )
       }
     }
 
@@ -143,8 +221,8 @@ object MenuItem : Item("menu") {
     val displayName: String,
     val step: Int
   ) {
-    Next("MHF_ArrowRight", template("items.previousPage"), 1),
-    Previous("MHF_ArrowLeft", template("items.nextPage"), -1),
+    Next("MHF_ArrowRight", MenuConfig.nextPage, 1),
+    Previous("MHF_ArrowLeft", MenuConfig.previousPage, -1),
   }
 
   private fun buildPaginationItem(type: PaginationType, page: Int): ItemStack {

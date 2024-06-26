@@ -56,6 +56,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
           .template(MessagesConfig.Event.firstGlobalBest)
           .values(
             mapOf(
+              "player" to player.name,
               "name" to parkour.name,
               "time" to time,
               "unit" to unit

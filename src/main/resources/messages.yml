@@ -4,9 +4,9 @@ event:
   checkpoint: "§7You reached a new checkpoint!"
   resetBlock: "§7You were reset to your last checkpoint"
   completed: "§7You finished §a{name} §7in §a{time} {unit}§7!"
-  globalBest: ""
-  firstGlobalBest: ""
-  personalBest: ""
+  globalBest: "§a{player} §7has beaten the best time at §a{name} §7of §a{holders} §7for §a{time} {unit}§7!"
+  firstGlobalBest: "§7The player §a{player} §7was the first to complete §a{name} §7in §a{time} {unit}"
+  personalBest: "§7You have set a new personal best time"
 
 command:
   top:
@@ -17,5 +17,5 @@ command:
 
 item:
   hider:
-    hidePlayers: ""
-    showPlayers: ""
+    hidePlayers: "§7All players are now §chidden"
+    showPlayers: "§7All players are now §ashown"
