@@ -35,7 +35,8 @@ object MenuItem : Item("menu") {
           "quantity" to ParkourManager.parkours.size
         )
       )
-      .buildSingle()
+      .build()
+      .first()
     val size = MenuConfig.parkoursPerPage + 9
     val inventory = Bukkit.createInventory(null, size, title)
 
@@ -92,7 +93,7 @@ object MenuItem : Item("menu") {
     val lore = buildList {
       val parkour = this@buildItem
 
-      add(
+      addAll(
         MessageBuilder()
           .template(MenuConfig.Entry.difficulty)
           .values(
@@ -100,10 +101,10 @@ object MenuItem : Item("menu") {
               "difficulty" to parkour.difficulty
             )
           )
-          .buildSingle()
+          .build()
       )
 
-      add(
+      addAll(
         MessageBuilder()
           .template(MenuConfig.Entry.builder)
           .values(
@@ -111,21 +112,21 @@ object MenuItem : Item("menu") {
               "builder" to parkour.builder
             )
           )
-          .buildSingle()
+          .build()
       )
 
       add("")
 
-      add(
+      addAll(
         MessageBuilder()
           .template(MenuConfig.Entry.PersonalBest.title)
-          .buildSingle()
+          .build()
       )
 
       if (playerTime != null) {
         val (time, unit) = TickFormatter.format(playerTime)
 
-        add(
+        addAll(
           MessageBuilder()
             .template(MenuConfig.Entry.PersonalBest.time)
             .values(
@@ -134,28 +135,28 @@ object MenuItem : Item("menu") {
                 "unit" to unit
               )
             )
-            .buildSingle()
+            .build()
         )
       } else {
-        add(
+        addAll(
           MessageBuilder()
             .template(MenuConfig.Entry.noTime)
-            .buildSingle()
+            .build()
         )
       }
 
       add("")
 
-      add(
+      addAll(
         MessageBuilder()
           .template(MenuConfig.Entry.GlobalBest.title)
-          .buildSingle()
+          .build()
       )
 
       if (bestTime != null) {
         val (time, unit) = TickFormatter.format(bestTime)
 
-        add(
+        addAll(
           MessageBuilder()
             .template(MenuConfig.Entry.GlobalBest.time)
             .values(
@@ -164,17 +165,17 @@ object MenuItem : Item("menu") {
                 "unit" to unit
               )
             )
-            .buildSingle()
+            .build()
         )
 
-        add(
+        addAll(
           MessageBuilder()
             .template(MenuConfig.Entry.GlobalBest.subtitle)
-            .buildSingle()
+            .build()
         )
 
         playersWithBestTime.forEach { player ->
-          add(
+          addAll(
             MessageBuilder()
               .template(MenuConfig.Entry.GlobalBest.player)
               .values(
@@ -182,14 +183,14 @@ object MenuItem : Item("menu") {
                   "player" to player.name!!
                 )
               )
-              .buildSingle()
+              .build()
           )
         }
       } else {
-        add(
+        addAll(
           MessageBuilder()
             .template(MenuConfig.Entry.noTime)
-            .buildSingle()
+            .build()
         )
       }
     }

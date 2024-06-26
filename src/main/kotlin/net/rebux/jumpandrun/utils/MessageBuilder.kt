@@ -41,10 +41,6 @@ data class MessageBuilder(
     } ?: error("Message must be specified!")
   }
 
-  fun buildSingle(): String {
-    return build().first()
-  }
-
   private fun replaceValues(line: String): String {
     return values?.entries?.fold(line) { acc, (key, value) ->
       acc.replace("{$key}", value.toString())
