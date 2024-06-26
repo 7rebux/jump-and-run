@@ -1,8 +1,8 @@
 package net.rebux.jumpandrun.item
 
-import net.minecraft.server.v1_8_R3.NBTTagCompound
+import de.tr7zw.changeme.nbtapi.NBT
 import net.rebux.jumpandrun.Plugin
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack
+import net.rebux.jumpandrun.getTag
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.ConcurrentHashMap
@@ -13,34 +13,30 @@ import java.util.concurrent.atomic.AtomicInteger
  */
 object ItemRegistry {
 
-    private val items = ConcurrentHashMap<Int, Item>()
-    private val itemStacks = ConcurrentHashMap<Int, ItemStack>()
-    private val nextId = AtomicInteger(1)
+  private val items = ConcurrentHashMap<Int, Item>()
+  private val itemStacks = ConcurrentHashMap<Int, ItemStack>()
+  private val nextId = AtomicInteger(1)
 
-    fun register(item: Item): Int {
-        return nextId.getAndIncrement().also { id ->
-            items[id] = item
-        }
+  fun register(item: Item): Int {
+    return nextId.getAndIncrement().also { id ->
+      items[id] = item
     }
+  }
 
-    fun onInteract(itemStack: ItemStack, player: Player) {
-        val tag = CraftItemStack.asNMSCopy(itemStack)?.tag
-            ?: return
-
-        if (tag.hasKey(Plugin.ID_TAG)) {
-            items[tag.getInt(Plugin.ID_TAG)]?.onInteract(player)
-        }
+  fun handleInteraction(itemStack: ItemStack, player: Player) {
+    itemStack.getTag(Plugin.ID_TAG)?.let {
+      items[it]?.onInteract(player)
+        ?: error("Found ItemStack with custom id which is not registered!")
     }
+  }
 
-    fun getItemStack(id: Int): ItemStack {
-        return itemStacks.getOrPut(id) {
-            val itemStack = items[id]!!.createItemStack()
-            val nmsCopy = CraftItemStack.asNMSCopy(itemStack)
-
-            nmsCopy.tag = nmsCopy.tag ?: NBTTagCompound()
-            nmsCopy.tag.setInt(Plugin.ID_TAG, id)
-
-            return@getOrPut CraftItemStack.asCraftMirror(nmsCopy)
+  fun getItemStack(id: Int): ItemStack {
+    return itemStacks.getOrPut(id) {
+      items[id]?.createItemStack().also {
+        NBT.modify(it) { nbt ->
+          nbt.setInteger(Plugin.ID_TAG, id)
         }
+      } ?: error("Could not find ItemStack with id $id in registry!")
     }
+  }
 }

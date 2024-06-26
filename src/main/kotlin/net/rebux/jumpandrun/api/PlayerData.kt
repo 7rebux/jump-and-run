@@ -5,10 +5,10 @@ import net.rebux.jumpandrun.utils.TickCounter
 import org.bukkit.Location
 
 data class PlayerData(
-    var parkour: Parkour? = null,
-    var checkpoint: Location? = null,
-    var timer: TickCounter = TickCounter(),
-    var playersHidden: Boolean = false,
+  var parkour: Parkour? = null,
+  var checkpoint: Location? = null,
+  var timer: TickCounter = TickCounter(),
+  var playersHidden: Boolean = false,
 ) {
 
     fun isInParkour() = parkour != null

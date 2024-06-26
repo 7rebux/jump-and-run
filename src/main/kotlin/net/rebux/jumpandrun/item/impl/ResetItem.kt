@@ -5,13 +5,11 @@ import net.rebux.jumpandrun.item.Item
 import net.rebux.jumpandrun.safeTeleport
 import org.bukkit.entity.Player
 
-object RestartItem : Item("restart") {
+object ResetItem : Item("reset") {
 
   override fun onInteract(player: Player) {
-    val startLocation = player.data.parkour!!.location
-
-    player.data.checkpoint = startLocation
-    player.data.timer.stop()
-    player.safeTeleport(startLocation)
+    if (player.data.isInParkour()) {
+      player.safeTeleport(player.data.checkpoint!!)
+    }
   }
 }

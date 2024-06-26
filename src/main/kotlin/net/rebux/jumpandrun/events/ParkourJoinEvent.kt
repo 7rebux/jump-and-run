@@ -7,9 +7,9 @@ import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
 /**
- * An [Event] that is being called when a [player] finishes a parkour
+ * An [Event] that is being called when a [player] joins a parkour
  */
-class ParkourFinishEvent(
+class ParkourJoinEvent(
   val player: Player,
   val parkour: Parkour
 ) : Event(), Cancellable {

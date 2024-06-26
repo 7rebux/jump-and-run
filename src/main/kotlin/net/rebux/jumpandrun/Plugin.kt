@@ -2,9 +2,12 @@
 
 package net.rebux.jumpandrun
 
-import net.rebux.jumpandrun.api.PlayerData
 import net.rebux.jumpandrun.commands.*
-import net.rebux.jumpandrun.config.PluginConfig
+import net.rebux.jumpandrun.config.DatabaseConfig
+import net.rebux.jumpandrun.config.ItemsConfig
+import net.rebux.jumpandrun.config.MenuConfig
+import net.rebux.jumpandrun.config.MessagesConfig
+import net.rebux.jumpandrun.config.ParkourConfig
 import net.rebux.jumpandrun.database.DatabaseConnector
 import net.rebux.jumpandrun.database.SchemaInitializer
 import net.rebux.jumpandrun.listeners.*
@@ -12,50 +15,54 @@ import net.rebux.jumpandrun.parkour.ParkourManager
 import org.bukkit.command.CommandExecutor
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.UUID
 
 // Sadly this can't be an object due to bukkit implementation
 class Plugin : JavaPlugin() {
 
-    private val instance = Instance(this)
-    private val config = PluginConfig()
-    private val databaseConnector = DatabaseConnector()
-    private val schemaInitializer = SchemaInitializer()
-    // TODO: This can be a object class
-    val parkourManager = ParkourManager()
-    val playerData = hashMapOf<UUID, PlayerData>()
+  @Override
+  override fun onEnable() {
+    this.logger.info("Loading configurations...")
+    MessagesConfig.createOrLoad(this)
+    ItemsConfig.createOrLoad(this)
+    MenuConfig.createOrLoad(this)
+    ParkourConfig.createOrLoad(this)
+    DatabaseConfig.createOrLoad(this)
 
-    override fun onEnable() {
-        databaseConnector.connect()
-        schemaInitializer.initialize()
-        parkourManager.load()
+    this.logger.info("Connecting to database...")
+    DatabaseConnector.connect()
+    SchemaInitializer.initialize()
 
-        registerListeners(
-            PlayerConnectionListener(this),
-            PlayerMoveListener(this),
-            PlayerInteractListener(this),
-            InventoryClickListener(this),
-            CommandPreprocessListener(),
-        )
+    this.logger.info("Loading parkours from database...")
+    ParkourManager.load()
 
-        registerCommands(
-            "jumpandrun" to JumpAndRunCommand(this),
-            "top" to TopCommand()
-        )
-    }
+    registerListeners(
+      PlayerConnectionListener,
+      PlayerMoveListener,
+      PlayerInteractListener,
+      InventoryClickListener,
+      CommandPreprocessListener,
+      ParkourJoinListener,
+      ParkourFinishListener(this),
+    )
 
-    private fun registerListeners(vararg listener: Listener) {
-        listener.forEach { server.pluginManager.registerEvents(it, this) }
-    }
+    registerCommands(
+      "jumpandrun" to JumpAndRunCommand(this),
+      "top" to TopCommand()
+    )
+  }
 
-    private fun registerCommands(vararg commands: Pair<String, CommandExecutor>) {
-        commands.forEach { this.getCommand(it.first).executor = it.second }
-    }
+  private fun registerListeners(vararg listener: Listener) {
+    listener.forEach { server.pluginManager.registerEvents(it, this) }
+  }
 
-    companion object {
-        const val ID_TAG = "net.rebux.jumpandrun.id"
-        const val PARKOUR_TAG = "net.rebux.jumpandrun.parkour"
-        const val PAGE_TAG = "net.rebux.jumpandrun.page"
-        const val PAGE_STEP_TAG = "net.rebux.jumpandrun.page.step"
-    }
+  private fun registerCommands(vararg commands: Pair<String, CommandExecutor>) {
+    commands.forEach { this.getCommand(it.first)!!.setExecutor(it.second) }
+  }
+
+  companion object {
+    const val ID_TAG = "net.rebux.jumpandrun.id"
+    const val PARKOUR_TAG = "net.rebux.jumpandrun.parkour"
+    const val PAGE_TAG = "net.rebux.jumpandrun.page"
+    const val PAGE_STEP_TAG = "net.rebux.jumpandrun.page.step"
+  }
 }
