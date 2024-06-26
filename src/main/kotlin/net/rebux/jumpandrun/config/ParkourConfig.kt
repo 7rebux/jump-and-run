@@ -19,4 +19,11 @@ object ParkourConfig : CustomConfiguration("parkour.yml") {
     val checkpoint = Material.getMaterial(config.getString("block.finish") ?: "IRON_BLOCK")
       ?: error("Material not found for checkpoint block!")
   }
+
+  internal object Difficulty {
+    val easy = config.getString("difficulty.easy")!!
+    val medium = config.getString("difficulty.medium")!!
+    val hard = config.getString("difficulty.hard")!!
+    val extreme = config.getString("difficulty.extreme")!!
+  }
 }

@@ -16,6 +16,7 @@ import net.rebux.jumpandrun.safeTeleport
 import net.rebux.jumpandrun.utils.MessageBuilder
 import org.bukkit.Location
 import org.bukkit.entity.Player
+import java.util.concurrent.TimeUnit
 
 object PlayerMoveListener : Listener {
 
@@ -48,9 +49,20 @@ object PlayerMoveListener : Listener {
       timer.tick()
     }
 
-    // TODO: Put action bar string in config
     val (time, unit) = TickFormatter.format(timer.ticks)
-    player.sendActionBar("$time $unit")
+    val unitString = if (unit == TimeUnit.SECONDS) MessagesConfig.Timer.Unit.seconds else MessagesConfig.Timer.Unit.minutes
+    player.sendActionBar(
+      MessageBuilder()
+        .template(MessagesConfig.Timer.bar)
+        .values(
+          mapOf(
+            "time" to time,
+            "unit" to unitString
+          )
+        )
+        .build()
+        .first()
+    )
 
     if (player.location.y <= ParkourConfig.resetHeight) {
       player.safeTeleport(data.checkpoint!!)

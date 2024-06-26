@@ -19,3 +19,9 @@ item:
   hider:
     hidePlayers: "§7All players are now §chidden"
     showPlayers: "§7All players are now §ashown"
+
+timer:
+  bar: "§a{time} {unit}"
+  unit:
+    seconds: "Seconds"
+    minutes: "Minutes"

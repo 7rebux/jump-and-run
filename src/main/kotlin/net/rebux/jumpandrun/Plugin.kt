@@ -8,7 +8,6 @@ import net.rebux.jumpandrun.config.ItemsConfig
 import net.rebux.jumpandrun.config.MenuConfig
 import net.rebux.jumpandrun.config.MessagesConfig
 import net.rebux.jumpandrun.config.ParkourConfig
-import net.rebux.jumpandrun.config.PluginConfig
 import net.rebux.jumpandrun.database.DatabaseConnector
 import net.rebux.jumpandrun.database.SchemaInitializer
 import net.rebux.jumpandrun.listeners.*
@@ -19,9 +18,6 @@ import org.bukkit.plugin.java.JavaPlugin
 
 // Sadly this can't be an object due to bukkit implementation
 class Plugin : JavaPlugin() {
-
-  private val instance = Instance(this)
-  private val config = PluginConfig()
 
   @Override
   override fun onEnable() {

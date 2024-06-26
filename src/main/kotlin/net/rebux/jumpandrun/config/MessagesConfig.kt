@@ -33,6 +33,16 @@ object MessagesConfig : CustomConfiguration("messages.yml") {
     }
   }
 
+  internal object Timer {
+
+    val bar = getMessage("timer.bar")
+
+    internal object Unit {
+      val seconds = getMessage("timer.unit.seconds")
+      val minutes = getMessage("timer.unit.minutes")
+    }
+  }
+
   private fun getMessage(path: String): String {
     return config.getString(path)
       ?: error("Could not find config entry for message $path")

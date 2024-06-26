@@ -8,3 +8,9 @@ block:
   checkpoint: "IRON_BLOCK"
   reset: "REDSTONE_BLOCK"
   finish: "GOLD_BLOCK"
+
+difficulty:
+  easy: "§aEasy"
+  medium: "§6Medium"
+  hard: "§cHard"
+  extreme: "§5Extreme"
