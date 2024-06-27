@@ -22,9 +22,7 @@ data class MessageBuilder(
   fun error(error: Boolean = true) = apply { this.error = error }
 
   fun buildAndSend(receiver: CommandSender) {
-    build().forEach { line ->
-      receiver.sendMessage(appendOptions(line))
-    }
+    build().forEach(receiver::sendMessage)
   }
 
   fun buildAndSendGlobally() {
@@ -34,9 +32,11 @@ data class MessageBuilder(
   fun build(): List<String> {
     return template?.let {
       if (it.contains("\n")) {
-        return it.split("\n").map(::replaceValues)
+        return it.split("\n")
+          .map(::replaceValues)
+          .map(::appendOptions)
       } else {
-        return listOf(replaceValues(it))
+        return listOf(appendOptions(replaceValues(it)))
       }
     } ?: error("Message must be specified!")
   }

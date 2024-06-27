@@ -1,19 +1,18 @@
 package net.rebux.jumpandrun.config
 
-import net.rebux.jumpandrun.Plugin
+import net.rebux.jumpandrun.Instance
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import java.io.File
 import java.io.InputStreamReader
 
-abstract class CustomConfiguration(private val fileName: String) {
+abstract class CustomConfiguration(fileName: String) {
 
-  private lateinit var file: File
-  protected lateinit var config: FileConfiguration
+  private val plugin = Instance.plugin
+  private var file: File = File(plugin.dataFolder, fileName)
+  protected var config: FileConfiguration
 
-  fun createOrLoad(plugin: Plugin) {
-    this.file = File(plugin.dataFolder, fileName)
-
+  init {
     if (!plugin.dataFolder.exists()) plugin.dataFolder.mkdir()
     if (!file.exists()) file.createNewFile()
 

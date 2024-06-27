@@ -12,10 +12,10 @@ import org.bukkit.inventory.meta.SkullMeta
 abstract class Item(private val configName: String) {
 
   val id = ItemRegistry.register(this)
-  val enabled = ItemsConfig.isEnabled(configName)
+  private val enabled = ItemsConfig.isEnabled(configName)
   val name = ItemsConfig.getName(configName)
   val material = ItemsConfig.getMaterial(configName)
-  val slot = ItemsConfig.getSlot(configName)
+  private val slot = ItemsConfig.getSlot(configName)
 
   open fun onInteract(player: Player) { }
 
@@ -23,7 +23,7 @@ abstract class Item(private val configName: String) {
     return Builder()
       .displayName(name)
       .material(
-        Material.getMaterial(material) ?: error("Material with $name is invalid!")
+        Material.getMaterial(material) ?: error("Material for item $configName with name $material is invalid!")
       )
       .build()
   }

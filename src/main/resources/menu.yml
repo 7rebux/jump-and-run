@@ -8,7 +8,7 @@ entry:
   builder: "§7» §eBuilder: §9{builder}"
   noTime: "§c--.--.---"
   personalBest:
-    title: "§7» §Personal best:"
+    title: "§7» §6Personal best:"
     time: "§9{time} {unit}"
   globalBest:
     title: "§7» §6Global best:"
