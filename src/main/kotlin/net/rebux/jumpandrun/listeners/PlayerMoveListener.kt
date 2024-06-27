@@ -60,8 +60,8 @@ object PlayerMoveListener : Listener {
             "unit" to unitString
           )
         )
-        .build()
-        .first()
+        .prefix(false)
+        .buildSingle()
     )
 
     if (player.location.y <= ParkourConfig.resetHeight) {

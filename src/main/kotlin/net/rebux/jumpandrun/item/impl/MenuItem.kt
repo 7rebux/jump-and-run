@@ -35,8 +35,8 @@ object MenuItem : Item("menu") {
           "quantity" to ParkourManager.parkours.size
         )
       )
-      .build()
-      .first()
+      .prefix(false)
+      .buildSingle()
     val size = MenuConfig.parkoursPerPage + 9
     val inventory = Bukkit.createInventory(null, size, title)
 
@@ -101,6 +101,7 @@ object MenuItem : Item("menu") {
               "difficulty" to parkour.difficulty
             )
           )
+          .prefix(false)
           .build()
       )
 
@@ -112,6 +113,7 @@ object MenuItem : Item("menu") {
               "builder" to parkour.builder
             )
           )
+          .prefix(false)
           .build()
       )
 
@@ -120,6 +122,7 @@ object MenuItem : Item("menu") {
       addAll(
         MessageBuilder()
           .template(MenuConfig.Entry.PersonalBest.title)
+          .prefix(false)
           .build()
       )
 
@@ -135,12 +138,14 @@ object MenuItem : Item("menu") {
                 "unit" to unit
               )
             )
+            .prefix(false)
             .build()
         )
       } else {
         addAll(
           MessageBuilder()
             .template(MenuConfig.Entry.noTime)
+            .prefix(false)
             .build()
         )
       }
@@ -150,6 +155,7 @@ object MenuItem : Item("menu") {
       addAll(
         MessageBuilder()
           .template(MenuConfig.Entry.GlobalBest.title)
+          .prefix(false)
           .build()
       )
 
@@ -165,12 +171,14 @@ object MenuItem : Item("menu") {
                 "unit" to unit
               )
             )
+            .prefix(false)
             .build()
         )
 
         addAll(
           MessageBuilder()
             .template(MenuConfig.Entry.GlobalBest.subtitle)
+            .prefix(false)
             .build()
         )
 
@@ -183,6 +191,7 @@ object MenuItem : Item("menu") {
                   "player" to player.name!!
                 )
               )
+              .prefix(false)
               .build()
           )
         }
@@ -190,6 +199,7 @@ object MenuItem : Item("menu") {
         addAll(
           MessageBuilder()
             .template(MenuConfig.Entry.noTime)
+            .prefix(false)
             .build()
         )
       }

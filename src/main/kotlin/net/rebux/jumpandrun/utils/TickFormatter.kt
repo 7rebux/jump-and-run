@@ -3,10 +3,19 @@ package net.rebux.jumpandrun.utils
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
+/**
+ * An object with utility functions to format tick based values.
+ *
+ * 1 tick represents 1/20 of a second. A Minecraft server runs tick based, that means
+ * this is the closest a time measurement can get on the server side.
+ */
 object TickFormatter {
 
   /**
-   * Formats the given [ticks] to "(mm.)ss.SSS" and also returns the unit
+   * Formats the given [ticks] to a pattern like <code>"(mm.)ss.SSS"</code>.
+   *
+   * @param[ticks] The ticks to format.
+   * @return A pair of the formatted [String] and the [TimeUnit].
    */
   fun format(ticks: Long): Pair<String, TimeUnit> {
     val negative = ticks < 0
