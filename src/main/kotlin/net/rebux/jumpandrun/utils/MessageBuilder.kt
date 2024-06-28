@@ -52,15 +52,10 @@ data class MessageBuilder(
    * Builds the message and returns all lines in a [Collection].
    */
   fun build(): Collection<String> {
-    return template?.let {
-      if (it.contains("\n")) {
-        return it.split("\n")
-          .map(::replaceValues)
-          .map(::appendOptions)
-      } else {
-        return listOf(appendOptions(replaceValues(it)))
-      }
-    } ?: error("Template must be specified!")
+    return checkNotNull(template) { "Template must be specified" }
+      .split("\n")
+      .map(::replaceValues)
+      .map(::appendOptions)
   }
 
   /**
