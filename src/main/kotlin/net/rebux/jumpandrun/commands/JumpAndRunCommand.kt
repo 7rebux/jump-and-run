@@ -184,10 +184,12 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
   }
 
   private fun sendUsage(sender: CommandSender) {
-    sender.sendMessage("/jnr list")
-    sender.sendMessage("/jnr join <id>")
-    sender.sendMessage("/jnr add <name> <builder> <difficulty> <material>")
-    sender.sendMessage("/jnr remove <id>")
-    sender.sendMessage("/jnr reset <id> <uuid | all>")
+    MessageBuilder("""
+      /jnr list
+      /jnr join <id>
+      /jnr add <name> <builder> <difficulty> <material>
+      /jnr remove <id>
+      /jnr reset <id> <uuid | all>
+    """.trimIndent()).buildAndSend(sender)
   }
 }
