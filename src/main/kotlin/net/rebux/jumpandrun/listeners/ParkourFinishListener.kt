@@ -34,15 +34,11 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
     val ticks = player.data.timer.stop()
     val (time, unit) = TickFormatter.format(ticks)
 
-    MessageBuilder()
-      .template(MessagesConfig.Event.completed)
-      .values(
-        mapOf(
-          "name" to parkour.name,
-          "time" to time,
-          "unit" to unit
-        )
-      )
+    MessageBuilder(MessagesConfig.Event.completed)
+      .values(mapOf(
+        "name" to parkour.name,
+        "time" to time,
+        "unit" to unit))
       .buildAndSend(player)
 
     if (!parkour.times.contains(player.uniqueId) ||
@@ -52,16 +48,12 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
 
       // First global best
       if (globalBest == null) {
-        MessageBuilder()
-          .template(MessagesConfig.Event.firstGlobalBest)
-          .values(
-            mapOf(
-              "player" to player.name,
-              "name" to parkour.name,
-              "time" to time,
-              "unit" to unit
-            )
-          )
+        MessageBuilder(MessagesConfig.Event.firstGlobalBest)
+          .values(mapOf(
+            "player" to player.name,
+            "name" to parkour.name,
+            "time" to time,
+            "unit" to unit))
           .buildAndSendGlobally()
 
         player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F) // TODO: Config entry for this?
@@ -75,17 +67,13 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
           .mapNotNull { Bukkit.getOfflinePlayer(it.key).name }
           .joinToString(", ")
 
-        MessageBuilder()
-          .template(MessagesConfig.Event.globalBest)
-          .values(
-            mapOf(
-              "player" to player.name,
-              "name" to parkour.name,
-              "holders" to previousHolders,
-              "time" to deltaTime,
-              "unit" to deltaUnit
-            )
-          )
+        MessageBuilder(MessagesConfig.Event.globalBest)
+          .values(mapOf(
+            "player" to player.name,
+            "name" to parkour.name,
+            "holders" to previousHolders,
+            "time" to deltaTime,
+            "unit" to deltaUnit))
           .buildAndSendGlobally()
 
         Bukkit.getOnlinePlayers().forEach {
@@ -94,10 +82,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
       }
       // New personal best
       else {
-        MessageBuilder()
-          .template(MessagesConfig.Event.personalBest)
-          .buildAndSend(player)
-
+        MessageBuilder(MessagesConfig.Event.personalBest).buildAndSend(player)
         player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F) // TODO: Config entry for this?
       }
 

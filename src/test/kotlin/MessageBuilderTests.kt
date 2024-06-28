@@ -1,25 +1,15 @@
 import net.rebux.jumpandrun.utils.MessageBuilder
-import org.junit.jupiter.api.assertThrows
-import java.lang.IllegalStateException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 internal class MessageBuilderTests {
 
   @Test
-  fun throwsWithoutTemplate() {
-    assertThrows<IllegalStateException> {
-      MessageBuilder().build()
-    }
-  }
-
-  @Test
   fun buildsSimpleMessage() {
     val expected = "message";
     assertEquals(
       expected,
-      MessageBuilder()
-        .template("message")
+      MessageBuilder("message")
         .prefix(false)
         .buildSingle()
     )
@@ -30,8 +20,7 @@ internal class MessageBuilderTests {
     val expected = listOf("line1", "line2")
     assertEquals(
       expected,
-      MessageBuilder()
-        .template("line1\nline2")
+      MessageBuilder("line1\nline2")
         .prefix(false)
         .build()
     )
@@ -42,8 +31,7 @@ internal class MessageBuilderTests {
     val expected = "§4error"
     assertEquals(
       expected,
-      MessageBuilder()
-        .template("error")
+      MessageBuilder("error")
         .error()
         .prefix(false)
         .buildSingle()
@@ -55,8 +43,7 @@ internal class MessageBuilderTests {
     val expected = listOf("§4error1", "§4error2")
     assertEquals(
       expected,
-      MessageBuilder()
-        .template("error1\nerror2")
+      MessageBuilder("error1\nerror2")
         .error()
         .prefix(false)
         .build()
@@ -68,13 +55,8 @@ internal class MessageBuilderTests {
     val expected = "value=2"
     assertEquals(
       expected,
-      MessageBuilder()
-        .template("value={value}")
-        .values(
-          mapOf(
-            "value" to 2
-          )
-        )
+      MessageBuilder("value={value}")
+        .values(mapOf("value" to 2))
         .prefix(false)
         .buildSingle()
     )
@@ -85,14 +67,10 @@ internal class MessageBuilderTests {
     val expected = listOf("§4line1=1", "§4line2=2")
     assertEquals(
       expected,
-      MessageBuilder()
-        .template("line1={line1}\nline2={line2}")
-        .values(
-          mapOf(
-            "line1" to 1,
-            "line2" to 2
-          )
-        )
+      MessageBuilder("line1={line1}\nline2={line2}")
+        .values(mapOf(
+          "line1" to 1,
+          "line2" to 2))
         .error()
         .prefix(false)
         .build()

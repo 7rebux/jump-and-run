@@ -9,22 +9,15 @@ import org.bukkit.command.CommandSender
  *
  * This class is used to create any type of message in the plugin.
  * It also supports multiline messages by default.
- * A template is required to build a message.
- * The prefix is included by default.
+ * The prefix is also included by default.
+ *
+ * @param[template] The template to use as the message basis. This may include <code>\n</code> for multiple lines.
  */
-data class MessageBuilder(
-  private var template: String? = null,
-  private var values: Map<String, Any>? = null,
-  private var prefix: Boolean = true,
-  private var error: Boolean = false
-) {
+data class MessageBuilder(private var template: String) {
 
-  /**
-   * Specifies the template to use for the message. This is required.
-   *
-   * @param[template] The template to use as the message basis. This may include <code>\n</code> for multiple lines.
-   */
-  fun template(template: String) = apply { this.template = template }
+  private var values: Map<String, Any>? = null
+  private var prefix: Boolean = true
+  private var error: Boolean = false
 
   /**
    * Specifies the values to be set in the message.
@@ -52,7 +45,7 @@ data class MessageBuilder(
    * Builds the message and returns all lines in a [Collection].
    */
   fun build(): Collection<String> {
-    return checkNotNull(template) { "Template must be specified" }
+    return template
       .split("\n")
       .map(::replaceValues)
       .map(::appendOptions)

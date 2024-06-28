@@ -26,15 +26,11 @@ object MenuItem : Item("menu") {
   }
 
   fun openInventory(player: Player, page: Int) {
-    val title = MessageBuilder()
-      .template(MenuConfig.tile)
-      .values(
-        mapOf(
-          "completed" to countParkoursPlayed(player),
-          "records" to countParkourRecords(player),
-          "quantity" to ParkourManager.parkours.size
-        )
-      )
+    val title = MessageBuilder(MenuConfig.tile)
+      .values(mapOf(
+        "completed" to countParkoursPlayed(player),
+        "records" to countParkourRecords(player),
+        "quantity" to ParkourManager.parkours.size))
       .prefix(false)
       .buildSingle()
     val size = MenuConfig.parkoursPerPage + 9
@@ -94,114 +90,66 @@ object MenuItem : Item("menu") {
       val parkour = this@buildItem
 
       addAll(
-        MessageBuilder()
-          .template(MenuConfig.Entry.difficulty)
-          .values(
-            mapOf(
-              "difficulty" to parkour.difficulty
-            )
-          )
+        MessageBuilder(MenuConfig.Entry.difficulty)
+          .values(mapOf("difficulty" to parkour.difficulty))
           .prefix(false)
           .build()
       )
 
       addAll(
-        MessageBuilder()
-          .template(MenuConfig.Entry.builder)
-          .values(
-            mapOf(
-              "builder" to parkour.builder
-            )
-          )
+        MessageBuilder(MenuConfig.Entry.builder)
+          .values(mapOf("builder" to parkour.builder))
           .prefix(false)
           .build()
       )
 
       add("")
 
-      addAll(
-        MessageBuilder()
-          .template(MenuConfig.Entry.PersonalBest.title)
-          .prefix(false)
-          .build()
-      )
+      addAll(MessageBuilder(MenuConfig.Entry.PersonalBest.title).prefix(false).build())
 
       if (playerTime != null) {
         val (time, unit) = TickFormatter.format(playerTime)
 
         addAll(
-          MessageBuilder()
-            .template(MenuConfig.Entry.PersonalBest.time)
-            .values(
-              mapOf(
-                "time" to time,
-                "unit" to unit
-              )
-            )
+          MessageBuilder(MenuConfig.Entry.PersonalBest.time)
+            .values(mapOf(
+              "time" to time,
+              "unit" to unit))
             .prefix(false)
             .build()
         )
       } else {
-        addAll(
-          MessageBuilder()
-            .template(MenuConfig.Entry.noTime)
-            .prefix(false)
-            .build()
-        )
+        addAll(MessageBuilder(MenuConfig.Entry.noTime).prefix(false).build())
       }
 
       add("")
 
-      addAll(
-        MessageBuilder()
-          .template(MenuConfig.Entry.GlobalBest.title)
-          .prefix(false)
-          .build()
-      )
+      addAll(MessageBuilder(MenuConfig.Entry.GlobalBest.title).prefix(false).build())
 
       if (bestTime != null) {
         val (time, unit) = TickFormatter.format(bestTime)
 
         addAll(
-          MessageBuilder()
-            .template(MenuConfig.Entry.GlobalBest.time)
-            .values(
-              mapOf(
-                "time" to time,
-                "unit" to unit
-              )
-            )
+          MessageBuilder(MenuConfig.Entry.GlobalBest.time)
+            .values(mapOf(
+              "time" to time,
+              "unit" to unit))
             .prefix(false)
             .build()
         )
 
-        addAll(
-          MessageBuilder()
-            .template(MenuConfig.Entry.GlobalBest.subtitle)
-            .prefix(false)
-            .build()
-        )
+        addAll(MessageBuilder(MenuConfig.Entry.GlobalBest.subtitle).prefix(false).build())
 
         playersWithBestTime.forEach { player ->
           addAll(
-            MessageBuilder()
-              .template(MenuConfig.Entry.GlobalBest.player)
-              .values(
-                mapOf(
-                  "player" to player.name!!
-                )
-              )
+            MessageBuilder(MenuConfig.Entry.GlobalBest.player)
+              .values(mapOf("player" to player.name!!))
               .prefix(false)
               .build()
           )
         }
       } else {
-        addAll(
-          MessageBuilder()
-            .template(MenuConfig.Entry.noTime)
-            .prefix(false)
-            .build()
-        )
+        addAll(MessageBuilder(MenuConfig.Entry.noTime).prefix(false).build())
       }
     }
 

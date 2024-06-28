@@ -12,7 +12,6 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 // TODO: Autocomplete
-// TODO: Entry argument > actual entries
 class TopCommand : CommandExecutor {
 
   private val messages = MessagesConfig.Command.Top
@@ -31,33 +30,23 @@ class TopCommand : CommandExecutor {
     val parkour = sender.data.parkour
 
     if (parkour == null) {
-      MessageBuilder()
-        .template(messages.invalid)
-        .error()
-        .buildAndSend(sender)
+      MessageBuilder(messages.invalid).error().buildAndSend(sender)
       return true
     }
 
     val entries = if (args.getOrNull(0) == "all") 100 else 5
 
     if (parkour.times.isEmpty()) {
-      MessageBuilder()
-        .template(messages.empty)
-        .error()
-        .buildAndSend(sender)
+      MessageBuilder(messages.empty).error().buildAndSend(sender)
       return true
     }
 
     val bestTime = parkour.times.values.min()
 
-    MessageBuilder()
-      .template(messages.header)
-      .values(
-        mapOf(
-          "name" to parkour.name,
-          "amount" to entries
-        )
-      )
+    MessageBuilder(messages.header)
+      .values(mapOf(
+        "name" to parkour.name,
+        "amount" to entries))
       .buildAndSend(sender)
 
     parkour.times.entries
@@ -70,16 +59,12 @@ class TopCommand : CommandExecutor {
           .mapNotNull { Bukkit.getOfflinePlayer(it.key).name }
           .joinToString(", ")
 
-        MessageBuilder()
-          .template(messages.entry)
-          .values(
-            mapOf(
-              "rank" to i + 1,
-              "player" to holders,
-              "time" to TickFormatter.format(time),
-              "delta" to formatDelta(time, bestTime)
-            )
-          )
+        MessageBuilder(messages.entry)
+          .values(mapOf(
+            "rank" to i + 1,
+            "player" to holders,
+            "time" to TickFormatter.format(time),
+            "delta" to formatDelta(time, bestTime)))
           .buildAndSend(sender)
       }
 

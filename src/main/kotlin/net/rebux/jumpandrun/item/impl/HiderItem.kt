@@ -14,15 +14,11 @@ object HiderItem : Item("hider") {
     if (player.data.playersHidden) {
       Bukkit.getOnlinePlayers().forEach(player::showPlayer)
       player.data.playersHidden = false
-      MessageBuilder()
-        .template(MessagesConfig.Item.Hider.showPlayers)
-        .buildAndSend(player)
+      MessageBuilder(MessagesConfig.Item.Hider.showPlayers).buildAndSend(player)
     } else {
       Bukkit.getOnlinePlayers().forEach(player::hidePlayer)
       player.data.playersHidden = true
-      MessageBuilder()
-        .template(MessagesConfig.Item.Hider.hidePlayers)
-        .buildAndSend(player)
+      MessageBuilder(MessagesConfig.Item.Hider.hidePlayers).buildAndSend(player)
     }
   }
 }

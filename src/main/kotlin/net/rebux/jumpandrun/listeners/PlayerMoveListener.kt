@@ -52,14 +52,10 @@ object PlayerMoveListener : Listener {
     val (time, unit) = TickFormatter.format(timer.ticks)
     val unitString = if (unit == TimeUnit.SECONDS) MessagesConfig.Timer.Unit.seconds else MessagesConfig.Timer.Unit.minutes
     player.sendActionBar(
-      MessageBuilder()
-        .template(MessagesConfig.Timer.bar)
-        .values(
-          mapOf(
-            "time" to time,
-            "unit" to unitString
-          )
-        )
+      MessageBuilder(MessagesConfig.Timer.bar)
+        .values(mapOf(
+          "time" to time,
+          "unit" to unitString))
         .prefix(false)
         .buildSingle()
     )
@@ -83,9 +79,7 @@ object PlayerMoveListener : Listener {
     }
 
     player.safeTeleport(player.data.checkpoint!!)
-    MessageBuilder()
-      .template(MessagesConfig.Event.resetBlock)
-      .buildAndSend(player)
+    MessageBuilder(MessagesConfig.Event.resetBlock).buildAndSend(player)
     player.playSound(player.location, Sound.ENTITY_SPIDER_DEATH, 1.0F, 1.0F) // TODO: Maybe put this in config?
   }
 
@@ -109,9 +103,7 @@ object PlayerMoveListener : Listener {
       this.yaw = player.location.yaw
       this.pitch = player.location.pitch
     }
-    MessageBuilder()
-      .template(MessagesConfig.Event.checkpoint)
-      .buildAndSend(player)
+    MessageBuilder(MessagesConfig.Event.checkpoint).buildAndSend(player)
     player.playSound(player.location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F) // TODO: Maybe put this in config?
   }
 
