@@ -3,16 +3,17 @@ package net.rebux.jumpandrun.listeners
 import net.rebux.jumpandrun.Plugin
 import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.config.MessagesConfig
+import net.rebux.jumpandrun.config.SoundsConfig
 import net.rebux.jumpandrun.database.entities.ParkourEntity
 import net.rebux.jumpandrun.database.entities.TimeEntity
 import net.rebux.jumpandrun.database.models.Times
 import net.rebux.jumpandrun.events.ParkourFinishEvent
 import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.utils.MessageBuilder
+import net.rebux.jumpandrun.utils.SoundUtil
 import net.rebux.jumpandrun.utils.TickFormatter
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
-import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -55,8 +56,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
             "time" to time,
             "unit" to unit))
           .buildAndSendGlobally()
-
-        player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F) // TODO: Config entry for this?
+        SoundUtil.playSound(SoundsConfig.firstGlobalBest, player)
       }
       // New global best
       else if (ticks < globalBest) {
@@ -75,15 +75,12 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
             "time" to deltaTime,
             "unit" to deltaUnit))
           .buildAndSendGlobally()
-
-        Bukkit.getOnlinePlayers().forEach {
-          it.playSound(it.location, Sound.BLOCK_ANVIL_LAND, 1.0F, 1.0F) // TODO: Config entry for this?
-        }
+        SoundUtil.playSound(SoundsConfig.newGlobalBest)
       }
       // New personal best
       else {
         MessageBuilder(MessagesConfig.Event.personalBest).buildAndSend(player)
-        player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F) // TODO: Config entry for this?
+        SoundUtil.playSound(SoundsConfig.newPersonalBest, player)
       }
 
       updateDatabaseEntry(parkour, player, ticks)

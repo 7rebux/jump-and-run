@@ -4,7 +4,6 @@ import net.rebux.jumpandrun.events.ParkourFinishEvent
 import net.rebux.jumpandrun.utils.ActionBarUtil.sendActionBar
 import net.rebux.jumpandrun.utils.TickFormatter
 import org.bukkit.Bukkit
-import org.bukkit.Sound
 import org.bukkit.block.BlockFace
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -12,8 +11,10 @@ import org.bukkit.event.player.PlayerMoveEvent
 import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.config.MessagesConfig
 import net.rebux.jumpandrun.config.ParkourConfig
+import net.rebux.jumpandrun.config.SoundsConfig
 import net.rebux.jumpandrun.safeTeleport
 import net.rebux.jumpandrun.utils.MessageBuilder
+import net.rebux.jumpandrun.utils.SoundUtil
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.concurrent.TimeUnit
@@ -41,8 +42,7 @@ object PlayerMoveListener : Listener {
 
     if (!timer.started && event.hasMoved()) {
       timer.start()
-      // TODO: Maybe put this in config?
-      player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_PLING, 1.0F, 1.0F)
+      SoundUtil.playSound(SoundsConfig.timerStart, player)
     }
 
     if (timer.started) {
@@ -62,7 +62,7 @@ object PlayerMoveListener : Listener {
 
     if (player.location.y <= ParkourConfig.resetHeight) {
       player.safeTeleport(data.checkpoint!!)
-      player.playSound(player.location, Sound.ENTITY_SPIDER_DEATH, 1.0F, 1.0F) // TODO: Maybe put this in config?
+      SoundUtil.playSound(SoundsConfig.resetHeight, player)
     }
 
     when (player.location.block.getRelative(BlockFace.DOWN).type) {
@@ -80,7 +80,7 @@ object PlayerMoveListener : Listener {
 
     player.safeTeleport(player.data.checkpoint!!)
     MessageBuilder(MessagesConfig.Event.resetBlock).buildAndSend(player)
-    player.playSound(player.location, Sound.ENTITY_SPIDER_DEATH, 1.0F, 1.0F) // TODO: Maybe put this in config?
+    SoundUtil.playSound(SoundsConfig.resetBlock, player)
   }
 
   // TODO: Not a clean solution with the distance checks
@@ -104,7 +104,7 @@ object PlayerMoveListener : Listener {
       this.pitch = player.location.pitch
     }
     MessageBuilder(MessagesConfig.Event.checkpoint).buildAndSend(player)
-    player.playSound(player.location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 1.0F) // TODO: Maybe put this in config?
+    SoundUtil.playSound(SoundsConfig.checkpoint, player)
   }
 
   private fun handleFinish(player: Player) {

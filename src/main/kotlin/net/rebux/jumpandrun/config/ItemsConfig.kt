@@ -10,7 +10,6 @@ object ItemsConfig : CustomConfiguration("items.yml") {
     return config.getString("$item.name") ?: "Unnamed"
   }
 
-  // TODO: Return material instead of string
   fun getMaterial(item: String): String {
     return config.getString("$item.material") ?: "BARRIER"
   }

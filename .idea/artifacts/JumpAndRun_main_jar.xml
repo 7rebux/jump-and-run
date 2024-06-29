@@ -31,6 +31,7 @@
       <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/menu.yml" />
       <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/messages.yml" />
       <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/parkour.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/sounds.yml" />
     </root>
   </artifact>
 </component>
