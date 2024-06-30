@@ -32,7 +32,7 @@ object PlayerInteractListener : Listener {
   // So we allow the interaction again when the player is in a parkour
   @EventHandler(priority = EventPriority.HIGH)
   fun onEntityInteract(event: PlayerInteractEntityEvent) {
-    if (event.player.data.isInParkour() && event.rightClicked is Minecart) {
+    if (event.player.data.inParkour && event.rightClicked is Minecart) {
       event.rightClicked.setPassenger(event.player)
     }
   }

@@ -36,7 +36,7 @@ object PlayerMoveListener : Listener {
       if (block.z < 0) -0.5 else 0.5
     )
 
-    if (!data.isInParkour()) {
+    if (!data.inParkour) {
       return
     }
 

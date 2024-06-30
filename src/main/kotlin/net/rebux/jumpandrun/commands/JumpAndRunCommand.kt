@@ -69,7 +69,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
       return
     }
 
-    if (sender.data.isInParkour()) {
+    if (sender.data.inParkour) {
       MessageBuilder("You are already in a parkour!").error().buildAndSend(sender)
       return
     }
