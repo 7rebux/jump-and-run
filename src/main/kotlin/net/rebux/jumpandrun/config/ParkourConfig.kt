@@ -5,12 +5,15 @@ import org.bukkit.Material
 object ParkourConfig : CustomConfiguration("parkour.yml") {
 
   val resetHeight = config.getInt("resetHeight")
+  val gameMode = config.getString("gameMode")!!
+  val leaveOnFinish = config.getBoolean("leaveOnFinish")
 
   internal object Feature {
     val resetBlock = config.getBoolean("feature.resetBlock")
     val checkpoint = config.getBoolean("feature.checkpoint")
   }
 
+  // TODO: Material parsing should not happen here?
   internal object Block {
     val finish = Material.getMaterial(config.getString("block.finish") ?: "GOLD_BLOCK")
       ?: error("Material not found for finish block!")

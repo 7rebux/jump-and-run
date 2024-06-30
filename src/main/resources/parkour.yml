@@ -1,4 +1,6 @@
 resetHeight: 70
+gameMode: "ADVENTURE"
+leaveOnFinish: true
 
 feature:
   checkpoint: true

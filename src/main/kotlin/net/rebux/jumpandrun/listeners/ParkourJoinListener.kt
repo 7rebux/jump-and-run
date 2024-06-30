@@ -1,6 +1,7 @@
 package net.rebux.jumpandrun.listeners
 
 import net.rebux.jumpandrun.api.PlayerDataManager.data
+import net.rebux.jumpandrun.config.ParkourConfig
 import net.rebux.jumpandrun.events.ParkourJoinEvent
 import net.rebux.jumpandrun.item.impl.ResetItem
 import net.rebux.jumpandrun.item.impl.HiderItem
@@ -10,6 +11,7 @@ import net.rebux.jumpandrun.safeTeleport
 import net.rebux.jumpandrun.utils.InventoryCache
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -23,33 +25,57 @@ object ParkourJoinListener : Listener {
     }
 
     val player = event.player
+    val parkour = event.parkour
 
-    if (player.data.isInParkour()) {
+    // TODO: Remove this because this should be possible?
+    // TODO: Also the menu item must stay in inventory
+    if (player.data.inParkour) {
       error("Player ${player.name} tried to join a parkour while already being in a parkour!")
     }
 
-    player.gameMode = GameMode.ADVENTURE
-    player.safeTeleport(event.parkour.location)
     player.data.apply {
-      this.parkour = event.parkour
-      this.checkpoint = event.parkour.location
+      // We only want to set the previous game mode if the players was not in a parkour before
+      if (!player.data.inParkour) {
+        this.previousGameMode = player.gameMode
+      }
+
+      this.parkour = parkour
+      this.checkpoint = parkour.location
     }
 
-    InventoryCache.saveInventory(player)
+    player.gameMode = GameMode.valueOf(ParkourConfig.gameMode)
+
+    player.saveInventory()
     player.inventory.clear()
-    addParkourItems(player)
+    player.addParkourItems()
 
     if (player.data.playersHidden) {
       Bukkit.getOnlinePlayers().forEach(player::hidePlayer)
     }
+
+    player.safeTeleport(parkour.location)
   }
 
-  private fun addParkourItems(player: Player) {
+  private fun Player.saveInventory() {
+    InventoryCache.inventories[this] = buildMap {
+      val player = this@saveInventory
+
+      for (i in 0..player.inventory.size) {
+        if (player.inventory.getItem(i)?.type in listOf(null, Material.AIR)) {
+          continue
+        }
+
+        this[i] = player.inventory.getItem(i)!!.clone()
+      }
+    }
+  }
+
+  private fun Player.addParkourItems() {
     listOf(
       ResetItem,
       RestartItem,
       HiderItem,
       LeaveItem
-    ).forEach { item -> item.addToInventory(player) }
+    ).forEach { item -> item.addToInventory(this) }
   }
 }

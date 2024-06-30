@@ -1,7 +1,9 @@
 package net.rebux.jumpandrun.listeners
 
+import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.api.PlayerDataManager
 import net.rebux.jumpandrun.item.impl.MenuItem
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -14,6 +16,11 @@ object PlayerConnectionListener : Listener {
   fun onJoin(event: PlayerJoinEvent) {
     PlayerDataManager.add(event.player)
     addLobbyItems(event.player)
+
+    Bukkit.getOnlinePlayers()
+      .filter { it.data.inParkour }
+      .filter { it.data.playersHidden }
+      .forEach { it.hidePlayer(event.player) }
   }
 
   @EventHandler
