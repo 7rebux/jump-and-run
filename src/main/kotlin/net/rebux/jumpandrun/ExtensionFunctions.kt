@@ -5,13 +5,6 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-// 1.8 Action Bar
-//fun Player.sendActionBar(text: String) {
-//    (this as CraftPlayer).handle.playerConnection.sendPacket(
-//        PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\":\"$text\"}"), 2)
-//    )
-//}
-
 fun Player.safeTeleport(location: Location) {
   this.fallDistance = 0.0F
   this.teleport(location)

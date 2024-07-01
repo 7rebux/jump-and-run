@@ -22,9 +22,8 @@ repositories {
 }
 
 dependencies {
-  // compileOnly("org.bukkit:bukkit:1.8.8-R0.1-SNAPSHOT")
-  // compileOnly("com.github.azbh111:craftbukkit-1.8.8:R")
   compileOnly("org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT")
+  compileOnly("com.github.azbh111:craftbukkit-1.8.8:R")
 
   implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
   implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")

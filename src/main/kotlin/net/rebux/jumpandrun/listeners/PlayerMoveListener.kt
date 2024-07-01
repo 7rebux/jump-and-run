@@ -68,7 +68,7 @@ object PlayerMoveListener : Listener {
     when (player.location.block.getRelative(BlockFace.DOWN).type) {
       ParkourConfig.Block.reset -> handleReset(player)
       ParkourConfig.Block.checkpoint -> handleCheckpoint(player, blockLocation)
-      ParkourConfig.Block.finish -> handleFinish(player)
+      ParkourConfig.Block.finish -> handleFinish(player, blockLocation)
       else -> {}
     }
   }
@@ -89,11 +89,6 @@ object PlayerMoveListener : Listener {
       return
     }
 
-    // Make sure start block can not be a checkpoint
-    if (player.data.parkour!!.location.distance(blockLocation) < 2.0) {
-      return
-    }
-
     // Make sure checkpoint is not already set
     if (player.data.checkpoint!!.distance(blockLocation) < 2.0) {
       return
@@ -107,7 +102,12 @@ object PlayerMoveListener : Listener {
     SoundUtil.playSound(SoundsConfig.checkpoint, player)
   }
 
-  private fun handleFinish(player: Player) {
+  private fun handleFinish(player: Player, blockLocation: Location) {
+    // Make sure start block is not finish block
+    if (player.data.parkour!!.location.distance(blockLocation) < 2.0) {
+      return
+    }
+
     Bukkit.getPluginManager().callEvent(
       ParkourFinishEvent(player, player.data.parkour!!)
     )

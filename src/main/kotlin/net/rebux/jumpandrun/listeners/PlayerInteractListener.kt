@@ -47,7 +47,7 @@ object PlayerInteractListener : Listener {
 
       return item
     } catch (_: NoSuchMethodError) {
-      // Fallback for 1.8 Servers
+      // Fallback for 1.8 servers
       return player.itemInHand
     }
   }
