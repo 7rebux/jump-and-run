@@ -35,7 +35,7 @@ object ParkourJoinListener : Listener {
 
     player.data.apply {
       // We only want to set the previous game mode if the players was not in a parkour before
-      if (!player.data.inParkour) {
+      if (!this.inParkour) {
         this.previousGameMode = player.gameMode
       }
 

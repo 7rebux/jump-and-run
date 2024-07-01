@@ -16,18 +16,20 @@ object CommandPreprocessListener : Listener {
       return
     }
 
-    event.player.data.apply {
+    val player = event.player
+
+    player.gameMode = player.data.previousGameMode!!
+
+    player.data.apply {
       this.parkour = null
       this.checkpoint = null
       this.previousGameMode = null
       this.timer.stop()
     }
 
-    event.player.gameMode = event.player.data.previousGameMode!!
+    player.loadInventory()
 
-    event.player.loadInventory()
-
-    Bukkit.getOnlinePlayers().forEach(event.player::showPlayer)
+    Bukkit.getOnlinePlayers().forEach(player::showPlayer)
   }
 
   private fun Player.loadInventory() {
