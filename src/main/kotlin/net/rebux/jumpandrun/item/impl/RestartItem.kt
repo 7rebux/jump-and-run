@@ -8,6 +8,10 @@ import org.bukkit.entity.Player
 object RestartItem : Item("restart") {
 
   override fun onInteract(player: Player) {
+    if (!player.data.inParkour) {
+      return
+    }
+
     val startLocation = player.data.parkour!!.location
 
     player.data.checkpoint = startLocation

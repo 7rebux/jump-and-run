@@ -11,6 +11,10 @@ object HiderItem : Item("hider") {
 
   @Override
   override fun onInteract(player: Player) {
+    if (!player.data.inParkour) {
+      return
+    }
+
     if (player.data.playersHidden) {
       Bukkit.getOnlinePlayers().forEach(player::showPlayer)
       player.data.playersHidden = false
