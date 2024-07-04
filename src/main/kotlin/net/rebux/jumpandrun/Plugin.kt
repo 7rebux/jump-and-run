@@ -32,6 +32,7 @@ class Plugin : JavaPlugin() {
       InventoryClickListener,
       CommandPreprocessListener,
       ParkourJoinListener,
+      FoodLevelChangeListener,
       ParkourFinishListener(this),
     )
 

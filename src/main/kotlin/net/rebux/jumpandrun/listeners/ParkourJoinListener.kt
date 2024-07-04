@@ -6,6 +6,7 @@ import net.rebux.jumpandrun.events.ParkourJoinEvent
 import net.rebux.jumpandrun.item.impl.ResetItem
 import net.rebux.jumpandrun.item.impl.HiderItem
 import net.rebux.jumpandrun.item.impl.LeaveItem
+import net.rebux.jumpandrun.item.impl.MenuItem
 import net.rebux.jumpandrun.item.impl.RestartItem
 import net.rebux.jumpandrun.safeTeleport
 import net.rebux.jumpandrun.utils.InventoryCache
@@ -18,6 +19,8 @@ import org.bukkit.event.Listener
 
 object ParkourJoinListener : Listener {
 
+  private const val MAX_FOOD_LEVEL = 20
+
   @EventHandler
   fun onParkourJoin(event: ParkourJoinEvent) {
     if (event.isCancelled) {
@@ -26,12 +29,6 @@ object ParkourJoinListener : Listener {
 
     val player = event.player
     val parkour = event.parkour
-
-    // TODO: Remove this because this should be possible?
-    // TODO: Also the menu item must stay in inventory
-    if (player.data.inParkour) {
-      error("Player ${player.name} tried to join a parkour while already being in a parkour!")
-    }
 
     player.data.apply {
       // We only want to set the previous game mode if the players was not in a parkour before
@@ -44,6 +41,7 @@ object ParkourJoinListener : Listener {
     }
 
     player.gameMode = GameMode.valueOf(ParkourConfig.gameMode)
+    player.foodLevel = MAX_FOOD_LEVEL
 
     player.saveInventory()
     player.inventory.clear()
@@ -74,6 +72,7 @@ object ParkourJoinListener : Listener {
     listOf(
       ResetItem,
       RestartItem,
+      MenuItem,
       HiderItem,
       LeaveItem
     ).forEach { item -> item.addToInventory(this) }

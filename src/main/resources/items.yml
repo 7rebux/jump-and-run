@@ -1,11 +1,8 @@
-# Outside of parkour
 menu:
   enabled: true
   name: '§bParkours'
   material: 'PAPER'
   slot: 4
-
-# While in parkour
 restart:
   enabled: true
   name: '§cRestart'
@@ -20,7 +17,7 @@ hider:
   enabled: true
   name: '§cShow/Hide others'
   material: 'STICK'
-  slot: 4
+  slot: 7
 leave:
   enabled: true
   name: '§cLeave §7(/spawn)'
