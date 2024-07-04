@@ -20,10 +20,13 @@ class Plugin : JavaPlugin() {
   override fun onEnable() {
     this.logger.info("Connecting to database...")
     DatabaseConnector.connect()
+    this.logger.info("Successfully connected to database!")
     SchemaInitializer.initialize()
+    this.logger.info("Successfully loaded database schema!")
 
     this.logger.info("Loading parkours from database...")
     ParkourManager.load()
+    this.logger.info("Successfully loaded ${ParkourManager.parkours.size} parkours!")
 
     registerListeners(
       PlayerConnectionListener,
