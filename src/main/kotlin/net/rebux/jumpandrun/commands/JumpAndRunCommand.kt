@@ -14,17 +14,17 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.Material
+import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
-// TODO: Autocompletion
-class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
+class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabCompleter {
 
   override fun onCommand(
     sender: CommandSender,
     command: Command,
-    abel: String,
+    label: String,
     args: Array<String>
   ): Boolean {
     Bukkit.getScheduler().runTaskAsynchronously(plugin) { ->
@@ -191,5 +191,32 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
       /jnr remove <id>
       /jnr reset <id> <uuid | all>
     """.trimIndent()).buildAndSend(sender)
+  }
+
+  override fun onTabComplete(
+    sender: CommandSender,
+    command: Command,
+    label: String,
+    args: Array<String>
+  ): List<String> {
+    if (args.size == 1) {
+      return listOf("list", "join", "add", "remove", "reset")
+    }
+
+    if (args.size == 2 && args[0] in listOf("join", "remove", "reset")) {
+      return ParkourManager.parkours.keys.map(Int::toString)
+    }
+
+    if (args.size == 4 && args[0] == "add") {
+      return ParkourDifficulty.values().map(ParkourDifficulty::name)
+        .filter { it.startsWith(args[3]) }
+    }
+
+    if (args.size == 5 && args[0] == "add") {
+      return Material.values().map(Material::name)
+        .filter { it.startsWith(args[4]) }
+    }
+
+    return emptyList()
   }
 }

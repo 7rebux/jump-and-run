@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="JumpAndRun.main:jar 1.20.4">
-    <output-path>$USER_HOME$/Downloads/bambi-server/plugins</output-path>
+    <output-path>$PROJECT_DIR$/../../private-parkour-server/plugins</output-path>
     <root id="archive" name="JumpAndRun.jar">
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/13.0/919f0dfe192fb4e063e7dacadee7f8bb9a2672a9/annotations-13.0.jar" path-in-jar="/" />
       <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/plugin.yml" />
