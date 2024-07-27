@@ -10,6 +10,7 @@ import net.rebux.jumpandrun.item.impl.MenuItem
 import net.rebux.jumpandrun.item.impl.RestartItem
 import net.rebux.jumpandrun.safeTeleport
 import net.rebux.jumpandrun.utils.InventoryCache
+import net.rebux.jumpandrun.utils.ScoreboardUtil
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Material
@@ -46,6 +47,8 @@ object ParkourJoinListener : Listener {
     player.saveInventory()
     player.inventory.clear()
     player.addParkourItems()
+
+    player.scoreboard = ScoreboardUtil.createScoreboard(parkour, player)
 
     if (player.data.playersHidden) {
       Bukkit.getOnlinePlayers().forEach(player::hidePlayer)
