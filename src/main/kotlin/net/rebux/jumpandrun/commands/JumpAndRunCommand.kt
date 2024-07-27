@@ -16,6 +16,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.Material
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
@@ -31,6 +32,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabComple
       when (args.firstOrNull()?.lowercase()) {
         "list" -> handleListCommand(sender)
         "join" -> handleJoinCommand(sender, args.getOrNull(1)?.toIntOrNull())
+        "leave" -> handleLeaveCommand(sender)
         "add" -> handleAddCommand(sender, args.copyOfRange(1, args.size))
         "remove" -> handleRemoveCommand(sender, args.getOrNull(1)?.toIntOrNull())
         "reset" -> handleResetCommand(sender, args.copyOfRange(1, args.size))
@@ -118,6 +120,17 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabComple
     }
   }
 
+  fun handleLeaveCommand(sender: CommandSender) {
+    if (sender !is Player) {
+      MessageBuilder("This command can only be called as a player!").error().buildAndSend(sender)
+      return
+    }
+
+    // TODO: Create a leave event or something and don't call spawn command if there is none
+    sender.performCommand("spawn")
+    Bukkit.getPluginManager().callEvent(PlayerCommandPreprocessEvent(sender, "/spawn"))
+  }
+
   private fun handleRemoveCommand(sender: CommandSender, id: Int?) {
     ParkourManager.parkours[id]?.let {
       transaction {
@@ -187,6 +200,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabComple
     MessageBuilder("""
       /jnr list
       /jnr join <id>
+      /jnr leave
       /jnr add <name> <builder> <difficulty> <material>
       /jnr remove <id>
       /jnr reset <id> <uuid | all>
