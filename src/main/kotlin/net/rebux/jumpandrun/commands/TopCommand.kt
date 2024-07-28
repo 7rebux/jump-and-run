@@ -11,7 +11,6 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-// TODO: Autocomplete
 class TopCommand : CommandExecutor {
 
   private val messages = MessagesConfig.Command.Top
@@ -27,7 +26,7 @@ class TopCommand : CommandExecutor {
       return true
     }
 
-    val parkour = sender.data.parkour
+    val parkour = sender.data.parkourData.parkour
 
     if (parkour == null) {
       MessageBuilder(messages.invalid).error().buildAndSend(sender)

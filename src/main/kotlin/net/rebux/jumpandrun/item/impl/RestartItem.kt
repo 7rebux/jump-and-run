@@ -12,10 +12,17 @@ object RestartItem : Item("restart") {
       return
     }
 
-    val startLocation = player.data.parkour!!.location
+    // Prevent restarting parkour when in practice mode
+    if (player.data.inPractice) {
+      // TODO: message template
+      player.sendMessage("Can't restart parkour while in practice mode")
+      return
+    }
 
-    player.data.checkpoint = startLocation
-    player.data.timer.stop()
+    val startLocation = player.data.parkourData.parkour!!.location
+
+    player.data.parkourData.checkpoint = startLocation
+    player.data.parkourData.timer.stop()
     player.safeTeleport(startLocation)
   }
 }

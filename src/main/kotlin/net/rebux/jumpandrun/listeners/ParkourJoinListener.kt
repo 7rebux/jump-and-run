@@ -9,11 +9,10 @@ import net.rebux.jumpandrun.item.impl.LeaveItem
 import net.rebux.jumpandrun.item.impl.MenuItem
 import net.rebux.jumpandrun.item.impl.RestartItem
 import net.rebux.jumpandrun.safeTeleport
-import net.rebux.jumpandrun.utils.InventoryCache
+import net.rebux.jumpandrun.utils.InventoryCache.saveInventory
 import net.rebux.jumpandrun.utils.ScoreboardUtil
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -37,8 +36,8 @@ object ParkourJoinListener : Listener {
         this.previousGameMode = player.gameMode
       }
 
-      this.parkour = parkour
-      this.checkpoint = parkour.location
+      this.parkourData.parkour = parkour
+      this.parkourData.checkpoint = parkour.location
     }
 
     player.gameMode = GameMode.valueOf(ParkourConfig.gameMode)
@@ -55,20 +54,6 @@ object ParkourJoinListener : Listener {
     }
 
     player.safeTeleport(parkour.location)
-  }
-
-  private fun Player.saveInventory() {
-    InventoryCache.inventories[this] = buildMap {
-      val player = this@saveInventory
-
-      for (i in 0..player.inventory.size) {
-        if (player.inventory.getItem(i)?.type in listOf(null, Material.AIR)) {
-          continue
-        }
-
-        this[i] = player.inventory.getItem(i)!!.clone()
-      }
-    }
   }
 
   private fun Player.addParkourItems() {

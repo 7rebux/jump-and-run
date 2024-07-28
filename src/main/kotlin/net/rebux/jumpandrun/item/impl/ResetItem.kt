@@ -9,7 +9,7 @@ object ResetItem : Item("reset") {
 
   override fun onInteract(player: Player) {
     if (player.data.inParkour) {
-      player.safeTeleport(player.data.checkpoint!!)
+      player.safeTeleport(player.data.parkourData.checkpoint!!)
     }
   }
 }

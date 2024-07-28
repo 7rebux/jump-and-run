@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
+import net.rebux.jumpandrun.api.PlayerDataManager.data
 
 object InventoryClickListener : Listener {
 
@@ -41,6 +42,13 @@ object InventoryClickListener : Listener {
     val id = itemStack.getTag(Plugin.PARKOUR_TAG)!!
     val parkour = ParkourManager.parkours[id]
       ?: error("Parkour with id=$id could not be found!")
+
+    // Prevent starting a parkour when the player is in practice mode
+    if (player.data.inPractice) {
+      // TODO: message template
+      player.sendMessage("Can't start parkour while in practice mode")
+      return
+    }
 
     Bukkit.getPluginManager().callEvent(ParkourJoinEvent(player, parkour))
   }

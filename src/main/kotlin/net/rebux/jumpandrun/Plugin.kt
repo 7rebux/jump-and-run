@@ -43,6 +43,7 @@ class Plugin : JavaPlugin() {
 
     registerCommands(
       "jumpandrun" to JumpAndRunCommand(this),
+      "practice" to PracticeCommand(),
       "top" to TopCommand()
     )
   }

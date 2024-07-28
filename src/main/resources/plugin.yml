@@ -15,3 +15,6 @@ commands:
     permission: jumpandrun.manage
   top:
     description: Lists the top 5 players of the current Jump and Run
+  practice:
+    aliases: [prac]
+    description: Toggle practice mode

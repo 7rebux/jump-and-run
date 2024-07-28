@@ -13,6 +13,13 @@ object LeaveItem : Item("leave") {
       return
     }
 
+    // Prevent leaving parkour while in practice mode
+    if (player.data.inPractice) {
+      // TODO: message template
+      player.sendMessage("Can't leave parkour while in practice mode")
+      return
+    }
+
     Bukkit.getPluginManager().callEvent(ParkourLeaveEvent(player))
   }
 }

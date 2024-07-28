@@ -15,6 +15,7 @@ import net.rebux.jumpandrun.config.SoundsConfig
 import net.rebux.jumpandrun.safeTeleport
 import net.rebux.jumpandrun.utils.MessageBuilder
 import net.rebux.jumpandrun.utils.SoundUtil
+import net.rebux.jumpandrun.utils.TickCounter
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.concurrent.TimeUnit
@@ -27,7 +28,6 @@ object PlayerMoveListener : Listener {
   fun onMove(event: PlayerMoveEvent) {
     val player = event.player
     val data = event.player.data
-    val timer = data.timer
     val block = player.location.block.location
     // TODO: This is very inaccurate
     val blockLocation = block.add(
@@ -36,32 +36,16 @@ object PlayerMoveListener : Listener {
       if (block.z < 0) -0.5 else 0.5
     )
 
-    if (!data.inParkour) {
+    if (data.inParkour && !data.inPractice) {
+      processTimer(data.parkourData.timer, player, event.hasMoved())
+    } else if (data.inPractice) {
+      processTimer(data.practiceData.timer, player, event.hasMoved())
+    } else {
       return
     }
 
-    if (!timer.started && event.hasMoved()) {
-      timer.start()
-      SoundUtil.playSound(SoundsConfig.timerStart, player)
-    }
-
-    if (timer.started) {
-      timer.tick()
-    }
-
-    val (time, unit) = TickFormatter.format(timer.ticks)
-    val unitString = if (unit == TimeUnit.SECONDS) MessagesConfig.Timer.Unit.seconds else MessagesConfig.Timer.Unit.minutes
-    player.sendActionBar(
-      MessageBuilder(MessagesConfig.Timer.bar)
-        .values(mapOf(
-          "time" to time,
-          "unit" to unitString))
-        .prefix(false)
-        .buildSingle()
-    )
-
     if (player.location.y <= ParkourConfig.resetHeight) {
-      player.safeTeleport(data.checkpoint!!)
+      player.safeTeleport(data.parkourData.checkpoint!!)
       SoundUtil.playSound(SoundsConfig.resetHeight, player)
       return
     }
@@ -74,12 +58,33 @@ object PlayerMoveListener : Listener {
     }
   }
 
+  private fun processTimer(timer: TickCounter, player: Player, hasMoved: Boolean) {
+    if (!timer.started && hasMoved) {
+      timer.start()
+      SoundUtil.playSound(SoundsConfig.timerStart, player)
+    } else if (timer.started) {
+      timer.tick()
+    }
+
+    // TODO: Maybe show this in a different color for practice mode
+    val (time, unit) = TickFormatter.format(timer.ticks)
+    val unitString = if (unit == TimeUnit.SECONDS) MessagesConfig.Timer.Unit.seconds else MessagesConfig.Timer.Unit.minutes
+    player.sendActionBar(
+      MessageBuilder(MessagesConfig.Timer.bar)
+        .values(mapOf(
+          "time" to time,
+          "unit" to unitString))
+        .prefix(false)
+        .buildSingle()
+    )
+  }
+
   private fun handleReset(player: Player) {
     if (!ParkourConfig.Feature.resetBlock) {
       return
     }
 
-    player.safeTeleport(player.data.checkpoint!!)
+    player.safeTeleport(player.data.parkourData.checkpoint!!)
     MessageBuilder(MessagesConfig.Event.resetBlock).buildAndSend(player)
     SoundUtil.playSound(SoundsConfig.resetBlock, player)
   }
@@ -90,12 +95,17 @@ object PlayerMoveListener : Listener {
       return
     }
 
-    // Make sure checkpoint is not already set
-    if (player.data.checkpoint!!.distance(blockLocation) < 2.0) {
+    // We ignore checkpoints in practice mode
+    if (player.data.inPractice) {
       return
     }
 
-    player.data.checkpoint = blockLocation.apply {
+    // Make sure checkpoint is not already set
+    if (player.data.parkourData.checkpoint!!.distance(blockLocation) < 2.0) {
+      return
+    }
+
+    player.data.parkourData.checkpoint = blockLocation.apply {
       this.yaw = player.location.yaw
       this.pitch = player.location.pitch
     }
@@ -104,13 +114,18 @@ object PlayerMoveListener : Listener {
   }
 
   private fun handleFinish(player: Player, blockLocation: Location) {
+    // We don't want to finish a parkour in practice mode
+    if (player.data.inPractice) {
+      return
+    }
+
     // Make sure start block is not finish block
-    if (player.data.parkour!!.location.distance(blockLocation) < 2.0) {
+    if (player.data.parkourData.parkour!!.location.distance(blockLocation) < 2.0) {
       return
     }
 
     Bukkit.getPluginManager().callEvent(
-      ParkourFinishEvent(player, player.data.parkour!!)
+      ParkourFinishEvent(player, player.data.parkourData.parkour!!)
     )
   }
 

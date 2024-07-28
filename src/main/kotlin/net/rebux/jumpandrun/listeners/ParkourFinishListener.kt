@@ -33,7 +33,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
 
     val player = event.player
     val parkour = event.parkour
-    val ticks = player.data.timer.stop()
+    val ticks = player.data.parkourData.timer.stop()
     val (time, unit) = TickFormatter.format(ticks)
 
     MessageBuilder(MessagesConfig.Event.completed)
@@ -91,10 +91,10 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
     if (ParkourConfig.leaveOnFinish) {
       Bukkit.getPluginManager().callEvent(ParkourLeaveEvent(player))
     } else {
-      val startLocation = player.data.parkour!!.location
+      val startLocation = player.data.parkourData.parkour!!.location
 
-      player.data.checkpoint = startLocation
-      player.data.timer.stop()
+      player.data.parkourData.checkpoint = startLocation
+      player.data.parkourData.timer.stop()
       player.safeTeleport(startLocation)
     }
   }
