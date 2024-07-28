@@ -6,6 +6,7 @@ import net.rebux.jumpandrun.getTag
 import net.rebux.jumpandrun.item.impl.MenuItem
 import net.rebux.jumpandrun.parkour.ParkourManager
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -16,8 +17,14 @@ object InventoryClickListener : Listener {
 
   @EventHandler
   fun onClick(event: InventoryClickEvent) {
-    val parkourTag = event.currentItem?.getTag(Plugin.PARKOUR_TAG)
-    val pageTag = event.currentItem?.getTag(Plugin.PAGE_TAG)
+    val item = event.currentItem
+
+    if (item == null || item.type == Material.AIR || item.amount == 0) {
+      return
+    }
+
+    val parkourTag = item.getTag(Plugin.PARKOUR_TAG)
+    val pageTag = item.getTag(Plugin.PAGE_TAG)
 
     parkourTag?.let {
       event.isCancelled = true
