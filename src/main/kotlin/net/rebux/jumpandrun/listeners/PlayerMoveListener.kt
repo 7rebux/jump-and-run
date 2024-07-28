@@ -63,6 +63,7 @@ object PlayerMoveListener : Listener {
     if (player.location.y <= ParkourConfig.resetHeight) {
       player.safeTeleport(data.checkpoint!!)
       SoundUtil.playSound(SoundsConfig.resetHeight, player)
+      return
     }
 
     when (player.location.block.getRelative(BlockFace.DOWN).type) {
