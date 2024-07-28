@@ -17,15 +17,18 @@ object PlayerInteractListener : Listener {
 
   @EventHandler
   fun onInteract(event: PlayerInteractEvent) {
-    val item = getItemInMainHand(event.player)
+    val itemStack = getItemInMainHand(event.player)
 
     if (event.action !in listOf(Action.RIGHT_CLICK_BLOCK, Action.RIGHT_CLICK_AIR)) {
       return
     }
 
-    item?.let {
-      ItemRegistry.handleInteraction(it, event.player)
+    if (itemStack == null || itemStack.type == Material.AIR || itemStack.amount == 0) {
+      return
     }
+
+    ItemRegistry.handleInteraction(itemStack, event.player)
+
   }
 
   // The lobby plugin of "auragames.de" prevents interacting with mine carts
