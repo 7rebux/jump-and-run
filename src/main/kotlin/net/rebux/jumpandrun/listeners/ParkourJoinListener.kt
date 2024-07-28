@@ -48,7 +48,7 @@ object ParkourJoinListener : Listener {
     player.inventory.clear()
     player.addParkourItems()
 
-    player.scoreboard = ScoreboardUtil.createScoreboard(parkour, player)
+    player.scoreboard = ScoreboardUtil.createParkourScoreboard(parkour, player)
 
     if (player.data.playersHidden) {
       Bukkit.getOnlinePlayers().forEach(player::hidePlayer)

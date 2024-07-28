@@ -34,9 +34,10 @@ class Plugin : JavaPlugin() {
       PlayerInteractListener,
       InventoryClickListener,
       CommandPreprocessListener,
-      ParkourJoinListener,
       FoodLevelChangeListener,
       EntityDamageListener,
+      ParkourJoinListener,
+      ParkourLeaveListener,
       ParkourFinishListener(this),
     )
 

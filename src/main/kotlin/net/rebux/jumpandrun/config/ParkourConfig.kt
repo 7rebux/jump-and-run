@@ -7,6 +7,7 @@ object ParkourConfig : CustomConfiguration("parkour.yml") {
   val resetHeight = config.getInt("resetHeight")
   val gameMode = config.getString("gameMode")!!
   val leaveOnFinish = config.getBoolean("leaveOnFinish")
+  val spawnOnLeave = config.getBoolean("spawnOnLeave")
 
   internal object Feature {
     val resetBlock = config.getBoolean("feature.resetBlock")

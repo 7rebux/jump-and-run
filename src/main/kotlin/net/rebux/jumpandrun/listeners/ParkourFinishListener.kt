@@ -9,6 +9,7 @@ import net.rebux.jumpandrun.database.entities.ParkourEntity
 import net.rebux.jumpandrun.database.entities.TimeEntity
 import net.rebux.jumpandrun.database.models.Times
 import net.rebux.jumpandrun.events.ParkourFinishEvent
+import net.rebux.jumpandrun.events.ParkourLeaveEvent
 import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.safeTeleport
 import net.rebux.jumpandrun.utils.MessageBuilder
@@ -18,7 +19,6 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
@@ -89,8 +89,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
     }
 
     if (ParkourConfig.leaveOnFinish) {
-      player.performCommand("spawn")
-      Bukkit.getPluginManager().callEvent(PlayerCommandPreprocessEvent(player, "/spawn"))
+      Bukkit.getPluginManager().callEvent(ParkourLeaveEvent(player))
     } else {
       val startLocation = player.data.parkour!!.location
 

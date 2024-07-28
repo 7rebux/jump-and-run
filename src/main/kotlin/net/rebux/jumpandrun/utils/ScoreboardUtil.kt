@@ -7,11 +7,10 @@ import org.bukkit.scoreboard.Criteria
 import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Scoreboard
 
-// TODO: Remove scoreboard when leaving parkour
 // TODO: Create new configuration file for scoreboard texts
 object ScoreboardUtil {
 
-  fun createScoreboard(parkour: Parkour, player: Player) : Scoreboard {
+  fun createParkourScoreboard(parkour: Parkour, player: Player) : Scoreboard {
     val scoreboard = Bukkit.getScoreboardManager()!!.newScoreboard
     val objective = scoreboard.registerNewObjective("parkourRecords", Criteria.DUMMY, parkour.name)
     val bestTimes = parkour.times.entries

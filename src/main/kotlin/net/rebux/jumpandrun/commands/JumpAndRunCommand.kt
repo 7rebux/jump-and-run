@@ -6,6 +6,7 @@ import net.rebux.jumpandrun.database.entities.LocationEntity
 import net.rebux.jumpandrun.database.entities.ParkourEntity
 import net.rebux.jumpandrun.database.entities.TimeEntity
 import net.rebux.jumpandrun.events.ParkourJoinEvent
+import net.rebux.jumpandrun.events.ParkourLeaveEvent
 import net.rebux.jumpandrun.parkour.ParkourDifficulty
 import net.rebux.jumpandrun.parkour.ParkourManager
 import net.rebux.jumpandrun.utils.MessageBuilder
@@ -16,7 +17,6 @@ import org.bukkit.command.CommandSender
 import org.bukkit.Material
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
@@ -126,9 +126,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabComple
       return
     }
 
-    // TODO: Create a leave event or something and don't call spawn command if there is none
-    sender.performCommand("spawn")
-    Bukkit.getPluginManager().callEvent(PlayerCommandPreprocessEvent(sender, "/spawn"))
+    Bukkit.getPluginManager().callEvent(ParkourLeaveEvent(sender))
   }
 
   private fun handleRemoveCommand(sender: CommandSender, id: Int?) {
