@@ -30,4 +30,14 @@ object ParkourConfig : CustomConfiguration("parkour.yml") {
     val hard = config.getString("difficulty.hard")!!
     val extreme = config.getString("difficulty.extreme")!!
   }
+
+  internal object Scoreboard {
+    val title = config.getString("scoreboard.title")!!
+    val personalBestHeader = config.getString("scoreboard.personalBestHeader")!!
+    val personalBest = config.getString("scoreboard.personalBest")!!
+    val personalBestFooter = config.getString("scoreboard.personalBestFooter")!!
+    val topTimesHeader = config.getString("scoreboard.topTimesHeader")!!
+    val topTimesEntry = config.getString("scoreboard.topTimesEntry")!!
+    val topTimesFooter = config.getString("scoreboard.topTimesFooter")!!
+  }
 }

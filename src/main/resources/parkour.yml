@@ -17,3 +17,12 @@ difficulty:
   medium: "§6Medium"
   hard: "§cHard"
   extreme: "§5Extreme"
+
+scoreboard:
+  title: "§f{name}"
+  personalBestHeader: "§7Deine Bestzeit"
+  personalBest: "§6{time} {unit}"
+  personalBestFooter: ""
+  topTimesHeader: "§7------ §bTop 10 §7------"
+  topTimesEntry: "§6{time} §f{player}"
+  topTimesFooter: "§7--------------------"

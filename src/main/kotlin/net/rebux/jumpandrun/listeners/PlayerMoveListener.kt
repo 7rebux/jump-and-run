@@ -62,7 +62,9 @@ object PlayerMoveListener : Listener {
     if (!timer.started && hasMoved) {
       timer.start()
       SoundUtil.playSound(SoundsConfig.timerStart, player)
-    } else if (timer.started) {
+    }
+
+    if (timer.started) {
       timer.tick()
     }
 

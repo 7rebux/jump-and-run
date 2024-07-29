@@ -8,7 +8,10 @@ import org.bukkit.event.HandlerList
 /**
  * An [Event] that is being called when a [player] leaves parkour mode
  */
-class ParkourLeaveEvent(val player: Player) : Event(), Cancellable {
+class ParkourLeaveEvent(
+  val player: Player,
+  val preventSpawnTeleport: Boolean = false
+) : Event(), Cancellable {
 
   private var cancelled: Boolean = false
 

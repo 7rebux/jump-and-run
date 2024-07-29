@@ -120,7 +120,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabComple
     }
   }
 
-  fun handleLeaveCommand(sender: CommandSender) {
+  private fun handleLeaveCommand(sender: CommandSender) {
     if (sender !is Player) {
       MessageBuilder("This command can only be called as a player!").error().buildAndSend(sender)
       return

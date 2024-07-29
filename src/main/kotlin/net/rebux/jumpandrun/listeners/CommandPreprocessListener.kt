@@ -15,6 +15,6 @@ object CommandPreprocessListener : Listener {
       return
     }
 
-    Bukkit.getPluginManager().callEvent(ParkourLeaveEvent(event.player))
+    Bukkit.getPluginManager().callEvent(ParkourLeaveEvent(event.player, preventSpawnTeleport = true))
   }
 }

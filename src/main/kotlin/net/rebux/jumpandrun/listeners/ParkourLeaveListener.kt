@@ -34,7 +34,7 @@ object ParkourLeaveListener : Listener {
 
     Bukkit.getOnlinePlayers().forEach(player::showPlayer)
 
-    if (ParkourConfig.spawnOnLeave) {
+    if (ParkourConfig.spawnOnLeave && !event.preventSpawnTeleport) {
       player.performCommand("spawn")
     }
   }
