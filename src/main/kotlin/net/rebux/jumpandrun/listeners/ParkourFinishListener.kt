@@ -13,6 +13,7 @@ import net.rebux.jumpandrun.events.ParkourLeaveEvent
 import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.safeTeleport
 import net.rebux.jumpandrun.utils.MessageBuilder
+import net.rebux.jumpandrun.utils.ScoreboardUtil
 import net.rebux.jumpandrun.utils.SoundUtil
 import net.rebux.jumpandrun.utils.TickFormatter
 import org.bukkit.Bukkit
@@ -84,6 +85,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
         SoundUtil.playSound(SoundsConfig.newPersonalBest, player)
       }
 
+      refreshScoreboards(parkour)
       updateDatabaseEntry(parkour, player, ticks)
       parkour.times[player.uniqueId] = ticks
     }
@@ -96,6 +98,16 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
       player.data.parkourData.checkpoint = startLocation
       player.data.parkourData.timer.stop()
       player.safeTeleport(startLocation)
+    }
+  }
+
+  private fun refreshScoreboards(parkour: Parkour) {
+    for (player in Bukkit.getOnlinePlayers()) {
+      if (player.data.parkourData.parkour != parkour) {
+        continue
+      }
+
+      player.scoreboard = ScoreboardUtil.createParkourScoreboard(parkour, player)
     }
   }
 
