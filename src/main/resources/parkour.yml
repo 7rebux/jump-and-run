@@ -20,7 +20,7 @@ difficulty:
 
 scoreboard:
   title: "§f{name}"
-  personalBestHeader: "§7Deine Bestzeit"
+  personalBestHeader: "§7Personal Best"
   personalBest: "§6{time} {unit}"
   personalBestFooter: ""
   topTimesHeader: "§7------ §bTop 10 §7------"
