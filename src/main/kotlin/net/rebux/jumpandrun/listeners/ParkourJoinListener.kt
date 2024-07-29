@@ -36,6 +36,7 @@ object ParkourJoinListener : Listener {
         this.previousGameMode = player.gameMode
       }
 
+      this.parkourData.timer.stop()
       this.parkourData.parkour = parkour
       this.parkourData.checkpoint = parkour.location
     }
