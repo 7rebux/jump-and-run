@@ -15,6 +15,14 @@ object ScoreboardUtil {
   private val config = ParkourConfig.Scoreboard
 
   fun createParkourScoreboard(parkour: Parkour, player: Player) : Scoreboard {
+    return scoreboard {
+      title(parkour.name)
+
+      appendLine("Line1")
+      appendLine("Line2")
+      appendLine("Line3 " + player.name)
+    }
+
     val scoreboard = Bukkit.getScoreboardManager()!!.newScoreboard
     val title = MessageBuilder(config.title)
       .values(mapOf("name" to parkour.name))

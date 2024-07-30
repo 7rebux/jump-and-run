@@ -12,6 +12,7 @@ object SoundUtil {
       return
     }
 
+    println("Sound value of $sound=${Sound.valueOf(sound)}")
     player.playSound(player.location, Sound.valueOf(sound), 1.0F, 1.0F)
   }
 

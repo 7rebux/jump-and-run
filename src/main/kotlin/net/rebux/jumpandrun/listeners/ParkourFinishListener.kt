@@ -107,6 +107,8 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
         continue
       }
 
+      println("Updating parkour for ${player.name}")
+      player.scoreboard = Bukkit.getScoreboardManager()!!.newScoreboard
       player.scoreboard = ScoreboardUtil.createParkourScoreboard(parkour, player)
     }
   }

@@ -126,7 +126,10 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabComple
       return
     }
 
-    Bukkit.getPluginManager().callEvent(ParkourLeaveEvent(sender))
+    // Events can not be called asynchronously
+    Bukkit.getScheduler().runTask(plugin) { ->
+      Bukkit.getPluginManager().callEvent(ParkourLeaveEvent(sender))
+    }
   }
 
   private fun handleRemoveCommand(sender: CommandSender, id: Int?) {

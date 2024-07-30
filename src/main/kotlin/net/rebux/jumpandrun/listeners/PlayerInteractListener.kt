@@ -27,6 +27,8 @@ object PlayerInteractListener : Listener {
       return
     }
 
+    println("Handling interaction for ${event.player.name} of ${itemStack.type}")
+
     ItemRegistry.handleInteraction(itemStack, event.player)
 
   }
