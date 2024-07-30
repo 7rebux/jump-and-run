@@ -11,7 +11,6 @@ import org.bukkit.event.player.PlayerMoveEvent
 import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.config.MessagesConfig
 import net.rebux.jumpandrun.config.ParkourConfig
-import net.rebux.jumpandrun.config.SoundsConfig
 import net.rebux.jumpandrun.safeTeleport
 import net.rebux.jumpandrun.utils.MessageBuilder
 import net.rebux.jumpandrun.utils.SoundUtil
@@ -46,7 +45,7 @@ object PlayerMoveListener : Listener {
 
     if (player.location.y <= ParkourConfig.resetHeight) {
       player.safeTeleport(data.parkourData.checkpoint!!)
-      SoundUtil.playSound(SoundsConfig.resetHeight, player)
+      SoundUtil.playSound("resetHeight", player)
       return
     }
 
@@ -61,7 +60,7 @@ object PlayerMoveListener : Listener {
   private fun processTimer(timer: TickCounter, player: Player, hasMoved: Boolean) {
     if (!timer.started && hasMoved) {
       timer.start()
-      SoundUtil.playSound(SoundsConfig.timerStart, player)
+      SoundUtil.playSound("timerStart", player)
     }
 
     if (timer.started) {
@@ -88,7 +87,7 @@ object PlayerMoveListener : Listener {
 
     player.safeTeleport(player.data.parkourData.checkpoint!!)
     MessageBuilder(MessagesConfig.Event.resetBlock).buildAndSend(player)
-    SoundUtil.playSound(SoundsConfig.resetBlock, player)
+    SoundUtil.playSound("resetBlock", player)
   }
 
   // TODO: Not a clean solution with the distance checks
@@ -112,7 +111,7 @@ object PlayerMoveListener : Listener {
       this.pitch = player.location.pitch
     }
     MessageBuilder(MessagesConfig.Event.checkpoint).buildAndSend(player)
-    SoundUtil.playSound(SoundsConfig.checkpoint, player)
+    SoundUtil.playSound("checkpoint", player)
   }
 
   private fun handleFinish(player: Player, blockLocation: Location) {

@@ -7,7 +7,7 @@ import org.bukkit.scoreboard.Scoreboard
 
 class ScoreboardBuilder {
   private val lines = mutableListOf<String>()
-  var title = ""
+  private var title = ""
 
   fun title(title: String) = apply { this.title = title }
 
@@ -18,7 +18,7 @@ class ScoreboardBuilder {
     val objective = scoreboard.registerNewObjective(title, Criteria.DUMMY, title)
 
     objective.displaySlot = DisplaySlot.SIDEBAR
-    lines.withIndex().reversed().forEach { (i, line) ->
+    lines.reversed().withIndex().forEach { (i, line) ->
       objective.getScore(line).score = i
     }
 

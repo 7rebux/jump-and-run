@@ -11,6 +11,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 
 object PlayerInteractListener : Listener {
@@ -18,6 +19,10 @@ object PlayerInteractListener : Listener {
   @EventHandler
   fun onInteract(event: PlayerInteractEvent) {
     val itemStack = getItemInMainHand(event.player)
+
+    if (event.hand == EquipmentSlot.OFF_HAND) {
+      return
+    }
 
     if (event.action !in listOf(Action.RIGHT_CLICK_BLOCK, Action.RIGHT_CLICK_AIR)) {
       return
@@ -27,10 +32,7 @@ object PlayerInteractListener : Listener {
       return
     }
 
-    println("Handling interaction for ${event.player.name} of ${itemStack.type}")
-
     ItemRegistry.handleInteraction(itemStack, event.player)
-
   }
 
   // The lobby plugin of "auragames.de" prevents interacting with mine carts
