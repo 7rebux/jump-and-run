@@ -85,9 +85,10 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
         SoundUtil.playSound(SoundsConfig.newPersonalBest, player)
       }
 
-      refreshScoreboards(parkour)
       updateDatabaseEntry(parkour, player, ticks)
+
       parkour.times[player.uniqueId] = ticks
+      refreshScoreboards(parkour)
     }
 
     if (ParkourConfig.leaveOnFinish) {
@@ -107,7 +108,6 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
         continue
       }
 
-      println("Updating parkour for ${player.name}")
       player.scoreboard = Bukkit.getScoreboardManager()!!.newScoreboard
       player.scoreboard = ScoreboardUtil.createParkourScoreboard(parkour, player)
     }

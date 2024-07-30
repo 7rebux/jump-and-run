@@ -25,7 +25,11 @@ object PlayerConnectionListener : Listener {
 
   @EventHandler
   fun onQuit(event: PlayerQuitEvent) {
-    event.player.inventory.clear()
+    if (event.player.data.inParkour || event.player.data.inPractice) {
+      event.player.inventory.clear()
+      event.player.data.previousGameMode?.run { event.player.gameMode = this }
+    }
+
     PlayerDataManager.remove(event.player)
   }
 
