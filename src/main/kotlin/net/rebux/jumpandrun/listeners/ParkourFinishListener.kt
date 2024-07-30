@@ -4,6 +4,7 @@ import net.rebux.jumpandrun.Plugin
 import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.config.MessagesConfig
 import net.rebux.jumpandrun.config.ParkourConfig
+import net.rebux.jumpandrun.config.SoundsConfig
 import net.rebux.jumpandrun.database.entities.ParkourEntity
 import net.rebux.jumpandrun.database.entities.TimeEntity
 import net.rebux.jumpandrun.database.models.Times
@@ -57,7 +58,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
             "time" to time,
             "unit" to unit))
           .buildAndSendGlobally()
-        SoundUtil.playSound("firstGlobalBest", player)
+        SoundUtil.playSound(SoundsConfig.firstGlobalBest, player)
       }
       // New global best
       else if (ticks < globalBest) {
@@ -76,12 +77,12 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
             "time" to deltaTime,
             "unit" to deltaUnit))
           .buildAndSendGlobally()
-        SoundUtil.playSound("newGlobalBest")
+        SoundUtil.playSound(SoundsConfig.newGlobalBest)
       }
       // New personal best
       else {
         MessageBuilder(MessagesConfig.Event.personalBest).buildAndSend(player)
-        SoundUtil.playSound("newPersonalBest", player)
+        SoundUtil.playSound(SoundsConfig.newPersonalBest, player)
       }
 
       refreshScoreboards(parkour)

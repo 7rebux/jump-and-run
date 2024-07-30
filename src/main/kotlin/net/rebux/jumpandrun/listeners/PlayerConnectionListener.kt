@@ -25,6 +25,7 @@ object PlayerConnectionListener : Listener {
 
   @EventHandler
   fun onQuit(event: PlayerQuitEvent) {
+    event.player.inventory.clear()
     PlayerDataManager.remove(event.player)
   }
 

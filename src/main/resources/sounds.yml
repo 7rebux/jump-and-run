@@ -1,24 +1,10 @@
 # Only for the player himself
-firstGlobalBest:
-  enabled: true
-  sound: "ENTITY_PLAYER_LEVELUP"
-newPersonalBest:
-  enabled: true
-  sound: "ENTITY_PLAYER_LEVELUP"
-checkpoint:
-  enabled: true
-  sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
-resetBlock:
-  enabled: true
-  sound: "ENTITY_SPIDER_DEATH"
-timerStart:
-  enabled: true
-  sound: "BLOCK_NOTE_BLOCK_PLING"
-resetHeight:
-  enabled: true
-  sound: "ENTITY_SPIDER_DEATH"
+firstGlobalBest: "ENTITY_PLAYER_LEVELUP"
+newPersonalBest: "ENTITY_PLAYER_LEVELUP"
+checkpoint: "ENTITY_EXPERIENCE_ORB_PICKUP"
+resetBlock: "ENTITY_SPIDER_DEATH"
+timerStart: "BLOCK_NOTE_BLOCK_PLING"
+resetHeight: "ENTITY_SPIDER_DEATH"
 
 # Global sounds
-newGlobalBest:
-  enabled: true
-  sound: "BLOCK_ANVIL_LAND"
+newGlobalBest: "BLOCK_ANVIL_LAND"

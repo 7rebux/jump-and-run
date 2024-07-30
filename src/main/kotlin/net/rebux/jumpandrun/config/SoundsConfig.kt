@@ -2,11 +2,11 @@ package net.rebux.jumpandrun.config
 
 object SoundsConfig : CustomConfiguration("sounds.yml") {
 
-  fun getSound(sound: String): String {
-    return config.getString("$sound.sound")!!
-  }
-
-  fun isEnabled(sound: String): Boolean {
-    return config.getBoolean("$sound.enabled")
-  }
+  val firstGlobalBest = config.getString("firstGlobalBest")
+  val newPersonalBest = config.getString("newPersonalBest")
+  val checkpoint      = config.getString("checkpoint")
+  val resetBlock      = config.getString("resetBlock")
+  val timerStart      = config.getString("timerStart")
+  val resetHeight     = config.getString("resetHeight")
+  val newGlobalBest   = config.getString("newGlobalBest")
 }
