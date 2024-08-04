@@ -14,8 +14,6 @@ object RestartItem : Item("restart") {
 
     // Prevent restarting parkour when in practice mode
     if (player.data.inPractice) {
-      // TODO: message template
-      player.sendMessage("Can't restart parkour while in practice mode")
       return
     }
 

@@ -24,6 +24,11 @@ object MessagesConfig : CustomConfiguration("messages.yml") {
       val header = getMessage("command.top.header")
       val entry = getMessage("command.top.entry")
     }
+
+    internal object Practice {
+      val enabled = getMessage("command.practice.enabled")
+      val disabled = getMessage("command.practice.disabled")
+    }
   }
 
   internal object Item {

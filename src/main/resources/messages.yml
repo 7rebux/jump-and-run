@@ -14,6 +14,15 @@ command:
     empty: "This parkour does not have any completions!"
     header: "§eTop {amount} times for §3{name} §e:"
     entry: "§a#{rank} §9{player} §7» §a{time} §7(§a{delta}§7)"
+  practice:
+    enabled: |-
+      §aEnabled practice mode:
+        §2➥ X: §f{x}
+        §2➥ Y: §f{y}
+        §2➥ Z: §f{z}
+        §2➥ Direction: §f{direction} 
+        §2➥ Facing: §f{yaw} / {pitch}
+    disabled: §aDisabled practice mode
 
 item:
   hider:

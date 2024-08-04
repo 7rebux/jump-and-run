@@ -45,8 +45,6 @@ object InventoryClickListener : Listener {
 
     // Prevent starting a parkour when the player is in practice mode
     if (player.data.inPractice) {
-      // TODO: message template
-      player.sendMessage("Can't start parkour while in practice mode")
       return
     }
 

@@ -23,3 +23,8 @@ leave:
   name: '§cLeave §7(/spawn)'
   material: 'GRAY_DYE'
   slot: 8
+practice:
+  enabled: true
+  name: '§aReset'
+  material: 'SLIME_BALL'
+  slot: 0
