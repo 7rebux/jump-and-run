@@ -1,12 +1,11 @@
 package net.rebux.jumpandrun.commands
 
 import net.rebux.jumpandrun.api.PlayerDataManager.data
+import net.rebux.jumpandrun.api.currentState
 import net.rebux.jumpandrun.config.MessagesConfig
 import net.rebux.jumpandrun.item.ItemRegistry
 import net.rebux.jumpandrun.item.impl.PracticeItem
 import net.rebux.jumpandrun.safeTeleport
-import net.rebux.jumpandrun.utils.InventoryCache.loadInventory
-import net.rebux.jumpandrun.utils.InventoryCache.saveInventory
 import net.rebux.jumpandrun.utils.MessageBuilder
 import org.bukkit.Location
 import org.bukkit.command.Command
@@ -46,11 +45,8 @@ class PracticeCommand : CommandExecutor {
     if (player.data.inParkour) {
       player.data.parkourData.timer.pause()
     }
-    // Only save inventory when not in a parkour since the inventory is already
-    // saved when the player is in a parkour
-    // TODO: Create some kind of persistent state for player inventory and gamemode management
     else {
-      player.saveInventory()
+      player.data.practiceData.previousState = player.currentState()
       player.inventory.clear()
       player.inventory.setItem(0, ItemRegistry.getItemStack(PracticeItem.id))
     }
