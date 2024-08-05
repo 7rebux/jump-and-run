@@ -6,11 +6,9 @@ import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
 /**
- * An [Event] that is being called when a [player] enables practice mode
+ * An [Event] that is being called when a [player] disables practice mode
  */
-class PracticeDisableEvent(
-  val player: Player
-) : Event(), Cancellable {
+class PracticeDisableEvent(val player: Player) : Event(), Cancellable {
 
   private var cancelled: Boolean = false
 

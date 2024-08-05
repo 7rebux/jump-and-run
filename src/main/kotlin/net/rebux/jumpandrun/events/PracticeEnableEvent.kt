@@ -8,9 +8,7 @@ import org.bukkit.event.HandlerList
 /**
  * An [Event] that is being called when a [player] enables practice mode
  */
-class PracticeEnableEvent(
-  val player: Player
-) : Event(), Cancellable {
+class PracticeEnableEvent(val player: Player) : Event(), Cancellable {
 
   private var cancelled: Boolean = false
 

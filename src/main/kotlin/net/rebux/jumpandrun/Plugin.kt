@@ -36,6 +36,8 @@ class Plugin : JavaPlugin() {
       CommandPreprocessListener,
       FoodLevelChangeListener,
       EntityDamageListener,
+      PracticeEnableListener,
+      PracticeDisableListener,
       ParkourJoinListener,
       ParkourLeaveListener,
       ParkourFinishListener(this),
