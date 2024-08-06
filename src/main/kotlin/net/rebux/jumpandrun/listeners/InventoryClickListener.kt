@@ -24,15 +24,17 @@ object InventoryClickListener : Listener {
       return
     }
 
+    val idTag = item.getTag(Plugin.ID_TAG)
     val parkourTag = item.getTag(Plugin.PARKOUR_TAG)
     val pageTag = item.getTag(Plugin.PAGE_TAG)
 
-    parkourTag?.let {
+    idTag?.let {
       event.isCancelled = true
+    }
+    parkourTag?.let {
       handleParkourTag(event.currentItem!!, event)
     }
     pageTag?.let {
-      event.isCancelled = true
       handlePageTag(event.currentItem!!, event)
     }
   }

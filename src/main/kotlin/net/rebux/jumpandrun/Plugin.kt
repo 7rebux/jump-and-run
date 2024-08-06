@@ -32,6 +32,7 @@ class Plugin : JavaPlugin() {
       PlayerConnectionListener,
       PlayerMoveListener,
       PlayerInteractListener,
+      PlayerDropItemListener,
       InventoryClickListener,
       CommandPreprocessListener,
       FoodLevelChangeListener,
