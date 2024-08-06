@@ -22,6 +22,13 @@ import java.util.*
 
 class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabCompleter {
 
+  private val materialByDifficulty = mapOf(
+    ParkourDifficulty.EASY    to Material.GREEN_SHULKER_BOX,
+    ParkourDifficulty.MEDIUM  to Material.YELLOW_SHULKER_BOX,
+    ParkourDifficulty.HARD    to Material.RED_SHULKER_BOX,
+    ParkourDifficulty.EXTREME to Material.PURPLE_SHULKER_BOX
+  )
+
   override fun onCommand(
     sender: CommandSender,
     command: Command,
@@ -87,22 +94,16 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabComple
       return
     }
 
-    // [Name, Builder, Difficulty, Material]
-    if (args.size != 4) {
+    // [Name, Builder, Difficulty]
+    if (args.size != 3) {
       sendUsage(sender)
       return
     }
 
     val difficulty = ParkourDifficulty.values().find { it.name == args[2].uppercase() }
-    val material: Material? = Material.getMaterial(args[3].uppercase())
 
     if (difficulty == null) {
       MessageBuilder("Difficulty not found!").error().buildAndSend(sender)
-      return
-    }
-
-    if (material == null) {
-      MessageBuilder("Material not found!").error().buildAndSend(sender)
       return
     }
 
@@ -111,7 +112,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabComple
         this.name = args[0]
         this.builder = args[1]
         this.difficulty = difficulty
-        this.material = material
+        this.material = materialByDifficulty[difficulty]!!
         this.location = LocationEntity.ofLocation(sender.location)
       }
 
