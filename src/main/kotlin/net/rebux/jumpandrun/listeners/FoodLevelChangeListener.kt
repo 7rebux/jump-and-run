@@ -11,7 +11,7 @@ object FoodLevelChangeListener : Listener {
   @EventHandler
   fun onFoodLevelChange(event: FoodLevelChangeEvent) {
     (event.entity as? Player)?.run {
-      if (this.data.inParkour) {
+      if (this.data.inParkour || this.data.inPractice) {
         event.isCancelled = true
       }
     }
