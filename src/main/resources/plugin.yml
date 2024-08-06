@@ -1,8 +1,8 @@
 name: JumpAndRun
-version: 2.1
+version: 3.0
 author: Rebux
 description: Jump and Run Plugin
-
+api-version: 1.20
 main: net.rebux.jumpandrun.Plugin
 
 # This is only here to make sure this plugin is loaded after Multiverse-Core
