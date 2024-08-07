@@ -1,5 +1,6 @@
 package net.rebux.jumpandrun.utils
 
+import net.rebux.jumpandrun.config.MessagesConfig
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
@@ -41,5 +42,13 @@ object TickFormatter {
     }
 
     return Pair(formatted, unit)
+  }
+
+  fun TimeUnit.toMessageValue() : String {
+    return when (this) {
+      TimeUnit.MINUTES -> MessagesConfig.Timer.Unit.minutes
+      TimeUnit.SECONDS -> MessagesConfig.Timer.Unit.seconds
+      else -> error("No message value for TimeUnit $this")
+    }
   }
 }

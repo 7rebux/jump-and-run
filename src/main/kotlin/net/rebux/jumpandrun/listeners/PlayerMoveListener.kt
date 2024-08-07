@@ -16,6 +16,7 @@ import net.rebux.jumpandrun.safeTeleport
 import net.rebux.jumpandrun.utils.MessageBuilder
 import net.rebux.jumpandrun.utils.SoundUtil
 import net.rebux.jumpandrun.utils.TickCounter
+import net.rebux.jumpandrun.utils.TickFormatter.toMessageValue
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.concurrent.TimeUnit
@@ -70,12 +71,11 @@ object PlayerMoveListener : Listener {
 
     // TODO: Maybe show this in a different color for practice mode
     val (time, unit) = TickFormatter.format(timer.ticks)
-    val unitString = if (unit == TimeUnit.SECONDS) MessagesConfig.Timer.Unit.seconds else MessagesConfig.Timer.Unit.minutes
     player.sendActionBar(
       MessageBuilder(MessagesConfig.Timer.bar)
         .values(mapOf(
           "time" to time,
-          "unit" to unitString))
+          "unit" to unit.toMessageValue()))
         .prefix(false)
         .buildSingle()
     )

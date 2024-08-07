@@ -1,12 +1,11 @@
 package net.rebux.jumpandrun.utils
 
-import net.rebux.jumpandrun.config.MessagesConfig
 import net.rebux.jumpandrun.config.ParkourConfig
 import net.rebux.jumpandrun.parkour.Parkour
+import net.rebux.jumpandrun.utils.TickFormatter.toMessageValue
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.Scoreboard
-import java.util.concurrent.TimeUnit
 
 object ScoreboardUtil {
 
@@ -14,12 +13,6 @@ object ScoreboardUtil {
 
   fun createParkourScoreboard(parkour: Parkour, player: Player) : Scoreboard {
     val personalBest = parkour.times[player.uniqueId]?.let(TickFormatter::format)
-    val unitString = personalBest?.let {
-      if (it.second == TimeUnit.SECONDS)
-        MessagesConfig.Timer.Unit.seconds
-      else
-        MessagesConfig.Timer.Unit.minutes
-    }
     val bestTimes = parkour.times.entries
       .sortedBy { it.value }
       .take(10)
@@ -38,7 +31,7 @@ object ScoreboardUtil {
           .values(
             mapOf(
               "time" to (personalBest?.first ?: "--:--:--"),
-              "unit" to (unitString ?: "")))
+              "unit" to (personalBest?.second?.toMessageValue() ?: "")))
           .prefix(false)
           .buildSingle()
       )

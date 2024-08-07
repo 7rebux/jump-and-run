@@ -4,6 +4,7 @@ import net.rebux.jumpandrun.utils.TickFormatter
 import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.config.MessagesConfig
 import net.rebux.jumpandrun.utils.MessageBuilder
+import net.rebux.jumpandrun.utils.TickFormatter.toMessageValue
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.command.Command
@@ -53,17 +54,19 @@ class TopCommand : CommandExecutor {
       .toSortedMap()
       .asIterable()
       .take(entries)
-      .forEachIndexed { i, (time, records) ->
+      .forEachIndexed { i, (ticks, records) ->
         val holders = records
           .mapNotNull { Bukkit.getOfflinePlayer(it.key).name }
           .joinToString(", ")
+        val (time, unit) = TickFormatter.format(ticks)
 
         MessageBuilder(messages.entry)
           .values(mapOf(
             "rank" to i + 1,
             "player" to holders,
-            "time" to TickFormatter.format(time),
-            "delta" to formatDelta(time, bestTime)))
+            "time" to time,
+            "unit" to unit.toMessageValue(),
+            "delta" to formatDelta(ticks, bestTime)))
           .buildAndSend(sender)
       }
 
@@ -74,7 +77,7 @@ class TopCommand : CommandExecutor {
     return if (time - bestTime == 0L) {
       "${ChatColor.GOLD}✫"
     } else {
-      "-" + TickFormatter.format(time - bestTime)
+      "-" + TickFormatter.format(time - bestTime).first
     }
   }
 }

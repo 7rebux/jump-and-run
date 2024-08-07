@@ -16,6 +16,7 @@ import net.rebux.jumpandrun.utils.MessageBuilder
 import net.rebux.jumpandrun.utils.ScoreboardUtil
 import net.rebux.jumpandrun.utils.SoundUtil
 import net.rebux.jumpandrun.utils.TickFormatter
+import net.rebux.jumpandrun.utils.TickFormatter.toMessageValue
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -41,7 +42,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
       .values(mapOf(
         "name" to parkour.name,
         "time" to time,
-        "unit" to unit))
+        "unit" to unit.toMessageValue()))
       .buildAndSend(player)
 
     if (!parkour.times.contains(player.uniqueId) ||
@@ -75,7 +76,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
             "name" to parkour.name,
             "holders" to previousHolders,
             "time" to deltaTime,
-            "unit" to deltaUnit))
+            "unit" to deltaUnit.toMessageValue()))
           .buildAndSendGlobally()
         SoundUtil.playSound(SoundsConfig.newGlobalBest)
       }

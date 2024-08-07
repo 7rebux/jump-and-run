@@ -9,6 +9,7 @@ import net.rebux.jumpandrun.parkour.ParkourDifficulty
 import net.rebux.jumpandrun.parkour.ParkourManager
 import net.rebux.jumpandrun.utils.MessageBuilder
 import net.rebux.jumpandrun.utils.TickFormatter
+import net.rebux.jumpandrun.utils.TickFormatter.toMessageValue
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.enchantments.Enchantment
@@ -150,7 +151,7 @@ object MenuItem : Item("menu") {
           MessageBuilder(MenuConfig.Entry.PersonalBest.time)
             .values(mapOf(
               "time" to time,
-              "unit" to unit))
+              "unit" to unit.toMessageValue()))
             .prefix(false)
             .build()
         )
@@ -169,7 +170,7 @@ object MenuItem : Item("menu") {
           MessageBuilder(MenuConfig.Entry.GlobalBest.time)
             .values(mapOf(
               "time" to time,
-              "unit" to unit))
+              "unit" to unit.toMessageValue()))
             .prefix(false)
             .build()
         )
