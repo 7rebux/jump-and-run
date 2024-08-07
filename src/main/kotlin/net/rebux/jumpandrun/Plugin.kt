@@ -5,16 +5,22 @@ package net.rebux.jumpandrun
 import net.rebux.jumpandrun.commands.*
 import net.rebux.jumpandrun.database.DatabaseConnector
 import net.rebux.jumpandrun.database.SchemaInitializer
+import net.rebux.jumpandrun.database.entities.LocationEntity
+import net.rebux.jumpandrun.database.entities.ParkourEntity
 import net.rebux.jumpandrun.listeners.*
+import net.rebux.jumpandrun.parkour.ParkourDifficulty
 import net.rebux.jumpandrun.parkour.ParkourManager
+import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.command.CommandExecutor
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
+import org.jetbrains.exposed.sql.transactions.transaction
 
 // Sadly this can't be an object due to bukkit implementation
 class Plugin : JavaPlugin() {
 
-  private val instance = Instance(this)
+  private val instance = ParkourInstance(this)
 
   @Override
   override fun onEnable() {
@@ -49,6 +55,32 @@ class Plugin : JavaPlugin() {
       "practice" to PracticeCommand(),
       "top" to TopCommand()
     )
+  }
+
+  private val materialByDifficulty = mapOf(
+    ParkourDifficulty.EASY    to Material.GREEN_SHULKER_BOX,
+    ParkourDifficulty.MEDIUM  to Material.YELLOW_SHULKER_BOX,
+    ParkourDifficulty.HARD    to Material.RED_SHULKER_BOX,
+    ParkourDifficulty.ULTRA   to Material.PURPLE_SHULKER_BOX
+  )
+
+  fun registerParkour(
+    name: String,
+    builder: String,
+    difficulty: ParkourDifficulty,
+    location: Location
+  ) {
+    transaction {
+      val entity = ParkourEntity.new {
+        this.name = name
+        this.builder = builder
+        this.difficulty = difficulty
+        this.material = materialByDifficulty[difficulty]!!
+        this.location = LocationEntity.ofLocation(location)
+      }
+
+      ParkourManager.add(entity)
+    }
   }
 
   private fun registerListeners(vararg listener: Listener) {

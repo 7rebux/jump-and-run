@@ -1,7 +1,7 @@
 package net.rebux.jumpandrun
 
 // TODO: Find a solution to remove this
-class Instance(javaPlugin: Plugin) {
+class ParkourInstance(javaPlugin: Plugin) {
   init {
     plugin = javaPlugin
   }

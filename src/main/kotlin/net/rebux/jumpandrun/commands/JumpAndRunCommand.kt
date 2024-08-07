@@ -2,7 +2,6 @@ package net.rebux.jumpandrun.commands
 
 import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.Plugin
-import net.rebux.jumpandrun.database.entities.LocationEntity
 import net.rebux.jumpandrun.database.entities.ParkourEntity
 import net.rebux.jumpandrun.database.entities.TimeEntity
 import net.rebux.jumpandrun.events.ParkourJoinEvent
@@ -21,13 +20,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabCompleter {
-
-  private val materialByDifficulty = mapOf(
-    ParkourDifficulty.EASY    to Material.GREEN_SHULKER_BOX,
-    ParkourDifficulty.MEDIUM  to Material.YELLOW_SHULKER_BOX,
-    ParkourDifficulty.HARD    to Material.RED_SHULKER_BOX,
-    ParkourDifficulty.ULTRA   to Material.PURPLE_SHULKER_BOX
-  )
 
   override fun onCommand(
     sender: CommandSender,
@@ -107,18 +99,8 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabComple
       return
     }
 
-    transaction {
-      val entity = ParkourEntity.new {
-        this.name = args[0]
-        this.builder = args[1]
-        this.difficulty = difficulty
-        this.material = materialByDifficulty[difficulty]!!
-        this.location = LocationEntity.ofLocation(sender.location)
-      }
-
-      ParkourManager.add(entity)
-      MessageBuilder("Successfully added new parkour").buildAndSend(sender)
-    }
+    plugin.registerParkour(args[0], args[1], difficulty, sender.location)
+    MessageBuilder("Successfully added new parkour").buildAndSend(sender)
   }
 
   private fun handleLeaveCommand(sender: CommandSender) {
