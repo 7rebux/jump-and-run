@@ -26,7 +26,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabComple
     ParkourDifficulty.EASY    to Material.GREEN_SHULKER_BOX,
     ParkourDifficulty.MEDIUM  to Material.YELLOW_SHULKER_BOX,
     ParkourDifficulty.HARD    to Material.RED_SHULKER_BOX,
-    ParkourDifficulty.EXTREME to Material.PURPLE_SHULKER_BOX
+    ParkourDifficulty.ULTRA   to Material.PURPLE_SHULKER_BOX
   )
 
   override fun onCommand(

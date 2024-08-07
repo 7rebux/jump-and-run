@@ -28,7 +28,7 @@ object ParkourConfig : CustomConfiguration("parkour.yml") {
     val easy = config.getString("difficulty.easy")!!
     val medium = config.getString("difficulty.medium")!!
     val hard = config.getString("difficulty.hard")!!
-    val extreme = config.getString("difficulty.extreme")!!
+    val ultra = config.getString("difficulty.ultra")!!
   }
 
   internal object Scoreboard {

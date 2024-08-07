@@ -41,7 +41,7 @@ object MenuItem : Item("menu") {
     Easy,
     Medium,
     Hard,
-    Extreme,
+    Ultra,
   }
 
   fun Player.openParkourMenu(
@@ -58,7 +58,7 @@ object MenuItem : Item("menu") {
           Category.Easy -> parkour.difficulty == ParkourDifficulty.EASY
           Category.Medium -> parkour.difficulty == ParkourDifficulty.MEDIUM
           Category.Hard -> parkour.difficulty == ParkourDifficulty.HARD
-          Category.Extreme -> parkour.difficulty == ParkourDifficulty.EXTREME
+          Category.Ultra -> parkour.difficulty == ParkourDifficulty.ULTRA
         }
       }
       .sortedBy { it.difficulty }

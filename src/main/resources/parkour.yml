@@ -16,7 +16,7 @@ difficulty:
   easy: "§aEasy"
   medium: "§6Medium"
   hard: "§cHard"
-  extreme: "§5Extreme"
+  ultra: "§5Ultra"
 
 scoreboard:
   title: "§f{name}"

@@ -8,7 +8,7 @@ enum class ParkourDifficulty(private val displayName: String) {
     EASY    (ParkourConfig.Difficulty.easy),
     MEDIUM  (ParkourConfig.Difficulty.medium),
     HARD    (ParkourConfig.Difficulty.hard),
-    EXTREME (ParkourConfig.Difficulty.extreme);
+    ULTRA   (ParkourConfig.Difficulty.ultra);
 
     override fun toString() = displayName
 }
