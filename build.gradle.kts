@@ -24,6 +24,7 @@ repositories {
 dependencies {
   compileOnly("org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT")
   compileOnly("com.github.azbh111:craftbukkit-1.8.8:R")
+  compileOnly("de.tr7zw:item-nbt-api:2.13.0")
 
   implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
   implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
@@ -32,7 +33,6 @@ dependencies {
   implementation("org.slf4j:slf4j-nop:2.0.3")
 
   shadow("org.mariadb.jdbc:mariadb-java-client:3.4.0")
-  shadow("de.tr7zw:item-nbt-api:2.13.0")
   shadow("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
   testImplementation(kotlin("test"))

@@ -4,6 +4,7 @@ author: Rebux
 description: Jump and Run Plugin
 api-version: 1.20
 main: net.rebux.jumpandrun.Plugin
+depend: [NBTAPI]
 
 # This is only here to make sure this plugin is loaded after Multiverse-Core
 # It is not a direct dependency
