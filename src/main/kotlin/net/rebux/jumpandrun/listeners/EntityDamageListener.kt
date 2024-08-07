@@ -11,7 +11,7 @@ object EntityDamageListener : Listener {
   @EventHandler
   fun onEntityDamage(event: EntityDamageEvent) {
     (event.entity as? Player)?.run {
-      if (this.data.inParkour) {
+      if (this.data.inParkour || this.data.inPractice) {
         event.isCancelled = true
       }
     }
