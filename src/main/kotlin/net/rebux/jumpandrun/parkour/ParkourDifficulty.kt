@@ -6,7 +6,7 @@ import net.rebux.jumpandrun.config.ParkourConfig
 enum class ParkourDifficulty(private val displayName: String) {
 
     EASY    (ParkourConfig.Difficulty.easy),
-    MEDIUM  (ParkourConfig.Difficulty.medium),
+    NORMAL  (ParkourConfig.Difficulty.normal),
     HARD    (ParkourConfig.Difficulty.hard),
     ULTRA   (ParkourConfig.Difficulty.ultra);
 

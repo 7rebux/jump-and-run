@@ -59,7 +59,7 @@ class Plugin : JavaPlugin() {
 
   private val materialByDifficulty = mapOf(
     ParkourDifficulty.EASY    to Material.GREEN_SHULKER_BOX,
-    ParkourDifficulty.MEDIUM  to Material.YELLOW_SHULKER_BOX,
+    ParkourDifficulty.NORMAL  to Material.YELLOW_SHULKER_BOX,
     ParkourDifficulty.HARD    to Material.RED_SHULKER_BOX,
     ParkourDifficulty.ULTRA   to Material.PURPLE_SHULKER_BOX
   )
@@ -70,6 +70,8 @@ class Plugin : JavaPlugin() {
     difficulty: ParkourDifficulty,
     location: Location
   ) {
+    println("Adding $name $difficulty by $builder with location $location")
+
     transaction {
       val entity = ParkourEntity.new {
         this.name = name

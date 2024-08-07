@@ -39,7 +39,7 @@ object MenuItem : Item("menu") {
   enum class Category {
     All,
     Easy,
-    Medium,
+    Normal,
     Hard,
     Ultra,
   }
@@ -56,7 +56,7 @@ object MenuItem : Item("menu") {
         when (category) {
           Category.All -> true
           Category.Easy -> parkour.difficulty == ParkourDifficulty.EASY
-          Category.Medium -> parkour.difficulty == ParkourDifficulty.MEDIUM
+          Category.Normal -> parkour.difficulty == ParkourDifficulty.NORMAL
           Category.Hard -> parkour.difficulty == ParkourDifficulty.HARD
           Category.Ultra -> parkour.difficulty == ParkourDifficulty.ULTRA
         }

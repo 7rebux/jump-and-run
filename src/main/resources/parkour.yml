@@ -14,7 +14,7 @@ block:
 
 difficulty:
   easy: "§aEasy"
-  medium: "§6Medium"
+  normal: "§6Normal"
   hard: "§cHard"
   ultra: "§5Ultra"
 
