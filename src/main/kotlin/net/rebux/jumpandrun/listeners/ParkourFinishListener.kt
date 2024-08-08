@@ -57,7 +57,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
             "player" to player.name,
             "name" to parkour.name,
             "time" to time,
-            "unit" to unit))
+            "unit" to unit.toMessageValue()))
           .buildAndSendGlobally()
         SoundUtil.playSound(SoundsConfig.firstGlobalBest, player)
       }
