@@ -66,11 +66,11 @@ class Plugin : JavaPlugin() {
 
   // TODO: Move this to parkour manager (create some kind of api)
   fun registerParkour(
-    id: Int? = null,
     name: String,
     builder: String,
     difficulty: ParkourDifficulty,
-    location: Location
+    location: Location,
+    id: Int? = null
   ) {
     transaction {
       val entity = ParkourEntity.new(id) {
