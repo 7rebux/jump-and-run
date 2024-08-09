@@ -61,7 +61,7 @@ object MenuItem : Item("menu") {
           Category.Ultra -> parkour.difficulty == ParkourDifficulty.ULTRA
         }
       }
-      .sortedBy { it.difficulty }
+      .sortedWith(compareBy(Parkour::difficulty, Parkour::name))
 
     for (slot in 0 until config.parkoursPerPage) {
       val index = slot + page * MenuConfig.parkoursPerPage
