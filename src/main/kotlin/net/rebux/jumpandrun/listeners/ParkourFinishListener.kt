@@ -41,6 +41,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
     MessageBuilder(MessagesConfig.Event.completed)
       .values(mapOf(
         "name" to parkour.name,
+        "difficulty" to parkour.difficulty.displayName,
         "time" to time,
         "unit" to unit.toMessageValue()))
       .buildAndSend(player)
@@ -56,6 +57,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
           .values(mapOf(
             "player" to player.name,
             "name" to parkour.name,
+            "difficulty" to parkour.difficulty.displayName,
             "time" to time,
             "unit" to unit.toMessageValue()))
           .buildAndSendGlobally()
@@ -74,6 +76,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
           .values(mapOf(
             "player" to player.name,
             "name" to parkour.name,
+            "difficulty" to parkour.difficulty.displayName,
             "holders" to previousHolders,
             "time" to deltaTime,
             "unit" to deltaUnit.toMessageValue()))
