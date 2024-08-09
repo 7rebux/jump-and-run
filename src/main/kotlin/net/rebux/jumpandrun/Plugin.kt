@@ -64,16 +64,16 @@ class Plugin : JavaPlugin() {
     ParkourDifficulty.ULTRA   to Material.PURPLE_SHULKER_BOX
   )
 
+  // TODO: Move this to parkour manager (create some kind of api)
   fun registerParkour(
+    id: Int? = null,
     name: String,
     builder: String,
     difficulty: ParkourDifficulty,
     location: Location
   ) {
-    println("Adding $name $difficulty by $builder with location $location")
-
     transaction {
-      val entity = ParkourEntity.new {
+      val entity = ParkourEntity.new(id) {
         this.name = name
         this.builder = builder
         this.difficulty = difficulty
