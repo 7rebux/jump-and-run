@@ -20,8 +20,17 @@ object ScoreboardUtil {
     return scoreboard {
       title(
         MessageBuilder(config.title)
-          .values(mapOf("name" to parkour.name))
           .prefix(false)
+          .buildSingle()
+      )
+
+      appendLine(
+        MessageBuilder(config.subtitle)
+          .prefix(false)
+          .values(
+            mapOf(
+              "difficulty" to parkour.difficulty.displayName,
+              "name" to parkour.name))
           .buildSingle()
       )
 

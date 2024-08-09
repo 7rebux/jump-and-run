@@ -3,7 +3,7 @@ package net.rebux.jumpandrun.parkour
 import net.rebux.jumpandrun.config.ParkourConfig
 
 // TODO: This should be more configurable, custom entries and so on
-enum class ParkourDifficulty(private val displayName: String) {
+enum class ParkourDifficulty(val displayName: String) {
 
     EASY    (ParkourConfig.Difficulty.easy),
     NORMAL  (ParkourConfig.Difficulty.normal),

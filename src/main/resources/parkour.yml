@@ -19,7 +19,8 @@ difficulty:
   ultra: "§5Ultra"
 
 scoreboard:
-  title: "§f{name}"
+  title: "§fParkour Server"
+  subtitle: "{difficulty} {name}"
   personalBestHeader: "§7Personal Best"
   personalBest: "§6{time} {unit}"
   personalBestFooter: ""

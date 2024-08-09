@@ -33,6 +33,7 @@ object ParkourConfig : CustomConfiguration("parkour.yml") {
 
   internal object Scoreboard {
     val title = config.getString("scoreboard.title")!!
+    val subtitle = config.getString("scoreboard.subtitle")!!
     val personalBestHeader = config.getString("scoreboard.personalBestHeader")!!
     val personalBest = config.getString("scoreboard.personalBest")!!
     val personalBestFooter = config.getString("scoreboard.personalBestFooter")!!
