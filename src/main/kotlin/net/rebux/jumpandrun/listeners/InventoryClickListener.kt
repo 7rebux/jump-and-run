@@ -1,6 +1,7 @@
 package net.rebux.jumpandrun.listeners
 
 import net.rebux.jumpandrun.Plugin
+import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.events.ParkourJoinEvent
 import net.rebux.jumpandrun.getTag
 import net.rebux.jumpandrun.item.impl.MenuItem
@@ -12,7 +13,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
-import net.rebux.jumpandrun.api.PlayerDataManager.data
 
 object InventoryClickListener : Listener {
 
@@ -21,6 +21,7 @@ object InventoryClickListener : Listener {
     val item = event.currentItem
 
     if (item == null || item.type == Material.AIR || item.amount == 0) {
+      event.isCancelled = true
       return
     }
 
@@ -28,22 +29,15 @@ object InventoryClickListener : Listener {
     val parkourTag = item.getTag(Plugin.PARKOUR_TAG)
     val pageTag = item.getTag(Plugin.PAGE_TAG)
 
-    idTag?.let {
-      event.isCancelled = true
-    }
-    parkourTag?.let {
-      handleParkourTag(event.currentItem!!, event)
-    }
-    pageTag?.let {
-      handlePageTag(event.currentItem!!, event)
-    }
+    idTag?.let { event.isCancelled = true }
+    parkourTag?.let { handleParkourTag(event.currentItem!!, event) }
+    pageTag?.let { handlePageTag(event.currentItem!!, event) }
   }
 
   private fun handleParkourTag(itemStack: ItemStack, event: InventoryClickEvent) {
     val player = event.whoClicked as Player
     val id = itemStack.getTag(Plugin.PARKOUR_TAG)!!
-    val parkour = ParkourManager.parkours[id]
-      ?: error("Parkour with id=$id could not be found!")
+    val parkour = ParkourManager.parkours[id] ?: error("Parkour with id=$id could not be found!")
 
     // Prevent starting a parkour when the player is in practice mode
     if (player.data.inPractice) {
