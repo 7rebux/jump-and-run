@@ -1,25 +1,24 @@
 package net.rebux.jumpandrun.listeners
 
-import net.rebux.jumpandrun.events.ParkourFinishEvent
-import net.rebux.jumpandrun.utils.ActionBarUtil.sendActionBar
-import net.rebux.jumpandrun.utils.TickFormatter
-import org.bukkit.Bukkit
-import org.bukkit.block.BlockFace
-import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
-import org.bukkit.event.player.PlayerMoveEvent
 import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.config.MessagesConfig
 import net.rebux.jumpandrun.config.ParkourConfig
 import net.rebux.jumpandrun.config.SoundsConfig
+import net.rebux.jumpandrun.events.ParkourFinishEvent
 import net.rebux.jumpandrun.safeTeleport
+import net.rebux.jumpandrun.utils.ActionBarUtil.sendActionBar
 import net.rebux.jumpandrun.utils.MessageBuilder
 import net.rebux.jumpandrun.utils.SoundUtil
 import net.rebux.jumpandrun.utils.TickCounter
+import net.rebux.jumpandrun.utils.TickFormatter
 import net.rebux.jumpandrun.utils.TickFormatter.toMessageValue
+import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
-import java.util.concurrent.TimeUnit
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerMoveEvent
 
 object PlayerMoveListener : Listener {
 
@@ -31,11 +30,8 @@ object PlayerMoveListener : Listener {
     val data = event.player.data
     val block = player.location.block.location
     // TODO: This is very inaccurate
-    val blockLocation = block.add(
-      if (block.x < 0) -0.5 else 0.5,
-      0.0,
-      if (block.z < 0) -0.5 else 0.5
-    )
+    val blockLocation =
+        block.add(if (block.x < 0) -0.5 else 0.5, 0.0, if (block.z < 0) -0.5 else 0.5)
 
     if (data.inParkour && !data.inPractice) {
       processTimer(data.parkourData.timer, player, event.hasMoved())
@@ -72,13 +68,10 @@ object PlayerMoveListener : Listener {
     // TODO: Maybe show this in a different color for practice mode
     val (time, unit) = TickFormatter.format(timer.ticks)
     player.sendActionBar(
-      MessageBuilder(MessagesConfig.Timer.bar)
-        .values(mapOf(
-          "time" to time,
-          "unit" to unit.toMessageValue()))
-        .prefix(false)
-        .buildSingle()
-    )
+        MessageBuilder(MessagesConfig.Timer.bar)
+            .values(mapOf("time" to time, "unit" to unit.toMessageValue()))
+            .prefix(false)
+            .buildSingle())
   }
 
   private fun handleReset(player: Player) {
@@ -107,10 +100,11 @@ object PlayerMoveListener : Listener {
       return
     }
 
-    player.data.parkourData.checkpoint = blockLocation.apply {
-      this.yaw = player.location.yaw
-      this.pitch = player.location.pitch
-    }
+    player.data.parkourData.checkpoint =
+        blockLocation.apply {
+          this.yaw = player.location.yaw
+          this.pitch = player.location.pitch
+        }
     MessageBuilder(MessagesConfig.Event.checkpoint).buildAndSend(player)
     SoundUtil.playSound(SoundsConfig.checkpoint, player)
   }
@@ -126,9 +120,8 @@ object PlayerMoveListener : Listener {
       return
     }
 
-    Bukkit.getPluginManager().callEvent(
-      ParkourFinishEvent(player, player.data.parkourData.parkour!!)
-    )
+    Bukkit.getPluginManager()
+        .callEvent(ParkourFinishEvent(player, player.data.parkourData.parkour!!))
   }
 
   private fun PlayerMoveEvent.hasMoved(): Boolean {
@@ -136,8 +129,6 @@ object PlayerMoveListener : Listener {
       return false
     }
 
-    return this.from.x != this.to!!.x
-      || this.from.y != this.to!!.y
-      || this.from.z != this.to!!.z
+    return this.from.x != this.to!!.x || this.from.y != this.to!!.y || this.from.z != this.to!!.z
   }
 }
