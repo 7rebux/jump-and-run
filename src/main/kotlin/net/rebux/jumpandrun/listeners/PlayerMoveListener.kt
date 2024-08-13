@@ -47,6 +47,13 @@ object PlayerMoveListener : Listener {
       return
     }
 
+    if (data.parkourData.parkour
+        ?.finishLocation
+        ?.equals(player.location.block.getRelative(BlockFace.DOWN).location) == true) {
+      handleFinish(player, null)
+      return
+    }
+
     when (player.location.block.getRelative(BlockFace.DOWN).type) {
       ParkourConfig.Block.reset -> handleReset(player)
       ParkourConfig.Block.checkpoint -> handleCheckpoint(player, blockLocation)
@@ -109,14 +116,20 @@ object PlayerMoveListener : Listener {
     SoundUtil.playSound(SoundsConfig.checkpoint, player)
   }
 
-  private fun handleFinish(player: Player, blockLocation: Location) {
+  private fun handleFinish(player: Player, blockLocation: Location?) {
     // We don't want to finish a parkour in practice mode
     if (player.data.inPractice) {
       return
     }
 
+    // We do not want to finish if the parkour has a finish location set
+    if (blockLocation != null && player.data.parkourData.parkour?.finishLocation != null) {
+      return
+    }
+
     // Make sure start block is not finish block
-    if (player.data.parkourData.parkour!!.location.distance(blockLocation) < 2.0) {
+    if (blockLocation != null &&
+        player.data.parkourData.parkour!!.startLocation.distance(blockLocation) < 2.0) {
       return
     }
 

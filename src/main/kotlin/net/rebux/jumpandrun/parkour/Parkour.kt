@@ -1,8 +1,8 @@
 package net.rebux.jumpandrun.parkour
 
-import java.util.*
 import org.bukkit.Location
 import org.bukkit.Material
+import java.util.*
 
 data class Parkour(
     val id: Int,
@@ -10,7 +10,8 @@ data class Parkour(
     val builder: String,
     val difficulty: ParkourDifficulty,
     val material: Material,
-    val location: Location,
+    val startLocation: Location,
+    val finishLocation: Location? = null
 ) {
   val times: HashMap<UUID, Long> = hashMapOf()
 }

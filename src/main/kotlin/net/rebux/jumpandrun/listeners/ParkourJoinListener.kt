@@ -4,11 +4,7 @@ import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.api.currentState
 import net.rebux.jumpandrun.config.ParkourConfig
 import net.rebux.jumpandrun.events.ParkourJoinEvent
-import net.rebux.jumpandrun.item.impl.ResetItem
-import net.rebux.jumpandrun.item.impl.HiderItem
-import net.rebux.jumpandrun.item.impl.LeaveItem
-import net.rebux.jumpandrun.item.impl.MenuItem
-import net.rebux.jumpandrun.item.impl.RestartItem
+import net.rebux.jumpandrun.item.impl.*
 import net.rebux.jumpandrun.safeTeleport
 import net.rebux.jumpandrun.utils.ScoreboardUtil
 import org.bukkit.Bukkit
@@ -39,7 +35,7 @@ object ParkourJoinListener : Listener {
     player.data.apply {
       this.parkourData.timer.stop()
       this.parkourData.parkour = parkour
-      this.parkourData.checkpoint = parkour.location
+      this.parkourData.checkpoint = parkour.startLocation
     }
 
     player.gameMode = GameMode.valueOf(ParkourConfig.gameMode)
@@ -51,16 +47,12 @@ object ParkourJoinListener : Listener {
       Bukkit.getOnlinePlayers().forEach(player::hidePlayer)
     }
 
-    player.safeTeleport(parkour.location)
+    player.safeTeleport(parkour.startLocation)
   }
 
   private fun Player.addParkourItems() {
-    listOf(
-      ResetItem,
-      RestartItem,
-      MenuItem,
-      HiderItem,
-      LeaveItem
-    ).forEach { item -> item.addToInventory(this) }
+    listOf(ResetItem, RestartItem, MenuItem, HiderItem, LeaveItem).forEach { item ->
+      item.addToInventory(this)
+    }
   }
 }

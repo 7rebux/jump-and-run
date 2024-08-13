@@ -35,7 +35,8 @@ object ParkourManager {
             this.builder = parkour.builder
             this.difficulty = parkour.difficulty
             this.material = parkour.material
-            this.location = LocationEntity.ofLocation(parkour.location)
+            this.location = LocationEntity.ofLocation(parkour.startLocation)
+            this.finishLocation = parkour.finishLocation?.let(LocationEntity.Companion::ofLocation)
           }
 
       parkours[entity.id.value] = parkour

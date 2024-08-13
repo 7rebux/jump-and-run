@@ -17,7 +17,7 @@ object RestartItem : Item("restart") {
       return
     }
 
-    val startLocation = player.data.parkourData.parkour!!.location
+    val startLocation = player.data.parkourData.parkour!!.startLocation
 
     player.data.parkourData.checkpoint = startLocation
     player.data.parkourData.timer.stop()

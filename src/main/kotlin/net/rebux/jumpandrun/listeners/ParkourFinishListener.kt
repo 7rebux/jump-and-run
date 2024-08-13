@@ -1,5 +1,6 @@
 package net.rebux.jumpandrun.listeners
 
+import java.time.LocalDateTime
 import net.rebux.jumpandrun.Plugin
 import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.config.MessagesConfig
@@ -23,7 +24,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.time.LocalDateTime
 
 class ParkourFinishListener(private val plugin: Plugin) : Listener {
 
@@ -39,48 +39,51 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
     val (time, unit) = TickFormatter.format(ticks)
 
     MessageBuilder(MessagesConfig.Event.completed)
-      .values(mapOf(
-        "name" to parkour.name,
-        "difficulty" to parkour.difficulty.displayName,
-        "time" to time,
-        "unit" to unit.toMessageValue()))
-      .buildAndSend(player)
+        .values(
+            mapOf(
+                "name" to parkour.name,
+                "difficulty" to parkour.difficulty.displayName,
+                "time" to time,
+                "unit" to unit.toMessageValue()))
+        .buildAndSend(player)
 
-    if (!parkour.times.contains(player.uniqueId) ||
-      ticks < parkour.times[player.uniqueId]!!) {
+    if (!parkour.times.contains(player.uniqueId) || ticks < parkour.times[player.uniqueId]!!) {
 
       val globalBest = parkour.times.values.minOrNull()
 
       // First global best
       if (globalBest == null) {
         MessageBuilder(MessagesConfig.Event.firstGlobalBest)
-          .values(mapOf(
-            "player" to player.name,
-            "name" to parkour.name,
-            "difficulty" to parkour.difficulty.displayName,
-            "time" to time,
-            "unit" to unit.toMessageValue()))
-          .buildAndSendGlobally()
+            .values(
+                mapOf(
+                    "player" to player.name,
+                    "name" to parkour.name,
+                    "difficulty" to parkour.difficulty.displayName,
+                    "time" to time,
+                    "unit" to unit.toMessageValue()))
+            .buildAndSendGlobally()
         SoundUtil.playSound(SoundsConfig.firstGlobalBest, player)
       }
       // New global best
       else if (ticks < globalBest) {
         val ticksDelta = globalBest - ticks
         val (deltaTime, deltaUnit) = TickFormatter.format(ticksDelta)
-        val previousHolders = parkour.times.entries
-          .filter { it.value == globalBest }
-          .mapNotNull { Bukkit.getOfflinePlayer(it.key).name }
-          .joinToString(", ")
+        val previousHolders =
+            parkour.times.entries
+                .filter { it.value == globalBest }
+                .mapNotNull { Bukkit.getOfflinePlayer(it.key).name }
+                .joinToString(", ")
 
         MessageBuilder(MessagesConfig.Event.globalBest)
-          .values(mapOf(
-            "player" to player.name,
-            "name" to parkour.name,
-            "difficulty" to parkour.difficulty.displayName,
-            "holders" to previousHolders,
-            "time" to deltaTime,
-            "unit" to deltaUnit.toMessageValue()))
-          .buildAndSendGlobally()
+            .values(
+                mapOf(
+                    "player" to player.name,
+                    "name" to parkour.name,
+                    "difficulty" to parkour.difficulty.displayName,
+                    "holders" to previousHolders,
+                    "time" to deltaTime,
+                    "unit" to deltaUnit.toMessageValue()))
+            .buildAndSendGlobally()
         SoundUtil.playSound(SoundsConfig.newGlobalBest)
       }
       // New personal best
@@ -98,7 +101,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
     if (ParkourConfig.leaveOnFinish) {
       Bukkit.getPluginManager().callEvent(ParkourLeaveEvent(player))
     } else {
-      val startLocation = player.data.parkourData.parkour!!.location
+      val startLocation = player.data.parkourData.parkour!!.startLocation
 
       player.data.parkourData.checkpoint = startLocation
       player.data.parkourData.timer.stop()
@@ -117,18 +120,14 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
     }
   }
 
-  private fun updateDatabaseEntry(
-    parkour: Parkour,
-    player: Player,
-    ticks: Long
-  ) {
+  private fun updateDatabaseEntry(parkour: Parkour, player: Player, ticks: Long) {
     Bukkit.getScheduler().runTaskAsynchronously(plugin) { ->
       transaction {
-        val parkourEntity = ParkourEntity.findById(parkour.id)
-          ?: error("Parkour ${parkour.id} found in memory but not in database!")
-        val existing = TimeEntity.find {
-          (Times.parkour eq parkour.id) and (Times.uuid eq player.uniqueId)
-        }
+        val parkourEntity =
+            ParkourEntity.findById(parkour.id)
+                ?: error("Parkour ${parkour.id} found in memory but not in database!")
+        val existing =
+            TimeEntity.find { (Times.parkour eq parkour.id) and (Times.uuid eq player.uniqueId) }
 
         existing.forEach(TimeEntity::delete)
 
