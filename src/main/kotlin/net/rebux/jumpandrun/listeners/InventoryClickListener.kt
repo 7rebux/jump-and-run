@@ -20,6 +20,7 @@ object InventoryClickListener : Listener {
   fun onClick(event: InventoryClickEvent) {
     val item = event.currentItem
 
+    // TODO: This cancels events for almost everything
     if (item == null || item.type == Material.AIR || item.amount == 0) {
       event.isCancelled = true
       return

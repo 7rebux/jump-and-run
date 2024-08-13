@@ -29,9 +29,6 @@ object PlayerMoveListener : Listener {
     val player = event.player
     val data = event.player.data
     val block = player.location.block.location
-    // TODO: This is very inaccurate
-    val blockLocation =
-        block.add(if (block.x < 0) -0.5 else 0.5, 0.0, if (block.z < 0) -0.5 else 0.5)
 
     if (data.inParkour && !data.inPractice) {
       processTimer(data.parkourData.timer, player, event.hasMoved())
@@ -56,8 +53,8 @@ object PlayerMoveListener : Listener {
 
     when (player.location.block.getRelative(BlockFace.DOWN).type) {
       ParkourConfig.Block.reset -> handleReset(player)
-      ParkourConfig.Block.checkpoint -> handleCheckpoint(player, blockLocation)
-      ParkourConfig.Block.finish -> handleFinish(player, blockLocation)
+      ParkourConfig.Block.checkpoint -> handleCheckpoint(player, block.normalized())
+      ParkourConfig.Block.finish -> handleFinish(player, block)
       else -> {}
     }
   }
@@ -143,5 +140,9 @@ object PlayerMoveListener : Listener {
     }
 
     return this.from.x != this.to!!.x || this.from.y != this.to!!.y || this.from.z != this.to!!.z
+  }
+
+  private fun Location.normalized(): Location {
+    return this.add(if (this.x < 0) -0.5 else 0.5, 0.0, if (this.z < 0) -0.5 else 0.5)
   }
 }
