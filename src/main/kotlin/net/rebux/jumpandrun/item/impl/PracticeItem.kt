@@ -7,10 +7,10 @@ import org.bukkit.entity.Player
 
 object PracticeItem : Item("practice") {
 
-  override fun onInteract(player: Player) {
-    if (player.data.inPractice) {
-      player.safeTeleport(player.data.practiceData.startLocation!!)
-      player.data.practiceData.timer.stop()
+    override fun onInteract(player: Player) {
+        if (player.data.inPractice) {
+            player.safeTeleport(player.data.practiceData.startLocation!!)
+            player.data.practiceData.timer.stop()
+        }
     }
-  }
 }

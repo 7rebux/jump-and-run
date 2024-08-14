@@ -83,8 +83,7 @@ object PlayerMoveListener : Listener {
             MessageBuilder(MessagesConfig.Timer.bar)
                 .values(mapOf("time" to time, "unit" to unit.toMessageValue()))
                 .prefix(false)
-                .buildSingle()
-        )
+                .buildSingle())
     }
 
     private fun handleReset(player: Player, lastLocation: Location) {

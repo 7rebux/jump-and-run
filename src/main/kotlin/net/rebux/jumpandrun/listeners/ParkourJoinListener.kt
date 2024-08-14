@@ -15,44 +15,44 @@ import org.bukkit.event.Listener
 
 object ParkourJoinListener : Listener {
 
-  private const val MAX_FOOD_LEVEL = 20
+    private const val MAX_FOOD_LEVEL = 20
 
-  @EventHandler
-  fun onParkourJoin(event: ParkourJoinEvent) {
-    if (event.isCancelled) {
-      return
+    @EventHandler
+    fun onParkourJoin(event: ParkourJoinEvent) {
+        if (event.isCancelled) {
+            return
+        }
+
+        val player = event.player
+        val parkour = event.parkour
+
+        if (!player.data.inParkour) {
+            player.data.parkourData.previousState = player.currentState()
+            player.inventory.clear()
+            player.addParkourItems()
+        }
+
+        player.data.apply {
+            this.parkourData.timer.stop()
+            this.parkourData.parkour = parkour
+            this.parkourData.checkpoint = parkour.startLocation
+        }
+
+        player.gameMode = GameMode.valueOf(ParkourConfig.gameMode)
+        player.foodLevel = MAX_FOOD_LEVEL
+
+        player.scoreboard = ScoreboardUtil.createParkourScoreboard(parkour, player)
+
+        if (player.data.playersHidden) {
+            Bukkit.getOnlinePlayers().forEach(player::hidePlayer)
+        }
+
+        player.safeTeleport(parkour.startLocation)
     }
 
-    val player = event.player
-    val parkour = event.parkour
-
-    if (!player.data.inParkour) {
-      player.data.parkourData.previousState = player.currentState()
-      player.inventory.clear()
-      player.addParkourItems()
+    private fun Player.addParkourItems() {
+        listOf(ResetItem, RestartItem, MenuItem, HiderItem, LeaveItem).forEach { item ->
+            item.addToInventory(this)
+        }
     }
-
-    player.data.apply {
-      this.parkourData.timer.stop()
-      this.parkourData.parkour = parkour
-      this.parkourData.checkpoint = parkour.startLocation
-    }
-
-    player.gameMode = GameMode.valueOf(ParkourConfig.gameMode)
-    player.foodLevel = MAX_FOOD_LEVEL
-
-    player.scoreboard = ScoreboardUtil.createParkourScoreboard(parkour, player)
-
-    if (player.data.playersHidden) {
-      Bukkit.getOnlinePlayers().forEach(player::hidePlayer)
-    }
-
-    player.safeTeleport(parkour.startLocation)
-  }
-
-  private fun Player.addParkourItems() {
-    listOf(ResetItem, RestartItem, MenuItem, HiderItem, LeaveItem).forEach { item ->
-      item.addToInventory(this)
-    }
-  }
 }

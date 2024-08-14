@@ -10,15 +10,15 @@ import java.sql.Connection.TRANSACTION_SERIALIZABLE
 
 object SchemaInitializer {
 
-  init {
-    TransactionManager.manager.defaultIsolationLevel = TRANSACTION_SERIALIZABLE
-  }
+    init {
+        TransactionManager.manager.defaultIsolationLevel = TRANSACTION_SERIALIZABLE
+    }
 
-  fun initialize() = transaction {
-    SchemaUtils.create(
-      Parkours,
-      Locations,
-      Times,
-    )
-  }
+    fun initialize() = transaction {
+        SchemaUtils.create(
+            Parkours,
+            Locations,
+            Times,
+        )
+    }
 }

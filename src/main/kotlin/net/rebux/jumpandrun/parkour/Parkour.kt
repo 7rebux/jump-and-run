@@ -13,5 +13,5 @@ data class Parkour(
     val startLocation: Location,
     val finishLocation: Location? = null
 ) {
-  val times: HashMap<UUID, Long> = hashMapOf()
+    val times: HashMap<UUID, Long> = hashMapOf()
 }

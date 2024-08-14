@@ -9,12 +9,13 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent
 
 object CommandPreprocessListener : Listener {
 
-  @EventHandler
-  fun onCommand(event: PlayerCommandPreprocessEvent) {
-    if (event.message != "/spawn" || !event.player.data.inParkour) {
-      return
-    }
+    @EventHandler
+    fun onCommand(event: PlayerCommandPreprocessEvent) {
+        if (event.message != "/spawn" || !event.player.data.inParkour) {
+            return
+        }
 
-    Bukkit.getPluginManager().callEvent(ParkourLeaveEvent(event.player, preventSpawnTeleport = true))
-  }
+        Bukkit.getPluginManager()
+            .callEvent(ParkourLeaveEvent(event.player, preventSpawnTeleport = true))
+    }
 }

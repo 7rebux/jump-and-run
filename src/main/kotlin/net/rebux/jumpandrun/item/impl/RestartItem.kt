@@ -7,20 +7,20 @@ import org.bukkit.entity.Player
 
 object RestartItem : Item("restart") {
 
-  override fun onInteract(player: Player) {
-    if (!player.data.inParkour) {
-      return
+    override fun onInteract(player: Player) {
+        if (!player.data.inParkour) {
+            return
+        }
+
+        // Prevent restarting parkour when in practice mode
+        if (player.data.inPractice) {
+            return
+        }
+
+        val startLocation = player.data.parkourData.parkour!!.startLocation
+
+        player.data.parkourData.checkpoint = startLocation
+        player.data.parkourData.timer.stop()
+        player.safeTeleport(startLocation)
     }
-
-    // Prevent restarting parkour when in practice mode
-    if (player.data.inPractice) {
-      return
-    }
-
-    val startLocation = player.data.parkourData.parkour!!.startLocation
-
-    player.data.parkourData.checkpoint = startLocation
-    player.data.parkourData.timer.stop()
-    player.safeTeleport(startLocation)
-  }
 }

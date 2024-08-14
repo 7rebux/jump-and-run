@@ -8,16 +8,16 @@ import org.bukkit.entity.Player
 
 object LeaveItem : Item("leave") {
 
-  override fun onInteract(player: Player) {
-    if (!player.data.inParkour) {
-      return
-    }
+    override fun onInteract(player: Player) {
+        if (!player.data.inParkour) {
+            return
+        }
 
-    // Prevent leaving parkour while in practice mode
-    if (player.data.inPractice) {
-      return
-    }
+        // Prevent leaving parkour while in practice mode
+        if (player.data.inPractice) {
+            return
+        }
 
-    Bukkit.getPluginManager().callEvent(ParkourLeaveEvent(player))
-  }
+        Bukkit.getPluginManager().callEvent(ParkourLeaveEvent(player))
+    }
 }

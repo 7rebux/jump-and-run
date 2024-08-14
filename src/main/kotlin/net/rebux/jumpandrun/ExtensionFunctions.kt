@@ -6,12 +6,10 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 fun Player.safeTeleport(location: Location) {
-  this.fallDistance = 0.0F
-  this.teleport(location)
+    this.fallDistance = 0.0F
+    this.teleport(location)
 }
 
 fun ItemStack.getTag(name: String): Int? {
-  return NBT.get<Int?>(this) { nbt ->
-    nbt.getOrNull(name, Integer.TYPE)
-  }
+    return NBT.get<Int?>(this) { nbt -> nbt.getOrNull(name, Integer.TYPE) }
 }

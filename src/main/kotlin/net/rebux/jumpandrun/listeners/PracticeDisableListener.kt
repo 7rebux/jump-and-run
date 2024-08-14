@@ -10,24 +10,23 @@ import org.bukkit.event.Listener
 
 object PracticeDisableListener : Listener {
 
-  @EventHandler
-  fun onDisable(event: PracticeDisableEvent) {
-    if (event.isCancelled) {
-      return
+    @EventHandler
+    fun onDisable(event: PracticeDisableEvent) {
+        if (event.isCancelled) {
+            return
+        }
+
+        val player = event.player
+        val practiceData = player.data.practiceData
+
+        player.safeTeleport(practiceData.startLocation!!)
+        practiceData.apply {
+            timer.stop()
+            startLocation = null
+        }
+
+        practiceData.previousState!!.restore()
+
+        MessageBuilder(MessagesConfig.Command.Practice.disabled).buildAndSend(player)
     }
-
-    val player = event.player
-    val practiceData = player.data.practiceData
-
-    player.safeTeleport(practiceData.startLocation!!)
-    practiceData.apply {
-      timer.stop()
-      startLocation = null
-    }
-
-    practiceData.previousState!!.restore()
-
-    MessageBuilder(MessagesConfig.Command.Practice.disabled)
-      .buildAndSend(player)
-  }
 }

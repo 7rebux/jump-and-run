@@ -7,9 +7,9 @@ import org.bukkit.entity.Player
 
 object ResetItem : Item("reset") {
 
-  override fun onInteract(player: Player) {
-    if (player.data.inParkour) {
-      player.safeTeleport(player.data.parkourData.checkpoint!!)
+    override fun onInteract(player: Player) {
+        if (player.data.inParkour) {
+            player.safeTeleport(player.data.parkourData.checkpoint!!)
+        }
     }
-  }
 }

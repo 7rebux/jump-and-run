@@ -9,13 +9,17 @@ import org.bukkit.entity.Player
 
 object ActionBarUtil {
 
-  fun Player.sendActionBar(message: String) {
-    try {
-      this.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent(message))
-    } catch (_: NoSuchMethodError) {
-      // Fallback for 1.8 servers
-      (this as CraftPlayer).handle.playerConnection.sendPacket(
-        PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\":\"$message\"}"), 2))
+    fun Player.sendActionBar(message: String) {
+        try {
+            this.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent(message))
+        } catch (_: NoSuchMethodError) {
+            // Fallback for 1.8 servers
+            (this as CraftPlayer)
+                .handle
+                .playerConnection
+                .sendPacket(
+                    PacketPlayOutChat(
+                        IChatBaseComponent.ChatSerializer.a("{\"text\":\"$message\"}"), 2))
+        }
     }
-  }
 }

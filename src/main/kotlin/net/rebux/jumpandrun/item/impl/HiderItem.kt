@@ -9,20 +9,20 @@ import org.bukkit.entity.Player
 
 object HiderItem : Item("hider") {
 
-  @Override
-  override fun onInteract(player: Player) {
-    if (!player.data.inParkour) {
-      return
-    }
+    @Override
+    override fun onInteract(player: Player) {
+        if (!player.data.inParkour) {
+            return
+        }
 
-    if (player.data.playersHidden) {
-      Bukkit.getOnlinePlayers().forEach(player::showPlayer)
-      player.data.playersHidden = false
-      MessageBuilder(MessagesConfig.Item.Hider.showPlayers).buildAndSend(player)
-    } else {
-      Bukkit.getOnlinePlayers().forEach(player::hidePlayer)
-      player.data.playersHidden = true
-      MessageBuilder(MessagesConfig.Item.Hider.hidePlayers).buildAndSend(player)
+        if (player.data.playersHidden) {
+            Bukkit.getOnlinePlayers().forEach(player::showPlayer)
+            player.data.playersHidden = false
+            MessageBuilder(MessagesConfig.Item.Hider.showPlayers).buildAndSend(player)
+        } else {
+            Bukkit.getOnlinePlayers().forEach(player::hidePlayer)
+            player.data.playersHidden = true
+            MessageBuilder(MessagesConfig.Item.Hider.hidePlayers).buildAndSend(player)
+        }
     }
-  }
 }

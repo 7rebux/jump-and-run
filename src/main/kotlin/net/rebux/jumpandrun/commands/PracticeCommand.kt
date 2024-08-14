@@ -11,22 +11,22 @@ import org.bukkit.entity.Player
 
 class PracticeCommand : CommandExecutor {
 
-  override fun onCommand(
-    sender: CommandSender,
-    command: Command,
-    label: String,
-    args: Array<String>
-  ): Boolean {
-    if (sender !is Player) {
-      sender.sendMessage("This command can only be called as a player!")
-      return true
-    }
+    override fun onCommand(
+        sender: CommandSender,
+        command: Command,
+        label: String,
+        args: Array<String>
+    ): Boolean {
+        if (sender !is Player) {
+            sender.sendMessage("This command can only be called as a player!")
+            return true
+        }
 
-    if (sender.data.inPractice) {
-      Bukkit.getPluginManager().callEvent(PracticeDisableEvent(sender))
-    } else {
-      Bukkit.getPluginManager().callEvent(PracticeEnableEvent(sender))
+        if (sender.data.inPractice) {
+            Bukkit.getPluginManager().callEvent(PracticeDisableEvent(sender))
+        } else {
+            Bukkit.getPluginManager().callEvent(PracticeEnableEvent(sender))
+        }
+        return true
     }
-    return true
-  }
 }

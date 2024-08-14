@@ -16,44 +16,45 @@ import org.bukkit.inventory.ItemStack
 
 object InventoryClickListener : Listener {
 
-  @EventHandler
-  fun onClick(event: InventoryClickEvent) {
-    val item = event.currentItem
+    @EventHandler
+    fun onClick(event: InventoryClickEvent) {
+        val item = event.currentItem
 
-    // TODO: This cancels events for almost everything
-    if (item == null || item.type == Material.AIR || item.amount == 0) {
-      event.isCancelled = true
-      return
+        // TODO: This cancels events for almost everything
+        if (item == null || item.type == Material.AIR || item.amount == 0) {
+            event.isCancelled = true
+            return
+        }
+
+        val idTag = item.getTag(Plugin.ID_TAG)
+        val parkourTag = item.getTag(Plugin.PARKOUR_TAG)
+        val pageTag = item.getTag(Plugin.PAGE_TAG)
+
+        idTag?.let { event.isCancelled = true }
+        parkourTag?.let { handleParkourTag(event.currentItem!!, event) }
+        pageTag?.let { handlePageTag(event.currentItem!!, event) }
     }
 
-    val idTag = item.getTag(Plugin.ID_TAG)
-    val parkourTag = item.getTag(Plugin.PARKOUR_TAG)
-    val pageTag = item.getTag(Plugin.PAGE_TAG)
+    private fun handleParkourTag(itemStack: ItemStack, event: InventoryClickEvent) {
+        val player = event.whoClicked as Player
+        val id = itemStack.getTag(Plugin.PARKOUR_TAG)!!
+        val parkour =
+            ParkourManager.parkours[id] ?: error("Parkour with id=$id could not be found!")
 
-    idTag?.let { event.isCancelled = true }
-    parkourTag?.let { handleParkourTag(event.currentItem!!, event) }
-    pageTag?.let { handlePageTag(event.currentItem!!, event) }
-  }
+        // Prevent starting a parkour when the player is in practice mode
+        if (player.data.inPractice) {
+            return
+        }
 
-  private fun handleParkourTag(itemStack: ItemStack, event: InventoryClickEvent) {
-    val player = event.whoClicked as Player
-    val id = itemStack.getTag(Plugin.PARKOUR_TAG)!!
-    val parkour = ParkourManager.parkours[id] ?: error("Parkour with id=$id could not be found!")
-
-    // Prevent starting a parkour when the player is in practice mode
-    if (player.data.inPractice) {
-      return
+        Bukkit.getPluginManager().callEvent(ParkourJoinEvent(player, parkour))
     }
 
-    Bukkit.getPluginManager().callEvent(ParkourJoinEvent(player, parkour))
-  }
+    private fun handlePageTag(itemStack: ItemStack, event: InventoryClickEvent) {
+        val player = event.whoClicked as Player
+        val page = itemStack.getTag(Plugin.PAGE_TAG)!!
+        val step = itemStack.getTag(Plugin.PAGE_STEP_TAG)!!
 
-  private fun handlePageTag(itemStack: ItemStack, event: InventoryClickEvent) {
-    val player = event.whoClicked as Player
-    val page = itemStack.getTag(Plugin.PAGE_TAG)!!
-    val step = itemStack.getTag(Plugin.PAGE_STEP_TAG)!!
-
-    MenuItem.openInventory(player, page + step)
-    event.isCancelled = true
-  }
+        MenuItem.openInventory(player, page + step)
+        event.isCancelled = true
+    }
 }
