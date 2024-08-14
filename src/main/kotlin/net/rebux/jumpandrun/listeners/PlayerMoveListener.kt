@@ -5,15 +5,16 @@ import net.rebux.jumpandrun.config.MessagesConfig
 import net.rebux.jumpandrun.config.ParkourConfig
 import net.rebux.jumpandrun.config.SoundsConfig
 import net.rebux.jumpandrun.events.ParkourFinishEvent
+import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.safeTeleport
 import net.rebux.jumpandrun.utils.ActionBarUtil.sendActionBar
 import net.rebux.jumpandrun.utils.MessageBuilder
 import net.rebux.jumpandrun.utils.SoundUtil
-import net.rebux.jumpandrun.utils.TickCounter
 import net.rebux.jumpandrun.utils.TickFormatter
 import net.rebux.jumpandrun.utils.TickFormatter.toMessageValue
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -22,127 +23,112 @@ import org.bukkit.event.player.PlayerMoveEvent
 
 object PlayerMoveListener : Listener {
 
-  // This event is manipulated through a custom server jar file to be called every tick,
-  // regardless if the player moved or not.
-  @EventHandler
-  fun onMove(event: PlayerMoveEvent) {
-    val player = event.player
-    val data = event.player.data
-    val block = player.location.block.location
+    // This event is manipulated through a custom server jar file to be called every tick,
+    // regardless if the player moved or not.
+    @EventHandler
+    fun onMove(event: PlayerMoveEvent) {
+        val player = event.player
+        val data = event.player.data
+        val blockBelow = player.location.block.getRelative(BlockFace.DOWN)
 
-    if (data.inParkour && !data.inPractice) {
-      processTimer(data.parkourData.timer, player, event.hasMoved())
-    } else if (data.inPractice) {
-      processTimer(data.practiceData.timer, player, event.hasMoved())
-    } else {
-      return
-    }
-
-    if (player.location.y <= ParkourConfig.resetHeight) {
-      player.safeTeleport(data.parkourData.checkpoint!!)
-      SoundUtil.playSound(SoundsConfig.resetHeight, player)
-      return
-    }
-
-    if (data.parkourData.parkour
-        ?.finishLocation
-        ?.equals(player.location.block.getRelative(BlockFace.DOWN).location) == true) {
-      handleFinish(player, null)
-      return
-    }
-
-    when (player.location.block.getRelative(BlockFace.DOWN).type) {
-      ParkourConfig.Block.reset -> handleReset(player)
-      ParkourConfig.Block.checkpoint -> handleCheckpoint(player, block.normalized())
-      ParkourConfig.Block.finish -> handleFinish(player, block)
-      else -> {}
-    }
-  }
-
-  private fun processTimer(timer: TickCounter, player: Player, hasMoved: Boolean) {
-    if (!timer.started && hasMoved) {
-      timer.start()
-      SoundUtil.playSound(SoundsConfig.timerStart, player)
-    }
-
-    if (timer.started) {
-      timer.tick()
-    }
-
-    // TODO: Maybe show this in a different color for practice mode
-    val (time, unit) = TickFormatter.format(timer.ticks)
-    player.sendActionBar(
-        MessageBuilder(MessagesConfig.Timer.bar)
-            .values(mapOf("time" to time, "unit" to unit.toMessageValue()))
-            .prefix(false)
-            .buildSingle())
-  }
-
-  private fun handleReset(player: Player) {
-    if (!ParkourConfig.Feature.resetBlock) {
-      return
-    }
-
-    player.safeTeleport(player.data.parkourData.checkpoint!!)
-    MessageBuilder(MessagesConfig.Event.resetBlock).buildAndSend(player)
-    SoundUtil.playSound(SoundsConfig.resetBlock, player)
-  }
-
-  // TODO: Not a clean solution with the distance checks
-  private fun handleCheckpoint(player: Player, blockLocation: Location) {
-    if (!ParkourConfig.Feature.checkpoint) {
-      return
-    }
-
-    // We ignore checkpoints in practice mode
-    if (player.data.inPractice) {
-      return
-    }
-
-    // Make sure checkpoint is not already set
-    if (player.data.parkourData.checkpoint!!.distance(blockLocation) < 2.0) {
-      return
-    }
-
-    player.data.parkourData.checkpoint =
-        blockLocation.apply {
-          this.yaw = player.location.yaw
-          this.pitch = player.location.pitch
+        if (!player.data.inParkour && !player.data.inPractice) {
+            return
         }
-    MessageBuilder(MessagesConfig.Event.checkpoint).buildAndSend(player)
-    SoundUtil.playSound(SoundsConfig.checkpoint, player)
-  }
 
-  private fun handleFinish(player: Player, blockLocation: Location?) {
-    // We don't want to finish a parkour in practice mode
-    if (player.data.inPractice) {
-      return
+        val lastLocation =
+            if (data.inPractice) data.practiceData.startLocation!!
+            else data.parkourData.checkpoint!!
+
+        handleTimer(player, event.hasPositionChanged())
+
+        // Handle reset height
+        if (player.location.y <= ParkourConfig.resetHeight) {
+            player.safeTeleport(lastLocation)
+            SoundUtil.playSound(SoundsConfig.resetHeight, player)
+            return
+        }
+
+        // Handle finish
+        if (blockBelow.isFinishBlockFor(data.parkourData.parkour!!) && !player.data.inPractice) {
+            Bukkit.getPluginManager()
+                .callEvent(ParkourFinishEvent(player, player.data.parkourData.parkour!!))
+            return
+        }
+
+        when (blockBelow.type) {
+            ParkourConfig.Block.reset -> handleReset(player, lastLocation)
+            ParkourConfig.Block.checkpoint ->
+                handleCheckpoint(player, player.location.block.location)
+            else -> {}
+        }
     }
 
-    // We do not want to finish if the parkour has a finish location set
-    if (blockLocation != null && player.data.parkourData.parkour?.finishLocation != null) {
-      return
+    private fun handleTimer(player: Player, hasMoved: Boolean) {
+        val timer =
+            if (player.data.inPractice) player.data.practiceData.timer
+            else player.data.practiceData.timer
+
+        if (!timer.started && hasMoved) {
+            timer.start()
+            SoundUtil.playSound(SoundsConfig.timerStart, player)
+        }
+
+        if (timer.started) {
+            timer.tick()
+        }
+
+        // TODO: Maybe show this in a different color for practice mode
+        val (time, unit) = TickFormatter.format(timer.ticks)
+        player.sendActionBar(
+            MessageBuilder(MessagesConfig.Timer.bar)
+                .values(mapOf("time" to time, "unit" to unit.toMessageValue()))
+                .prefix(false)
+                .buildSingle()
+        )
     }
 
-    // Make sure start block is not finish block
-    if (blockLocation != null &&
-        player.data.parkourData.parkour!!.startLocation.distance(blockLocation) < 2.0) {
-      return
+    private fun handleReset(player: Player, lastLocation: Location) {
+        if (!ParkourConfig.Feature.resetBlock) {
+            return
+        }
+
+        player.safeTeleport(lastLocation)
+        MessageBuilder(MessagesConfig.Event.resetBlock).buildAndSend(player)
+        SoundUtil.playSound(SoundsConfig.resetBlock, player)
     }
 
-    Bukkit.getPluginManager()
-        .callEvent(ParkourFinishEvent(player, player.data.parkourData.parkour!!))
-  }
+    private fun handleCheckpoint(player: Player, location: Location) {
+        if (!ParkourConfig.Feature.checkpoint) {
+            return
+        }
 
-  private fun PlayerMoveEvent.hasMoved(): Boolean {
-    if (this.to == null) {
-      return false
+        // We ignore checkpoints in practice mode
+        if (player.data.inPractice) {
+            return
+        }
+
+        // Make sure checkpoint is not already set
+        // TODO: Not a clean solution with the distance check
+        if (player.data.parkourData.checkpoint!!.distance(location) < 2.0) {
+            return
+        }
+
+        player.data.parkourData.checkpoint =
+            location.normalized().apply {
+                this.yaw = player.location.yaw
+                this.pitch = player.location.pitch
+            }
+        MessageBuilder(MessagesConfig.Event.checkpoint).buildAndSend(player)
+        SoundUtil.playSound(SoundsConfig.checkpoint, player)
     }
-
-    return this.from.x != this.to!!.x || this.from.y != this.to!!.y || this.from.z != this.to!!.z
-  }
-
-  private fun Location.normalized(): Location {
-    return this.add(if (this.x < 0) -0.5 else 0.5, 0.0, if (this.z < 0) -0.5 else 0.5)
-  }
 }
+
+private fun Block.isFinishBlockFor(parkour: Parkour) =
+    if (parkour.finishLocation == null) type == ParkourConfig.Block.finish
+    else location == parkour.finishLocation
+
+private fun PlayerMoveEvent.hasPositionChanged() =
+    to?.let { from.x != it.x || from.y != it.y || from.z != it.z } ?: false
+
+private fun Location.normalized() =
+    this.add(if (x < 0) -0.5 else 0.5, 0.0, if (z < 0) -0.5 else 0.5)
