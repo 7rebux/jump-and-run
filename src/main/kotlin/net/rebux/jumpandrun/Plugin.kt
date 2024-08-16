@@ -65,5 +65,6 @@ class Plugin : JavaPlugin() {
         const val PARKOUR_TAG = "net.rebux.jumpandrun.parkour"
         const val PAGE_TAG = "net.rebux.jumpandrun.page"
         const val PAGE_STEP_TAG = "net.rebux.jumpandrun.page.step"
+        const val DIFFICULTY_TAG = "net.rebux.jumpandrun.difficulty"
     }
 }

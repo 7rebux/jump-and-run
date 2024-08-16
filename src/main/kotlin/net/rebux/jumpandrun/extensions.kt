@@ -13,3 +13,7 @@ fun Player.safeTeleport(location: Location) {
 fun ItemStack.getTag(name: String): Int? {
     return NBT.get<Int?>(this) { nbt -> nbt.getOrNull(name, Integer.TYPE) }
 }
+
+fun <E> ItemStack.getEnumTag(name: String, enumClass: Class<E>): E? {
+    return NBT.get<E?>(this) { nbt -> nbt.getOrNull(name, enumClass) }
+}

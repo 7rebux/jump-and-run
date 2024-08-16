@@ -12,6 +12,7 @@ import net.rebux.jumpandrun.utils.TickFormatter
 import net.rebux.jumpandrun.utils.TickFormatter.toMessageValue
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -21,66 +22,12 @@ import org.bukkit.inventory.ItemStack
 /** 0, 1, 2, 3, 4, 5, 6, 7, 8 P, A, E, M, H, U, x, S, P */
 object MenuItem : Item("menu") {
 
+    val selectedDifficulty = mutableMapOf<Player, ParkourDifficulty?>()
+
     private val config = MenuConfig
 
     override fun onInteract(player: Player) {
         this.openInventory(player)
-    }
-
-    enum class Sorting {
-        Difficulty,
-        Shortest,
-        Longest,
-    }
-
-    enum class Category {
-        All,
-        Easy,
-        Normal,
-        Hard,
-        Ultra,
-    }
-
-    fun Player.openParkourMenu(
-        inventory: Inventory,
-        page: Int = 0,
-        category: Category = Category.All,
-        sorting: Sorting = Sorting.Difficulty,
-    ) {
-        // TODO: Sorting
-        val parkours =
-            ParkourManager.parkours.values
-                .filter { parkour ->
-                    when (category) {
-                        Category.All -> true
-                        Category.Easy -> parkour.difficulty == ParkourDifficulty.EASY
-                        Category.Normal -> parkour.difficulty == ParkourDifficulty.NORMAL
-                        Category.Hard -> parkour.difficulty == ParkourDifficulty.HARD
-                        Category.Ultra -> parkour.difficulty == ParkourDifficulty.ULTRA
-                    }
-                }
-                .sortedWith(compareBy(Parkour::difficulty, Parkour::name))
-
-        for (slot in 0 until config.parkoursPerPage) {
-            val index = slot + page * MenuConfig.parkoursPerPage
-
-            if (index == parkours.size) {
-                break
-            }
-
-            inventory.setItem(slot, parkours[index].buildItem(this))
-        }
-
-        if (parkours.size > MenuConfig.parkoursPerPage * (page + 1)) {
-            inventory.setItem(inventory.size - 1, buildPaginationItem(PaginationType.Next, page))
-        }
-
-        if (page > 0) {
-            inventory.setItem(
-                inventory.size - 9, buildPaginationItem(PaginationType.Previous, page))
-        }
-
-        this.openInventory(inventory)
     }
 
     fun openInventory(player: Player, page: Int = 0) {
@@ -97,6 +44,50 @@ object MenuItem : Item("menu") {
         val inventory = Bukkit.createInventory(null, size, title)
 
         player.openParkourMenu(inventory, page = page)
+    }
+
+    private fun Player.openParkourMenu(
+        inventory: Inventory,
+        page: Int = 0,
+    ) {
+        val parkours =
+            ParkourManager.parkours.values
+                .filter { parkour ->
+                    when (selectedDifficulty[player]) {
+                        null -> true
+                        else -> parkour.difficulty == selectedDifficulty[player]
+                    }
+                }
+                .sortedWith(compareBy(Parkour::difficulty, Parkour::name))
+
+        // Parkour items
+        for (slot in 0 until config.parkoursPerPage) {
+            val index = slot + page * MenuConfig.parkoursPerPage
+
+            if (index == parkours.size) {
+                break
+            }
+
+            inventory.setItem(slot, parkours[index].buildItem(this))
+        }
+
+        // Previous page item
+        if (page > 0) {
+            inventory.setItem(
+                inventory.size - 9, buildPaginationItem(PaginationType.Previous, page))
+        }
+
+        // Difficulty items
+        for ((index, difficulty) in listOf(null, *ParkourDifficulty.values()).withIndex()) {
+            inventory.setItem(inventory.size - 8 + index, buildDifficultyItem(difficulty))
+        }
+
+        // Next page item
+        if (parkours.size > MenuConfig.parkoursPerPage * (page + 1)) {
+            inventory.setItem(inventory.size - 1, buildPaginationItem(PaginationType.Next, page))
+        }
+
+        this.openInventory(inventory)
     }
 
     private fun Parkour.buildItem(player: Player): ItemStack {
@@ -211,6 +202,19 @@ object MenuItem : Item("menu") {
         NBT.modify(itemStack) { nbt ->
             nbt.setInteger(Plugin.PAGE_TAG, page)
             nbt.setInteger(Plugin.PAGE_STEP_TAG, type.step)
+        }
+
+        return itemStack
+    }
+
+    private fun buildDifficultyItem(difficulty: ParkourDifficulty?): ItemStack {
+        val itemStack = Builder()
+            .material(Material.STONE) // TODO: Use proper materials
+            .displayName(difficulty?.displayName ?: "All")
+            .build()
+
+        NBT.modify(itemStack) { nbt ->
+            nbt.setEnum(Plugin.DIFFICULTY_TAG, difficulty)
         }
 
         return itemStack
