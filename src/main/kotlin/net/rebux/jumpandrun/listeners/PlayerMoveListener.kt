@@ -66,7 +66,7 @@ object PlayerMoveListener : Listener {
     private fun handleTimer(player: Player, hasMoved: Boolean) {
         val timer =
             if (player.data.inPractice) player.data.practiceData.timer
-            else player.data.practiceData.timer
+            else player.data.parkourData.timer
 
         if (!timer.started && hasMoved) {
             timer.start()

@@ -2,6 +2,7 @@ package net.rebux.jumpandrun.item.impl
 
 import de.tr7zw.changeme.nbtapi.NBT
 import net.rebux.jumpandrun.Plugin
+import net.rebux.jumpandrun.api.MenuCategory
 import net.rebux.jumpandrun.config.MenuConfig
 import net.rebux.jumpandrun.item.Item
 import net.rebux.jumpandrun.parkour.Parkour
@@ -22,7 +23,7 @@ import org.bukkit.inventory.ItemStack
 /** 0, 1, 2, 3, 4, 5, 6, 7, 8 P, A, E, M, H, U, x, S, P */
 object MenuItem : Item("menu") {
 
-    val selectedDifficulty = mutableMapOf<Player, ParkourDifficulty?>()
+    val selectedDifficulty = mutableMapOf<Player, MenuCategory>()
 
     private val config = MenuConfig
 
@@ -46,16 +47,16 @@ object MenuItem : Item("menu") {
         player.openParkourMenu(inventory, page = page)
     }
 
-    private fun Player.openParkourMenu(
-        inventory: Inventory,
-        page: Int = 0,
-    ) {
+    private fun Player.openParkourMenu(inventory: Inventory, page: Int = 0) {
         val parkours =
             ParkourManager.parkours.values
                 .filter { parkour ->
                     when (selectedDifficulty[player]) {
-                        null -> true
-                        else -> parkour.difficulty == selectedDifficulty[player]
+                        MenuCategory.Easy -> parkour.difficulty == ParkourDifficulty.EASY
+                        MenuCategory.Normal -> parkour.difficulty == ParkourDifficulty.NORMAL
+                        MenuCategory.Hard -> parkour.difficulty == ParkourDifficulty.HARD
+                        MenuCategory.Ultra -> parkour.difficulty == ParkourDifficulty.ULTRA
+                        else -> true
                     }
                 }
                 .sortedWith(compareBy(Parkour::difficulty, Parkour::name))
@@ -78,8 +79,8 @@ object MenuItem : Item("menu") {
         }
 
         // Difficulty items
-        for ((index, difficulty) in listOf(null, *ParkourDifficulty.values()).withIndex()) {
-            inventory.setItem(inventory.size - 8 + index, buildDifficultyItem(difficulty))
+        for ((index, category) in MenuCategory.values().withIndex()) {
+            inventory.setItem(inventory.size - 8 + index, buildCategoryItem(category))
         }
 
         // Next page item
@@ -207,14 +208,22 @@ object MenuItem : Item("menu") {
         return itemStack
     }
 
-    private fun buildDifficultyItem(difficulty: ParkourDifficulty?): ItemStack {
+    private fun buildCategoryItem(category: MenuCategory): ItemStack {
         val itemStack = Builder()
             .material(Material.STONE) // TODO: Use proper materials
-            .displayName(difficulty?.displayName ?: "All")
+            .displayName(
+                when (category) {
+                    MenuCategory.All -> "All"
+                    MenuCategory.Easy -> ParkourDifficulty.EASY.displayName
+                    MenuCategory.Normal -> ParkourDifficulty.NORMAL.displayName
+                    MenuCategory.Hard -> ParkourDifficulty.HARD.displayName
+                    MenuCategory.Ultra -> ParkourDifficulty.ULTRA.displayName
+                }
+            )
             .build()
 
         NBT.modify(itemStack) { nbt ->
-            nbt.setEnum(Plugin.DIFFICULTY_TAG, difficulty)
+            nbt.setEnum(Plugin.CATEGORY_TAG, category)
         }
 
         return itemStack

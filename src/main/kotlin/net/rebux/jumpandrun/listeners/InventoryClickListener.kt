@@ -1,12 +1,12 @@
 package net.rebux.jumpandrun.listeners
 
 import net.rebux.jumpandrun.Plugin
+import net.rebux.jumpandrun.api.MenuCategory
 import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.events.ParkourJoinEvent
 import net.rebux.jumpandrun.getEnumTag
 import net.rebux.jumpandrun.getTag
 import net.rebux.jumpandrun.item.impl.MenuItem
-import net.rebux.jumpandrun.parkour.ParkourDifficulty
 import net.rebux.jumpandrun.parkour.ParkourManager
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -31,12 +31,12 @@ object InventoryClickListener : Listener {
         val idTag = item.getTag(Plugin.ID_TAG)
         val parkourTag = item.getTag(Plugin.PARKOUR_TAG)
         val pageTag = item.getTag(Plugin.PAGE_TAG)
-        val difficultyTag = item.getTag(Plugin.DIFFICULTY_TAG)
+        val categoryTag = item.getTag(Plugin.CATEGORY_TAG)
 
         idTag?.let { event.isCancelled = true }
         parkourTag?.let { handleParkourTag(event.currentItem!!, event) }
         pageTag?.let { handlePageTag(event.currentItem!!, event) }
-        difficultyTag?.let { handleDifficultyTag(event.currentItem!!, event) }
+        categoryTag?.let { handleCategoryTag(event.currentItem!!, event) }
     }
 
     private fun handleParkourTag(itemStack: ItemStack, event: InventoryClickEvent) {
@@ -62,11 +62,12 @@ object InventoryClickListener : Listener {
         event.isCancelled = true
     }
 
-    private fun handleDifficultyTag(itemStack: ItemStack, event: InventoryClickEvent) {
+    private fun handleCategoryTag(itemStack: ItemStack, event: InventoryClickEvent) {
         val player = event.whoClicked as Player
-        val difficulty = itemStack.getEnumTag(Plugin.DIFFICULTY_TAG, ParkourDifficulty::class.java)
+        val category = itemStack.getEnumTag(Plugin.CATEGORY_TAG, MenuCategory::class.java)
+            ?: error("Invalid category on item stack")
 
-        MenuItem.selectedDifficulty[player] = difficulty
+        MenuItem.selectedDifficulty[player] = category
         MenuItem.openInventory(player, 0)
         event.isCancelled = true
     }
