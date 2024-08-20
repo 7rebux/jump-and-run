@@ -1,7 +1,7 @@
 @file:Suppress("SpellCheckingInspection")
 
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val pluginName = "JumpAndRun"
 val exposedVersion: String by project
@@ -43,10 +43,10 @@ tasks.named<ShadowJar>("shadowJar") {
     attributes(mapOf("Main-Class" to "$group/Plugin"))
   }
 
-  archiveBaseName.set(pluginName)
-  archiveClassifier.set("")
-  archiveVersion.set("")
-  destinationDir = File("./_server/plugins")
+//  archiveBaseName.set(pluginName)
+//  archiveClassifier.set("")
+//  archiveVersion.set("")
+//  destinationDir = File("./_server/plugins")
 }
 
 tasks.build {
