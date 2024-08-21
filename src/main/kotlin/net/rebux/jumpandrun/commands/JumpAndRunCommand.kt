@@ -193,7 +193,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabComple
                 timeEntity.delete()
                 parkour.times.remove(timeEntity.uuid)
                 MessageBuilder("Successfully reset time for player {name}")
-                    .values(mapOf("name" to Bukkit.getOfflinePlayer(timeEntity.uuid).name!!))
+                    .values(mapOf("name" to (Bukkit.getOfflinePlayer(timeEntity.uuid).name ?: timeEntity.uuid.toString())))
                     .error()
                     .buildAndSend(sender)
             }

@@ -1,6 +1,6 @@
 package net.rebux.jumpandrun.item.impl
 
-import de.tr7zw.changeme.nbtapi.NBT
+import de.tr7zw.nbtapi.NBT
 import net.rebux.jumpandrun.Plugin
 import net.rebux.jumpandrun.api.MenuCategory
 import net.rebux.jumpandrun.config.MenuConfig
@@ -161,7 +161,7 @@ object MenuItem : Item("menu") {
                 playersWithBestTime.forEach { player ->
                     addAll(
                         MessageBuilder(MenuConfig.Entry.GlobalBest.player)
-                            .values(mapOf("player" to player.name!!))
+                            .values(mapOf("player" to (player.name ?: player.uniqueId)))
                             .prefix(false)
                             .build())
                 }

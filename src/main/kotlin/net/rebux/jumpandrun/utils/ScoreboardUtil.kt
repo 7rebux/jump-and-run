@@ -43,7 +43,7 @@ object ScoreboardUtil {
                         .values(
                             mapOf(
                                 "time" to TickFormatter.format(it.value).first,
-                                "player" to Bukkit.getOfflinePlayer(it.key).name!!))
+                                "player" to (Bukkit.getOfflinePlayer(it.key).name ?: it.key)))
                         .prefix(false)
                         .buildSingle())
             }

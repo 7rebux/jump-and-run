@@ -15,6 +15,10 @@ object PlayerConnectionListener : Listener {
     @EventHandler
     fun onJoin(event: PlayerJoinEvent) {
         PlayerDataManager.add(event.player)
+
+        // TODO: Remove this later
+        event.player.inventory.clear()
+
         addLobbyItems(event.player)
 
         Bukkit.getOnlinePlayers()

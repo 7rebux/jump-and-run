@@ -1,6 +1,6 @@
 package net.rebux.jumpandrun.item
 
-import de.tr7zw.changeme.nbtapi.NBT
+import de.tr7zw.nbtapi.NBT
 import net.rebux.jumpandrun.Plugin
 import net.rebux.jumpandrun.getTag
 import org.bukkit.entity.Player

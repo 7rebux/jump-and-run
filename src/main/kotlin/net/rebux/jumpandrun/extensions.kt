@@ -1,6 +1,6 @@
 package net.rebux.jumpandrun
 
-import de.tr7zw.changeme.nbtapi.NBT
+import de.tr7zw.nbtapi.NBT
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
