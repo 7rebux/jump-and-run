@@ -6,8 +6,8 @@ import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Scoreboard
 
 class ScoreboardBuilder {
-    private val lines = mutableListOf<String>()
     private var title = ""
+    private val lines = mutableListOf<String>()
 
     fun title(title: String) = apply { this.title = title }
 

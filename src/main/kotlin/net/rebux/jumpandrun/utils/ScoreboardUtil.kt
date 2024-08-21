@@ -6,6 +6,7 @@ import net.rebux.jumpandrun.utils.TickFormatter.toMessageValue
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.Scoreboard
+import org.bukkit.scoreboard.Team
 
 object ScoreboardUtil {
 
@@ -48,6 +49,13 @@ object ScoreboardUtil {
                         .buildSingle())
             }
             appendLine(MessageBuilder(config.topTimesFooter).prefix(false).buildSingle())
+        }.also {
+            // TODO: Do this somewhere else
+            if (it.getTeam("NO_COLLIDERS_X") == null) {
+                it.registerNewTeam("NO_COLLIDERS_X").setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER)
+            }
+
+            it.getTeam("NO_COLLIDERS_X")!!.addPlayer(player)
         }
     }
 }
