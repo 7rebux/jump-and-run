@@ -28,16 +28,14 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabComple
         label: String,
         args: Array<String>
     ): Boolean {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin) { ->
-            when (args.firstOrNull()?.lowercase()) {
-                "list" -> handleListCommand(sender)
-                "join" -> handleJoinCommand(sender, args.getOrNull(1)?.toIntOrNull())
-                "leave" -> handleLeaveCommand(sender)
-                "add" -> handleAddCommand(sender, args.copyOfRange(1, args.size))
-                "remove" -> handleRemoveCommand(sender, args.getOrNull(1)?.toIntOrNull())
-                "reset" -> handleResetCommand(sender, args.copyOfRange(1, args.size))
-                else -> sendUsage(sender)
-            }
+        when (args.firstOrNull()?.lowercase()) {
+            "list" -> handleListCommand(sender)
+            "join" -> handleJoinCommand(sender, args.getOrNull(1)?.toIntOrNull())
+            "leave" -> handleLeaveCommand(sender)
+            "add" -> handleAddCommand(sender, args.copyOfRange(1, args.size))
+            "remove" -> handleRemoveCommand(sender, args.getOrNull(1)?.toIntOrNull())
+            "reset" -> handleResetCommand(sender, args.copyOfRange(1, args.size))
+            else -> sendUsage(sender)
         }
 
         return true
@@ -74,8 +72,8 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabComple
             return
         }
 
-        if (sender.data.inParkour) {
-            MessageBuilder("You are already in a parkour!").error().buildAndSend(sender)
+        if (sender.data.inPractice) {
+            MessageBuilder("Can't join parkour in practice mode!").error().buildAndSend(sender)
             return
         }
 
