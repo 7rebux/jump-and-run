@@ -26,7 +26,7 @@ object ParkourManager {
     }
 
     fun register(parkour: Parkour) {
-        val id = parkour.id.let { if (it == -1) null else parkour.id }
+        val id = if (parkour.id == -1) null else parkour.id
 
         transaction {
             val entity =
@@ -40,7 +40,7 @@ object ParkourManager {
                         parkour.finishLocation?.let(LocationEntity.Companion::ofLocation)
                 }
 
-            parkours[entity.id.value] = parkour
+            parkours[entity.id.value] = parkour.copy(id = entity.id.value)
         }
     }
 }
