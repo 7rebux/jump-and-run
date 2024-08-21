@@ -26,10 +26,8 @@ class ParkourEntity(id: EntityID<Int>) : IntEntity(id) {
             finishLocation?.toLocation())
 
     override fun delete() {
-        TimeEntity.all().filter { entity -> entity.parkour == this }.forEach(TimeEntity::delete)
-        location.delete()
-        finishLocation?.delete()
-
+        // TODO: Should we still delete times?
+        // TimeEntity.all().filter { entity -> entity.parkour == this }.forEach(TimeEntity::delete)
         super.delete()
     }
 
