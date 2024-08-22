@@ -8,6 +8,7 @@ import net.rebux.jumpandrun.events.ParkourFinishEvent
 import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.safeTeleport
 import net.rebux.jumpandrun.utils.ActionBarUtil.sendActionBar
+import net.rebux.jumpandrun.utils.EventLogger
 import net.rebux.jumpandrun.utils.MessageBuilder
 import net.rebux.jumpandrun.utils.SoundUtil
 import net.rebux.jumpandrun.utils.TickFormatter
@@ -23,6 +24,8 @@ import org.bukkit.event.player.PlayerMoveEvent
 
 object PlayerMoveListener : Listener {
 
+    private val lastMoveLocation = mutableMapOf<Player, Location?>()
+
     // This event is manipulated through a custom server jar file to be called every tick,
     // regardless if the player moved or not.
     @EventHandler
@@ -31,19 +34,32 @@ object PlayerMoveListener : Listener {
         val data = event.player.data
         val blockBelow = player.location.block.getRelative(BlockFace.DOWN)
 
-        if (!player.data.inParkour && !player.data.inPractice) {
+        if (!data.inParkour && !data.inPractice) {
             return
         }
 
-        val lastLocation =
+        val checkpoint =
             if (data.inPractice) data.practiceData.startLocation!!
             else data.parkourData.checkpoint!!
 
         handleTimer(player, event.hasPositionChanged())
 
+        // Check for packet loss
+        if (data.inParkour) {
+            lastMoveLocation[player]?.run {
+                if (this != event.from) {
+                    EventLogger.warn(
+                        "PlayerMoveEvent",
+                        "Detected packet loss for player ${player.name}"
+                    )
+                }
+            }
+            lastMoveLocation[player] = event.to
+        }
+
         // Handle reset height
         if (player.location.y <= ParkourConfig.resetHeight) {
-            player.safeTeleport(lastLocation)
+            player.safeTeleport(checkpoint)
             SoundUtil.playSound(SoundsConfig.resetHeight, player)
             return
         }
@@ -56,7 +72,7 @@ object PlayerMoveListener : Listener {
         }
 
         when (blockBelow.type) {
-            ParkourConfig.Block.reset -> handleReset(player, lastLocation)
+            ParkourConfig.Block.reset -> handleReset(player, checkpoint)
             ParkourConfig.Block.checkpoint ->
                 handleCheckpoint(player, player.location.block.location)
             else -> {}
