@@ -2,6 +2,7 @@ resetHeight: 70
 gameMode: "ADVENTURE"
 leaveOnFinish: true
 spawnOnLeave: true
+eventLogging: true
 
 feature:
   checkpoint: true

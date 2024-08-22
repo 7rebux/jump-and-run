@@ -12,10 +12,7 @@ import net.rebux.jumpandrun.events.ParkourFinishEvent
 import net.rebux.jumpandrun.events.ParkourLeaveEvent
 import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.safeTeleport
-import net.rebux.jumpandrun.utils.MessageBuilder
-import net.rebux.jumpandrun.utils.ScoreboardUtil
-import net.rebux.jumpandrun.utils.SoundUtil
-import net.rebux.jumpandrun.utils.TickFormatter
+import net.rebux.jumpandrun.utils.*
 import net.rebux.jumpandrun.utils.TickFormatter.toMessageValue
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -37,6 +34,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
         val parkour = event.parkour
         val ticks = player.data.parkourData.timer.stop()
         val (time, unit) = TickFormatter.format(ticks)
+        var typeOfFinish = FinishType.Regular
 
         MessageBuilder(MessagesConfig.Event.completed)
             .values(
@@ -44,15 +42,17 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
                     "name" to parkour.name,
                     "difficulty" to parkour.difficulty.displayName,
                     "time" to time,
-                    "unit" to unit.toMessageValue()))
+                    "unit" to unit.toMessageValue(),
+                )
+            )
             .buildAndSend(player)
 
         if (!parkour.times.contains(player.uniqueId) || ticks < parkour.times[player.uniqueId]!!) {
-
             val globalBest = parkour.times.values.minOrNull()
 
-            // First global best
             if (globalBest == null) {
+                typeOfFinish = FinishType.FirstGlobalBest
+
                 MessageBuilder(MessagesConfig.Event.firstGlobalBest)
                     .values(
                         mapOf(
@@ -60,12 +60,14 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
                             "name" to parkour.name,
                             "difficulty" to parkour.difficulty.displayName,
                             "time" to time,
-                            "unit" to unit.toMessageValue()))
+                            "unit" to unit.toMessageValue(),
+                        )
+                    )
                     .buildAndSendGlobally()
                 SoundUtil.playSound(SoundsConfig.firstGlobalBest, player)
-            }
-            // New global best
-            else if (ticks < globalBest) {
+            } else if (ticks < globalBest) {
+                typeOfFinish = FinishType.NewGlobalBest
+
                 val ticksDelta = globalBest - ticks
                 val (deltaTime, deltaUnit) = TickFormatter.format(ticksDelta)
                 val previousHolders =
@@ -82,12 +84,15 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
                             "difficulty" to parkour.difficulty.displayName,
                             "holders" to previousHolders,
                             "time" to deltaTime,
-                            "unit" to deltaUnit.toMessageValue()))
+                            "unit" to deltaUnit.toMessageValue(),
+                        )
+                    )
                     .buildAndSendGlobally()
                 SoundUtil.playSound(SoundsConfig.newGlobalBest)
             }
             // New personal best
             else {
+                typeOfFinish = FinishType.NewPersonalBest
                 MessageBuilder(MessagesConfig.Event.personalBest).buildAndSend(player)
                 SoundUtil.playSound(SoundsConfig.newPersonalBest, player)
             }
@@ -97,6 +102,11 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
             parkour.times[player.uniqueId] = ticks
             refreshScoreboards(parkour)
         }
+
+        EventLogger.log(
+            "ParkourFinishEvent",
+            "(Type=$typeOfFinish) Player ${player.name} finished ${parkour.id} in $time ${unit.toMessageValue()} ($ticks ticks)",
+        )
 
         if (ParkourConfig.leaveOnFinish) {
             Bukkit.getPluginManager().callEvent(ParkourLeaveEvent(player))
@@ -141,5 +151,12 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
                 }
             }
         }
+    }
+
+    private enum class FinishType {
+        FirstGlobalBest,
+        NewGlobalBest,
+        NewPersonalBest,
+        Regular,
     }
 }

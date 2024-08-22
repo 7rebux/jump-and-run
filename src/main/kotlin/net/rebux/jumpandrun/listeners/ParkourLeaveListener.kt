@@ -3,6 +3,7 @@ package net.rebux.jumpandrun.listeners
 import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.config.ParkourConfig
 import net.rebux.jumpandrun.events.ParkourLeaveEvent
+import net.rebux.jumpandrun.utils.EventLogger
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -16,6 +17,7 @@ object ParkourLeaveListener : Listener {
         }
 
         val player = event.player
+        val parkour = player.data.parkourData.parkour!!
 
         player.data.parkourData.previousState!!.restore()
 
@@ -33,5 +35,10 @@ object ParkourLeaveListener : Listener {
         if (ParkourConfig.spawnOnLeave && !event.preventSpawnTeleport) {
             player.performCommand("spawn")
         }
+
+        EventLogger.log(
+            "ParkourLeaveEvent",
+            "Player ${player.name} left parkour ${parkour.id}",
+        )
     }
 }

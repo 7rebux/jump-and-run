@@ -7,6 +7,7 @@ import net.rebux.jumpandrun.config.ParkourConfig
 import net.rebux.jumpandrun.events.PracticeEnableEvent
 import net.rebux.jumpandrun.item.ItemRegistry
 import net.rebux.jumpandrun.item.impl.PracticeItem
+import net.rebux.jumpandrun.utils.EventLogger
 import net.rebux.jumpandrun.utils.MessageBuilder
 import org.bukkit.GameMode
 import org.bukkit.Location
@@ -48,6 +49,11 @@ object PracticeEnableListener : Listener {
                     "yaw" to "%.3f".format(player.location.yaw),
                     "pitch" to "%.3f".format(player.location.pitch)))
             .buildAndSend(player)
+
+        EventLogger.log(
+            "PracticeEnableEvent",
+            "Player ${player.name} enabled practice mode (inParkour=${player.data.inParkour})"
+        )
     }
 
     private fun Location.facing(): String {

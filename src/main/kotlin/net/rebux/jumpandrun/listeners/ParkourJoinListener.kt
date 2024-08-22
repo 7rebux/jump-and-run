@@ -6,6 +6,7 @@ import net.rebux.jumpandrun.config.ParkourConfig
 import net.rebux.jumpandrun.events.ParkourJoinEvent
 import net.rebux.jumpandrun.item.impl.*
 import net.rebux.jumpandrun.safeTeleport
+import net.rebux.jumpandrun.utils.EventLogger
 import net.rebux.jumpandrun.utils.ScoreboardUtil
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
@@ -48,6 +49,11 @@ object ParkourJoinListener : Listener {
         }
 
         player.safeTeleport(parkour.startLocation)
+
+        EventLogger.log(
+            "ParkourJoinEvent",
+            "Player ${player.name} joined parkour ${parkour.id}"
+        )
     }
 
     private fun Player.addParkourItems() {
