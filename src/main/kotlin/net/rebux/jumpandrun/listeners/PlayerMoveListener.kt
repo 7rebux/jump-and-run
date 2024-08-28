@@ -24,7 +24,7 @@ import org.bukkit.event.player.PlayerMoveEvent
 
 object PlayerMoveListener : Listener {
 
-    private val lastMoveLocation = mutableMapOf<Player, Location?>()
+    val lastMoveLocation = mutableMapOf<Player, Location?>()
 
     // This event is manipulated through a custom server jar file to be called every tick,
     // regardless if the player moved or not.
@@ -42,7 +42,7 @@ object PlayerMoveListener : Listener {
             if (data.inPractice) data.practiceData.startLocation!!
             else data.parkourData.checkpoint!!
 
-        handleTimer(player, event.hasPositionChanged())
+        handleTimer(player, event.isPositionChange())
 
         // Check for packet loss
         if (data.inParkour) {
@@ -50,7 +50,7 @@ object PlayerMoveListener : Listener {
                 if (this != event.from) {
                     EventLogger.warn(
                         "PlayerMoveEvent",
-                        "Detected packet loss for player ${player.name}"
+                        "Detected packet loss for player ${player.name} (Parkour=${data.parkourData.parkour?.id})"
                     )
                 }
             }
@@ -71,6 +71,7 @@ object PlayerMoveListener : Listener {
             return
         }
 
+        // Special blocks
         when (blockBelow.type) {
             ParkourConfig.Block.reset -> handleReset(player, checkpoint)
             ParkourConfig.Block.checkpoint ->
@@ -142,7 +143,7 @@ private fun Block.isFinishBlockFor(parkour: Parkour) =
     if (parkour.finishLocation == null) type == ParkourConfig.Block.finish
     else location == parkour.finishLocation
 
-private fun PlayerMoveEvent.hasPositionChanged() =
+private fun PlayerMoveEvent.isPositionChange() =
     to?.let { from.x != it.x || from.y != it.y || from.z != it.z } ?: false
 
 private fun Location.normalized() =
