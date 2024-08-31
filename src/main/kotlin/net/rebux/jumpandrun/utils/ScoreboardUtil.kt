@@ -51,11 +51,14 @@ object ScoreboardUtil {
             appendLine(MessageBuilder(config.topTimesFooter).prefix(false).buildSingle())
         }.also {
             // TODO: Do this somewhere else
-            if (it.getTeam("NO_COLLIDERS_X") == null) {
-                it.registerNewTeam("NO_COLLIDERS_X").setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER)
-            }
+            // No fallback needed since there is no player collision in older versions (right?)
+            try {
+                if (it.getTeam("NO_COLLIDERS_X") == null) {
+                    it.registerNewTeam("NO_COLLIDERS_X").setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER)
+                }
 
-            it.getTeam("NO_COLLIDERS_X")!!.addPlayer(player)
+                it.getTeam("NO_COLLIDERS_X")!!.addPlayer(player)
+            } catch (_: NoClassDefFoundError) { }
         }
     }
 }
