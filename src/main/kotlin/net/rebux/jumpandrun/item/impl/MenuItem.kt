@@ -214,7 +214,6 @@ object MenuItem : Item("menu") {
         return itemStack
     }
 
-    // TODO: Use message builder
     private fun buildLeaderboardItem(player: Player): ItemStack {
         val recordsByPlayer = recordsByPlayer()
 
