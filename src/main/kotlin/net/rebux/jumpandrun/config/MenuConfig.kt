@@ -7,6 +7,8 @@ object MenuConfig : CustomConfiguration("menu.yml") {
     val nextPage = config.getString("nextPage")!!
     val previousPage = config.getString("previousPage")!!
 
+    val leaderboardItem = config.getBoolean("leaderboardItem")
+
     internal object Entry {
 
         val difficulty = config.getString("entry.difficulty")!!

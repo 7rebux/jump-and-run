@@ -19,6 +19,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import java.util.*
 
 /** 0, 1, 2, 3, 4, 5, 6, 7, 8 P, A, E, M, H, U, x, S, P */
 object MenuItem : Item("menu") {
@@ -86,6 +87,11 @@ object MenuItem : Item("menu") {
         // Next page item
         if (parkours.size > MenuConfig.parkoursPerPage * (page + 1)) {
             inventory.setItem(inventory.size - 1, buildPaginationItem(PaginationType.Next, page))
+        }
+
+        // Leaderboard item
+        if (config.leaderboardItem) {
+            inventory.setItem(inventory.size - 2, buildLeaderboardItem(this))
         }
 
         this.openInventory(inventory)
@@ -208,6 +214,29 @@ object MenuItem : Item("menu") {
         return itemStack
     }
 
+    // TODO: Use message builder
+    private fun buildLeaderboardItem(player: Player): ItemStack {
+        val recordsByPlayer = recordsByPlayer()
+
+        return Builder()
+            .material(Material.NETHER_STAR)
+            .displayName("${ChatColor.AQUA}Leaderboard")
+            .lore(
+                buildList {
+                    recordsByPlayer.entries
+                        .take(5)
+                        .forEach {
+                            this.add("${ChatColor.GOLD}${it.value} ${ChatColor.WHITE}${Bukkit.getOfflinePlayer(it.key).name}")
+                        }
+
+                    add("")
+                    add("${ChatColor.GRAY}Your Records: ${ChatColor.GOLD}${recordsByPlayer[player.uniqueId] ?: 0}")
+                    add("${ChatColor.GRAY}Your Rank: ${ChatColor.GOLD}${recordsByPlayer.entries.indexOfFirst { it.key == player.uniqueId } + 1}")
+                }
+            )
+            .build()
+    }
+
     private fun buildCategoryItem(category: MenuCategory): ItemStack {
         val itemStack = Builder()
             .material(
@@ -235,6 +264,25 @@ object MenuItem : Item("menu") {
         }
 
         return itemStack
+    }
+
+    // TODO: Move this functions to an separate file
+    fun recordsByPlayer(): Map<UUID, Int> {
+        return ParkourManager.parkours.values
+            .asSequence()
+            .filter { it.times.isNotEmpty() }
+            .flatMap { parkour ->
+                val recordTime = parkour.times.values.min()
+
+                parkour.times
+                    .filterValues { it == recordTime }
+                    .map { (uuid, _) -> uuid }
+            }
+            .groupingBy { it }
+            .eachCount()
+            .toList()
+            .sortedByDescending { (_, count) -> count }
+            .toMap()
     }
 
     private fun countParkoursPlayed(player: Player): Int {

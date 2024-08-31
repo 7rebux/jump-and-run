@@ -3,6 +3,8 @@ title: "§bParkours §7(§e{completed}/{quantity}§7) §a{records}✫"
 nextPage: "§7Next page §a»"
 previousPage: "§a« §7Previous page"
 
+leaderboardItem: true
+
 entry:
   difficulty: "§7» §eDifficulty: {difficulty}"
   builder: "§7» §eBuilder: §9{builder}"

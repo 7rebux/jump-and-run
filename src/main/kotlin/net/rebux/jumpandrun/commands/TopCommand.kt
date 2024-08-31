@@ -2,6 +2,7 @@ package net.rebux.jumpandrun.commands
 
 import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.config.MessagesConfig
+import net.rebux.jumpandrun.item.impl.MenuItem
 import net.rebux.jumpandrun.utils.MessageBuilder
 import net.rebux.jumpandrun.utils.TickFormatter
 import net.rebux.jumpandrun.utils.TickFormatter.toMessageValue
@@ -22,19 +23,16 @@ class TopCommand : CommandExecutor {
         label: String,
         args: Array<out String>
     ): Boolean {
-        if (sender !is Player) {
-            sender.sendMessage("This command can only be called as a player!")
-            return true
-        }
-
-        val parkour = sender.data.parkourData.parkour
-
-        if (parkour == null) {
-            MessageBuilder(messages.invalid).error().buildAndSend(sender)
-            return true
-        }
-
         val entries = if (args.getOrNull(0) == "all") 100 else 5
+        val parkour = (sender as? Player)?.data?.parkourData?.parkour
+
+        // Parkour is also null if the sender is not a player
+        if (parkour == null) {
+            MenuItem.recordsByPlayer().entries.take(entries).forEachIndexed { index, entry ->
+                sender.sendMessage("${ChatColor.GRAY}${index + 1}. ${ChatColor.GOLD}${entry.value} ${ChatColor.WHITE}${Bukkit.getOfflinePlayer(entry.key).name}")
+            }
+            return true
+        }
 
         if (parkour.times.isEmpty()) {
             MessageBuilder(messages.empty).error().buildAndSend(sender)
