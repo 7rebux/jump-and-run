@@ -7,11 +7,13 @@ object ItemsConfig : CustomConfiguration("items.yml") {
     }
 
     fun getName(item: String): String {
-        return config.getString("$item.name") ?: "Unnamed"
+        return config.getString("$item.name")
+            ?: error("Item name for item $item not found!")
     }
 
     fun getMaterial(item: String): String {
-        return config.getString("$item.material") ?: "BARRIER"
+        return config.getString("$item.material")
+            ?: error("Material for item $item not found!")
     }
 
     fun getSlot(item: String): Int {

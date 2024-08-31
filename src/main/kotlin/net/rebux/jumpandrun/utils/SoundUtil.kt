@@ -6,15 +6,11 @@ import org.bukkit.entity.Player
 
 object SoundUtil {
 
-    fun playSound(sound: String?, player: Player) {
-        if (sound == null) {
-            return
-        }
-
-        player.playSound(player.location, Sound.valueOf(sound), 1.0F, 1.0F)
+    fun playSound(sound: Sound, player: Player) {
+        player.playSound(player.location, sound, 1.0F, 1.0F)
     }
 
-    fun playSound(sound: String?) {
+    fun playSound(sound: Sound) {
         Bukkit.getOnlinePlayers().forEach { player -> playSound(sound, player) }
     }
 }

@@ -19,7 +19,6 @@ object MessagesConfig : CustomConfiguration("messages.yml") {
 
     internal object Command {
         internal object Top {
-            val invalid = getMessage("command.top.invalid")
             val empty = getMessage("command.top.empty")
             val header = getMessage("command.top.header")
             val entry = getMessage("command.top.entry")
@@ -49,6 +48,7 @@ object MessagesConfig : CustomConfiguration("messages.yml") {
     }
 
     private fun getMessage(path: String): String {
-        return config.getString(path) ?: error("Could not find config entry for message $path")
+        return config.getString(path)
+            ?: error("Could not find config entry for message $path")
     }
 }

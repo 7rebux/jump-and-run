@@ -34,7 +34,7 @@ object MenuItem : Item("menu") {
 
     fun openInventory(player: Player, page: Int = 0) {
         val title =
-            MessageBuilder(MenuConfig.tile)
+            MessageBuilder(MenuConfig.inventoryTile)
                 .values(
                     mapOf(
                         "completed" to countParkoursPlayed(player),
@@ -198,8 +198,8 @@ object MenuItem : Item("menu") {
         val displayName: String,
         val step: Int
     ) {
-        Next("MHF_ArrowRight", MenuConfig.nextPage, 1),
-        Previous("MHF_ArrowLeft", MenuConfig.previousPage, -1),
+        Next("MHF_ArrowRight", MenuConfig.nextPageTitle, 1),
+        Previous("MHF_ArrowLeft", MenuConfig.previousPageTitle, -1),
     }
 
     private fun buildPaginationItem(type: PaginationType, page: Int): ItemStack {
