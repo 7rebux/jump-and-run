@@ -80,8 +80,10 @@ object MenuItem : Item("menu") {
         }
 
         // Difficulty items
-        for ((index, category) in MenuCategory.values().withIndex()) {
-            inventory.setItem(inventory.size - 8 + index, buildCategoryItem(category))
+        if (config.categoryItems) {
+            for ((index, category) in MenuCategory.values().withIndex()) {
+                inventory.setItem(inventory.size - 8 + index, buildCategoryItem(category))
+            }
         }
 
         // Next page item
@@ -238,24 +240,8 @@ object MenuItem : Item("menu") {
 
     private fun buildCategoryItem(category: MenuCategory): ItemStack {
         val itemStack = Builder()
-            .material(
-                when (category) {
-                    MenuCategory.All -> Material.WHITE_CONCRETE
-                    MenuCategory.Easy -> Material.GREEN_CONCRETE
-                    MenuCategory.Normal -> Material.YELLOW_CONCRETE
-                    MenuCategory.Hard -> Material.RED_CONCRETE
-                    MenuCategory.Ultra -> Material.PURPLE_CONCRETE
-                }
-            )
-            .displayName(
-                when (category) {
-                    MenuCategory.All -> "${ChatColor.WHITE}All"
-                    MenuCategory.Easy -> ParkourDifficulty.EASY.displayName
-                    MenuCategory.Normal -> ParkourDifficulty.NORMAL.displayName
-                    MenuCategory.Hard -> ParkourDifficulty.HARD.displayName
-                    MenuCategory.Ultra -> ParkourDifficulty.ULTRA.displayName
-                }
-            )
+            .material(category.material)
+            .displayName(category.displayName)
             .build()
 
         NBT.modify(itemStack) { nbt ->
