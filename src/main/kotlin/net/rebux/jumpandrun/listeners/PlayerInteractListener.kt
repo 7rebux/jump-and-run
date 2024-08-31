@@ -20,9 +20,12 @@ object PlayerInteractListener : Listener {
     fun onInteract(event: PlayerInteractEvent) {
         val itemStack = getItemInMainHand(event.player)
 
-        if (event.hand == EquipmentSlot.OFF_HAND) {
-            return
-        }
+        // Cancel off-hand interactions for newer versions
+        try {
+            if (event.hand == EquipmentSlot.OFF_HAND) {
+                return
+            }
+        } catch (_: NoSuchMethodError) { }
 
         if (event.action !in listOf(Action.RIGHT_CLICK_BLOCK, Action.RIGHT_CLICK_AIR)) {
             return
