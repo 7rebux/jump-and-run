@@ -9,8 +9,8 @@ class TimeEntity(id: EntityID<Int>) : IntEntity(id) {
 
     companion object : IntEntityClass<TimeEntity>(Times)
 
-    var uuid        by Times.uuid
-    var time        by Times.time
-    var date        by Times.date
-    var parkour     by ParkourEntity referencedOn Times.parkour
+    var uuid by Times.uuid
+    var time by Times.time
+    var date by Times.date
+    var parkour by ParkourEntity referencedOn Times.parkour
 }

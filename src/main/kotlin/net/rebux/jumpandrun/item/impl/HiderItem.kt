@@ -1,35 +1,28 @@
 package net.rebux.jumpandrun.item.impl
 
-import net.rebux.jumpandrun.Instance
-import net.rebux.jumpandrun.data
+import net.rebux.jumpandrun.api.PlayerDataManager.data
+import net.rebux.jumpandrun.config.MessagesConfig
 import net.rebux.jumpandrun.item.Item
-import net.rebux.jumpandrun.item.ItemRegistry
-import net.rebux.jumpandrun.msgTemplate
+import net.rebux.jumpandrun.utils.MessageBuilder
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 
-object HiderItem : Item() {
+object HiderItem : Item("hider") {
 
-  val id = ItemRegistry.register(this)
+    @Override
+    override fun onInteract(player: Player) {
+        if (!player.data.inParkour) {
+            return
+        }
 
-  override fun createItemStack(): ItemStack {
-    return Builder()
-      .material(Material.STICK)
-      .displayName(Instance.plugin.config.getString("items.hider"))
-      .build()
-  }
-
-  override fun onInteract(player: Player) {
-    if (player.data.playersHidden) {
-      Bukkit.getOnlinePlayers().forEach(player::showPlayer)
-      player.data.playersHidden = false
-      player.msgTemplate("items.hider.disable")
-    } else {
-      Bukkit.getOnlinePlayers().forEach(player::hidePlayer)
-      player.data.playersHidden = true
-      player.msgTemplate("items.hider.enable")
+        if (player.data.playersHidden) {
+            Bukkit.getOnlinePlayers().forEach(player::showPlayer)
+            player.data.playersHidden = false
+            MessageBuilder(MessagesConfig.Item.Hider.showPlayers).buildAndSend(player)
+        } else {
+            Bukkit.getOnlinePlayers().forEach(player::hidePlayer)
+            player.data.playersHidden = true
+            MessageBuilder(MessagesConfig.Item.Hider.hidePlayers).buildAndSend(player)
+        }
     }
-  }
 }

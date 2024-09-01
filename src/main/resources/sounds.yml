@@ -1,0 +1,10 @@
+# Only for the player himself
+firstGlobalBest: "ENTITY_PLAYER_LEVELUP"
+newPersonalBest: "ENTITY_PLAYER_LEVELUP"
+checkpoint: "ENTITY_EXPERIENCE_ORB_PICKUP"
+resetBlock: "ENTITY_SPIDER_DEATH"
+timerStart: "BLOCK_NOTE_BLOCK_PLING"
+resetHeight: "ENTITY_SPIDER_DEATH"
+
+# Global sounds
+newGlobalBest: "BLOCK_ANVIL_LAND"

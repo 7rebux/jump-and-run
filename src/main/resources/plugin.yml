@@ -1,10 +1,14 @@
 name: JumpAndRun
-version: 2.1
+version: 3.0
 author: Rebux
 description: Jump and Run Plugin
+api-version: 1.20
 main: net.rebux.jumpandrun.Plugin
-softdepend:
-  - Multiverse-Core
+depend: [NBTAPI]
+
+# This is only here to make sure this plugin is loaded after Multiverse-Core
+# It is not a direct dependency
+softdepend: [Multiverse-Core]
 
 commands:
   jumpandrun:
@@ -12,3 +16,6 @@ commands:
     permission: jumpandrun.manage
   top:
     description: Lists the top 5 players of the current Jump and Run
+  practice:
+    aliases: [prac]
+    description: Toggle practice mode

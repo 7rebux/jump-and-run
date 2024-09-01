@@ -1,60 +1,92 @@
 package net.rebux.jumpandrun.commands
 
 import net.rebux.jumpandrun.Plugin
-import net.rebux.jumpandrun.database.entities.LocationEntity
+import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.database.entities.ParkourEntity
 import net.rebux.jumpandrun.database.entities.TimeEntity
-import net.rebux.jumpandrun.msg
-import net.rebux.jumpandrun.msgTemplate
+import net.rebux.jumpandrun.events.ParkourJoinEvent
+import net.rebux.jumpandrun.events.ParkourLeaveEvent
+import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.parkour.ParkourDifficulty
+import net.rebux.jumpandrun.parkour.ParkourManager
+import net.rebux.jumpandrun.utils.MessageBuilder
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
+import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
-import org.bukkit.Material
+import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
-class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
+class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabCompleter {
 
     override fun onCommand(
         sender: CommandSender,
         command: Command,
-        abel: String,
+        label: String,
         args: Array<String>
     ): Boolean {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin) {
-            when (args.firstOrNull()?.lowercase()) {
-                "list" -> handleListCommand(sender)
-                "add" -> handleAddCommand(sender, args.copyOfRange(1, args.size))
-                "remove" -> handleRemoveCommand(sender, args.getOrNull(1)?.toIntOrNull())
-                "reset" -> handleResetCommand(sender, args.copyOfRange(1, args.size))
-                else -> sendUsage(sender)
-            }
+        when (args.firstOrNull()?.lowercase()) {
+            "list" -> handleListCommand(sender)
+            "join" -> handleJoinCommand(sender, args.getOrNull(1)?.toIntOrNull())
+            "leave" -> handleLeaveCommand(sender)
+            "add" -> handleAddCommand(sender, args.copyOfRange(1, args.size))
+            "remove" -> handleRemoveCommand(sender, args.getOrNull(1)?.toIntOrNull())
+            "reset" -> handleResetCommand(sender, args.copyOfRange(1, args.size))
+            else -> sendUsage(sender)
         }
 
         return true
     }
 
     private fun handleListCommand(sender: CommandSender) {
-        val parkours = plugin.parkourManager.parkours.values
+        val parkours = ParkourManager.parkours.values
 
         if (parkours.isEmpty()) {
-            sender.msgTemplate("commands.jnr.list.empty")
+            MessageBuilder("No parkours found!").error().buildAndSend(sender)
             return
         }
 
-        sender.msgTemplate("commands.jnr.list.full", mapOf("size" to parkours.size))
+        MessageBuilder("Found {size} parkours:")
+            .values(mapOf("size" to parkours.size))
+            .buildAndSend(sender)
+
         parkours.forEach { parkour ->
-            sender.msg("#${parkour.id}: ${ChatColor.GREEN}${parkour.name} ${ChatColor.GRAY}- ${parkour.difficulty}")
+            MessageBuilder("# {id}: {name} - {difficulty}")
+                .values(
+                    mapOf(
+                        "id" to parkour.id,
+                        "name" to parkour.name,
+                        "difficulty" to parkour.difficulty))
+                .buildAndSend(sender)
         }
+    }
+
+    private fun handleJoinCommand(sender: CommandSender, id: Int?) {
+        if (sender !is Player) {
+            MessageBuilder("This command can only be called as a player!")
+                .error()
+                .buildAndSend(sender)
+            return
+        }
+
+        if (sender.data.inPractice) {
+            MessageBuilder("Can't join parkour in practice mode!").error().buildAndSend(sender)
+            return
+        }
+
+        ParkourManager.parkours[id]?.let {
+            Bukkit.getPluginManager().callEvent(ParkourJoinEvent(sender, it))
+        } ?: MessageBuilder("Parkour not found!").error().buildAndSend(sender)
     }
 
     private fun handleAddCommand(sender: CommandSender, args: Array<String>) {
         if (sender !is Player) {
-            sender.msgTemplate("commands.playersOnly")
+            MessageBuilder("This command can only be called as a player!")
+                .error()
+                .buildAndSend(sender)
             return
         }
 
@@ -65,49 +97,52 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
         }
 
         val difficulty = ParkourDifficulty.values().find { it.name == args[2].uppercase() }
-        val material: Material? = Material.getMaterial(args[3].uppercase())
+        val material = Material.values().find { it.name == args[3].uppercase() }
 
         if (difficulty == null) {
-            sender.msgTemplate("commands.jnr.add.invalidDifficulty")
+            MessageBuilder("Difficulty not found!").error().buildAndSend(sender)
             return
         }
 
         if (material == null) {
-            sender.msgTemplate("commands.jnr.add.invalidMaterial")
+            MessageBuilder("Material not found!").error().buildAndSend(sender)
             return
         }
 
-        transaction {
-            val entity = ParkourEntity.new {
-                this.name = args[0]
-                this.builder = args[1]
-                this.difficulty = difficulty
-                this.material = material
-                this.location = LocationEntity.ofLocation(sender.location)
-            }
+        ParkourManager.register(
+            Parkour(
+                id = -1,
+                name = args[0],
+                builder = args[1],
+                difficulty = difficulty,
+                material = material,
+                startLocation = sender.location))
+        MessageBuilder("Successfully added new parkour").buildAndSend(sender)
+    }
 
-            plugin.parkourManager.add(entity)
-            sender.msgTemplate("commands.jnr.add.success", mapOf("name" to entity.name))
+    private fun handleLeaveCommand(sender: CommandSender) {
+        if (sender !is Player) {
+            MessageBuilder("This command can only be called as a player!")
+                .error()
+                .buildAndSend(sender)
+            return
+        }
+
+        // Events can not be called asynchronously
+        Bukkit.getScheduler().runTask(plugin) { ->
+            Bukkit.getPluginManager().callEvent(ParkourLeaveEvent(sender))
         }
     }
 
     private fun handleRemoveCommand(sender: CommandSender, id: Int?) {
-        if (id == null) {
-            sendUsage(sender)
-            return
-        }
+        ParkourManager.parkours[id]?.let {
+            transaction {
+                ParkourEntity.findById(it.id)?.delete()
 
-        if (plugin.parkourManager.parkours[id] == null) {
-            sender.msgTemplate("commands.jnr.remove.notFound")
-            return
-        }
-
-        val removed = plugin.parkourManager.parkours.remove(id)!!
-        transaction {
-            ParkourEntity.findById(id)?.delete()
-        }
-
-        sender.msgTemplate("commands.jnr.remove.success", mapOf("name" to removed.name))
+                ParkourManager.parkours.remove(it.id)
+                sender.sendMessage("Successfully removed parkour")
+            }
+        } ?: MessageBuilder("Parkour not found!").error().buildAndSend(sender)
     }
 
     private fun handleResetCommand(sender: CommandSender, args: Array<String>) {
@@ -120,56 +155,87 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor {
         val id = args[0].toIntOrNull()
 
         if (id == null) {
-            sender.msgTemplate("commands.jnr.reset.idNotNumeric")
+            MessageBuilder("Id must be an Integer!").error().buildAndSend(sender)
             return
         }
 
-        val parkour = plugin.parkourManager.parkours.get(id)
+        val parkour = ParkourManager.parkours.get(id)
 
         if (parkour == null) {
-            sender.msgTemplate("commands.jnr.reset.notFound")
+            MessageBuilder("Parkour not found!").error().buildAndSend(sender)
             return
         }
 
         if (args[1].lowercase() == "all") {
             transaction {
                 TimeEntity.all()
-                    .filter { entity ->
-                        entity.parkour.id.value == id
-                    }
+                    .filter { entity -> entity.parkour.id.value == id }
                     .forEach { entity ->
                         entity.delete()
                         parkour.times.remove(entity.uuid)
                     }
             }
-            sender.msgTemplate("commands.jnr.reset.successAll", mapOf("name" to parkour.name))
+            MessageBuilder("Successfully reset all times!").buildAndSend(sender)
         } else {
             transaction {
-                val timeEntity = TimeEntity.all().singleOrNull { entity ->
-                    entity.parkour.id.value == id && entity.uuid == UUID.fromString(args[1])
-                }
+                val timeEntity =
+                    TimeEntity.all().singleOrNull { entity ->
+                        entity.parkour.id.value == id && entity.uuid == UUID.fromString(args[1])
+                    }
 
                 if (timeEntity == null) {
-                    sender.msgTemplate("commands.jnr.reset.notFound")
+                    MessageBuilder("No time for specified UUID found!").error().buildAndSend(sender)
                     return@transaction
                 }
 
                 timeEntity.delete()
                 parkour.times.remove(timeEntity.uuid)
-                sender.msgTemplate(
-                    "commands.jnr.reset.successSingle", mapOf(
-                        "name" to parkour.name,
-                        "player" to Bukkit.getOfflinePlayer(timeEntity.uuid).name
-                    )
-                )
+                MessageBuilder("Successfully reset time for player {name}")
+                    .values(mapOf("name" to (Bukkit.getOfflinePlayer(timeEntity.uuid).name ?: timeEntity.uuid.toString())))
+                    .error()
+                    .buildAndSend(sender)
             }
         }
     }
 
     private fun sendUsage(sender: CommandSender) {
-        sender.msg("/jnr list")
-        sender.msg("/jnr add <name> <builder> <difficulty> <material>")
-        sender.msg("/jnr remove <id>")
-        sender.msg("/jnr reset <id> <uuid | all>")
+        MessageBuilder(
+                """
+      /jnr list
+      /jnr join <id>
+      /jnr leave
+      /jnr add <name> <builder> <difficulty> <material>
+      /jnr remove <id>
+      /jnr reset <id> <uuid | all>
+    """
+                    .trimIndent())
+            .buildAndSend(sender)
+    }
+
+    override fun onTabComplete(
+        sender: CommandSender,
+        command: Command,
+        label: String,
+        args: Array<String>
+    ): List<String> {
+        if (args.size == 1) {
+            return listOf("list", "join", "add", "remove", "reset")
+        }
+
+        if (args.size == 2 && args[0] in listOf("join", "remove", "reset")) {
+            return ParkourManager.parkours.keys.map(Int::toString)
+        }
+
+        if (args.size == 4 && args[0] == "add") {
+            return ParkourDifficulty.values().map(ParkourDifficulty::name).filter {
+                it.startsWith(args[3])
+            }
+        }
+
+        if (args.size == 5 && args[0] == "add") {
+            return Material.values().map(Material::name).filter { it.startsWith(args[4]) }
+        }
+
+        return emptyList()
     }
 }

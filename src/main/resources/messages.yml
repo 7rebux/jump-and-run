@@ -1,0 +1,36 @@
+prefix: "§7[§eParkour§7] "
+
+event:
+  checkpoint: "§7You reached a new checkpoint!"
+  resetBlock: "§7You were reset to your last checkpoint"
+  completed: "§7You finished §a{name} §7in §a{time} {unit}§7!"
+  globalBest: "§a{player} §7has beaten the best time at §a{name} §7of §a{holders} §7for §a{time} {unit}§7!"
+  firstGlobalBest: "§7The player §a{player} §7was the first to complete §a{name} §7in §a{time} {unit}"
+  personalBest: "§7You have set a new personal best time"
+
+command:
+  top:
+    invalid: "You have to be in a parkour to do this!"
+    empty: "This parkour does not have any completions!"
+    header: "§eTop {amount} times for §3{name} §e:"
+    entry: "§a#{rank} §9{player} §7» §a{time} {unit} §7(§a{delta}§7)"
+  practice:
+    enabled: |-
+      §aEnabled practice mode:
+        §2➥ X: §f{x}
+        §2➥ Y: §f{y}
+        §2➥ Z: §f{z}
+        §2➥ Direction: §f{direction} 
+        §2➥ Facing: §f{yaw} / {pitch}
+    disabled: §aDisabled practice mode
+
+item:
+  hider:
+    hidePlayers: "§7All players are now §chidden"
+    showPlayers: "§7All players are now §ashown"
+
+timer:
+  bar: "§a{time} {unit}"
+  unit:
+    seconds: "Seconds"
+    minutes: "Minutes"

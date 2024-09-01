@@ -1,0 +1,64 @@
+package net.rebux.jumpandrun.utils
+
+import net.rebux.jumpandrun.config.ParkourConfig
+import net.rebux.jumpandrun.parkour.Parkour
+import net.rebux.jumpandrun.utils.TickFormatter.toMessageValue
+import org.bukkit.Bukkit
+import org.bukkit.entity.Player
+import org.bukkit.scoreboard.Scoreboard
+import org.bukkit.scoreboard.Team
+
+object ScoreboardUtil {
+
+    private val config = ParkourConfig.Scoreboard
+
+    fun createParkourScoreboard(parkour: Parkour, player: Player): Scoreboard {
+        val personalBest = parkour.times[player.uniqueId]?.let(TickFormatter::format)
+        val bestTimes = parkour.times.entries.sortedBy { it.value }.take(10)
+
+        return scoreboard {
+            title(MessageBuilder(config.title).prefix(false).buildSingle())
+
+            appendLine(
+                MessageBuilder(config.subtitle)
+                    .prefix(false)
+                    .values(
+                        mapOf(
+                            "difficulty" to parkour.difficulty.displayName, "name" to parkour.name))
+                    .buildSingle())
+
+            appendLine(MessageBuilder(config.personalBestHeader).prefix(false).buildSingle())
+            appendLine(
+                MessageBuilder(config.personalBest)
+                    .values(
+                        mapOf(
+                            "time" to (personalBest?.first ?: "--:--:--"),
+                            "unit" to (personalBest?.second?.toMessageValue() ?: "")))
+                    .prefix(false)
+                    .buildSingle())
+            appendLine(MessageBuilder(config.personalBestFooter).prefix(false).buildSingle())
+            appendLine(MessageBuilder(config.topTimesHeader).prefix(false).buildSingle())
+            bestTimes.forEach {
+                appendLine(
+                    MessageBuilder(config.topTimesEntry)
+                        .values(
+                            mapOf(
+                                "time" to TickFormatter.format(it.value).first,
+                                "player" to (Bukkit.getOfflinePlayer(it.key).name ?: it.key)))
+                        .prefix(false)
+                        .buildSingle())
+            }
+            appendLine(MessageBuilder(config.topTimesFooter).prefix(false).buildSingle())
+        }.also {
+            // TODO: Do this somewhere else
+            // No fallback needed since there is no player collision in older versions (right?)
+            try {
+                if (it.getTeam("NO_COLLIDERS_X") == null) {
+                    it.registerNewTeam("NO_COLLIDERS_X").setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER)
+                }
+
+                it.getTeam("NO_COLLIDERS_X")!!.addPlayer(player)
+            } catch (_: NoClassDefFoundError) { }
+        }
+    }
+}

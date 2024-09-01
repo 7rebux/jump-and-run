@@ -1,8 +1,11 @@
 package net.rebux.jumpandrun.commands
 
-import net.rebux.jumpandrun.data
-import net.rebux.jumpandrun.msgTemplate
-import net.rebux.jumpandrun.utils.TimeUtil
+import net.rebux.jumpandrun.api.PlayerDataManager.data
+import net.rebux.jumpandrun.config.MessagesConfig
+import net.rebux.jumpandrun.item.impl.MenuItem
+import net.rebux.jumpandrun.utils.MessageBuilder
+import net.rebux.jumpandrun.utils.TickFormatter
+import net.rebux.jumpandrun.utils.TickFormatter.toMessageValue
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.command.Command
@@ -12,45 +15,59 @@ import org.bukkit.entity.Player
 
 class TopCommand : CommandExecutor {
 
+    private val messages = MessagesConfig.Command.Top
+
     override fun onCommand(
         sender: CommandSender,
         command: Command,
         label: String,
         args: Array<out String>
     ): Boolean {
-        if (sender !is Player) {
-            sender.msgTemplate("commands.playersOnly")
-            return true
-        }
-
-        if (!sender.data.isInParkour()) {
-            sender.msgTemplate("commands.top.invalid")
-            return true
-        }
-
         val entries = if (args.getOrNull(0) == "all") 100 else 5
-        val parkour = sender.data.parkour!!
+        val parkour = (sender as? Player)?.data?.parkourData?.parkour
+
+        // Parkour is also null if the sender is not a player
+        if (parkour == null) {
+            MenuItem.recordsByPlayer().entries.take(entries).forEachIndexed { index, entry ->
+                sender.sendMessage("${ChatColor.GRAY}${index + 1}. ${ChatColor.GOLD}${entry.value} ${ChatColor.WHITE}${Bukkit.getOfflinePlayer(entry.key).name}")
+            }
+            return true
+        }
 
         if (parkour.times.isEmpty()) {
-            sender.msgTemplate("commands.top.empty")
+            MessageBuilder(messages.empty).error().buildAndSend(sender)
             return true
         }
 
         val bestTime = parkour.times.values.min()
 
-        sender.msgTemplate("commands.top.header", mapOf("name" to parkour.name))
+        MessageBuilder(messages.header)
+            .values(
+                mapOf(
+                    "name" to parkour.name,
+                    "difficulty" to parkour.difficulty.displayName,
+                    "amount" to entries))
+            .buildAndSend(sender)
+
         parkour.times.entries
             .groupBy { it.value }
             .toSortedMap()
             .asIterable()
             .take(entries)
-            .forEachIndexed { i, (time, records) ->
-                sender.msgTemplate("commands.top.time", mapOf(
-                    "rank" to i + 1,
-                    "player" to records.joinToString(", ") { Bukkit.getOfflinePlayer(it.key).name },
-                    "time" to TimeUtil.formatTicks(time),
-                    "delta" to formatDelta(time, bestTime)
-                ))
+            .forEachIndexed { i, (ticks, records) ->
+                val holders =
+                    records.mapNotNull { Bukkit.getOfflinePlayer(it.key).name }.joinToString(", ")
+                val (time, unit) = TickFormatter.format(ticks)
+
+                MessageBuilder(messages.entry)
+                    .values(
+                        mapOf(
+                            "rank" to i + 1,
+                            "player" to holders,
+                            "time" to time,
+                            "unit" to unit.toMessageValue(),
+                            "delta" to formatDelta(ticks, bestTime)))
+                    .buildAndSend(sender)
             }
 
         return true
@@ -60,7 +77,7 @@ class TopCommand : CommandExecutor {
         return if (time - bestTime == 0L) {
             "${ChatColor.GOLD}✫"
         } else {
-            "-" + TimeUtil.formatTicks(time - bestTime)
+            "-" + TickFormatter.format(time - bestTime).first
         }
     }
 }

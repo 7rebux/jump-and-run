@@ -1,0 +1,37 @@
+parkoursPerPage: 45
+title: "§bParkours §7(§e{completed}/{quantity}§7) §a{records}✫"
+nextPage: "§7Next page §a»"
+previousPage: "§a« §7Previous page"
+
+leaderboardItem: true
+categoryItems: true
+
+category:
+  all:
+    material: "WHITE_CONCRETE"
+    name: "§fAll"
+  easy:
+    material: "GREEN_CONCRETE"
+    name: "§aEasy"
+  normal:
+    material: "YELLOW_CONCRETE"
+    name: "§6Normal"
+  hard:
+    material: "RED_CONCRETE"
+    name: "§cHard"
+  ultra:
+    material: "PURPLE_CONCRETE"
+    name: "§5Ultra"
+
+entry:
+  difficulty: "§7» §eDifficulty: {difficulty}"
+  builder: "§7» §eBuilder: §9{builder}"
+  noTime: "§c--.--.---"
+  personalBest:
+    title: "§7» §6Personal best:"
+    time: "§9{time} {unit}"
+  globalBest:
+    title: "§7» §6Global best:"
+    subtitle: "§7of:"
+    time: "§9{time} {unit}"
+    player: "§9{player}"

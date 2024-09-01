@@ -12,9 +12,12 @@ class TickCounter {
         ticks++
     }
 
+    fun pause() {
+        started = false
+    }
+
     fun stop(): Long {
         started = false
-        return ticks
-            .also { ticks = 0L }
+        return ticks.also { ticks = 0L }
     }
 }

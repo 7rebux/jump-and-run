@@ -1,47 +1,74 @@
 package net.rebux.jumpandrun.listeners
 
-import net.minecraft.server.v1_8_R3.ItemStack
 import net.rebux.jumpandrun.Plugin
+import net.rebux.jumpandrun.api.MenuCategory
+import net.rebux.jumpandrun.api.PlayerDataManager.data
+import net.rebux.jumpandrun.events.ParkourJoinEvent
+import net.rebux.jumpandrun.getEnumTag
+import net.rebux.jumpandrun.getTag
 import net.rebux.jumpandrun.item.impl.MenuItem
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack
+import net.rebux.jumpandrun.parkour.ParkourManager
+import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.ItemStack
 
-class InventoryClickListener(private val plugin: Plugin) : Listener {
+object InventoryClickListener : Listener {
 
     @EventHandler
     fun onClick(event: InventoryClickEvent) {
-        if (event.currentItem == null) {
+        val item = event.currentItem
+
+        // TODO: IMPORTANT!!! This cancels events for almost everything
+        if (item == null || item.type == Material.AIR || item.amount == 0) {
+            event.isCancelled = true
             return
         }
 
-        val nmsCopy = CraftItemStack.asNMSCopy(event.currentItem) ?: return
+        val idTag = item.getTag(Plugin.ID_TAG)
+        val parkourTag = item.getTag(Plugin.PARKOUR_TAG)
+        val pageTag = item.getTag(Plugin.PAGE_TAG)
+        val categoryTag = item.getTag(Plugin.CATEGORY_TAG)
 
-        if (nmsCopy.hasTag()) {
-            when {
-                nmsCopy.tag.hasKey(Plugin.PARKOUR_TAG) -> handleParkourTag(nmsCopy, event)
-                nmsCopy.tag.hasKey(Plugin.PAGE_TAG) -> handlePageTag(nmsCopy, event)
-            }
-        }
+        idTag?.let { event.isCancelled = true }
+        parkourTag?.let { handleParkourTag(event.currentItem!!, event) }
+        pageTag?.let { handlePageTag(event.currentItem!!, event) }
+        categoryTag?.let { handleCategoryTag(event.currentItem!!, event) }
     }
 
-    private fun handleParkourTag(nmsCopy: ItemStack, event: InventoryClickEvent) {
+    private fun handleParkourTag(itemStack: ItemStack, event: InventoryClickEvent) {
         val player = event.whoClicked as Player
-        val id = nmsCopy.tag.getInt(Plugin.PARKOUR_TAG)
-        val parkour = plugin.parkourManager.parkours[id]
+        val id = itemStack.getTag(Plugin.PARKOUR_TAG)!!
+        val parkour =
+            ParkourManager.parkours[id] ?: error("Parkour with id=$id could not be found!")
 
-        parkour?.start(player) ?: error("Parkour #$id not found!")
+        // Prevent starting a parkour when the player is in practice mode
+        if (player.data.inPractice) {
+            return
+        }
+
+        Bukkit.getPluginManager().callEvent(ParkourJoinEvent(player, parkour))
+    }
+
+    private fun handlePageTag(itemStack: ItemStack, event: InventoryClickEvent) {
+        val player = event.whoClicked as Player
+        val page = itemStack.getTag(Plugin.PAGE_TAG)!!
+        val step = itemStack.getTag(Plugin.PAGE_STEP_TAG)!!
+
+        MenuItem.openInventory(player, page + step)
         event.isCancelled = true
     }
 
-    private fun handlePageTag(nmsCopy: ItemStack, event: InventoryClickEvent) {
+    private fun handleCategoryTag(itemStack: ItemStack, event: InventoryClickEvent) {
         val player = event.whoClicked as Player
-        val page = nmsCopy.tag.getInt(Plugin.PAGE_TAG)
-        val step = nmsCopy.tag.getInt(Plugin.PAGE_STEP_TAG)
+        val category = itemStack.getEnumTag(Plugin.CATEGORY_TAG, MenuCategory::class.java)
+            ?: error("Invalid category on item stack")
 
-        MenuItem.openInventory(player, page + step)
+        MenuItem.selectedDifficulty[player] = category
+        MenuItem.openInventory(player, 0)
         event.isCancelled = true
     }
 }

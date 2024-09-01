@@ -1,0 +1,30 @@
+resetHeight: 70
+gameMode: "ADVENTURE"
+leaveOnFinish: true
+spawnOnLeave: true
+eventLogging: true
+
+feature:
+  checkpoint: true
+  resetBlock: true
+
+block:
+  checkpoint: "IRON_BLOCK"
+  reset: "REDSTONE_BLOCK"
+  finish: "GOLD_BLOCK"
+
+difficulty:
+  easy: "§aEasy"
+  normal: "§6Normal"
+  hard: "§cHard"
+  ultra: "§5Ultra"
+
+scoreboard:
+  title: "§fParkour Server"
+  subtitle: "{difficulty} {name}"
+  personalBestHeader: "§7Personal Best"
+  personalBest: "§6{time} {unit}"
+  personalBestFooter: ""
+  topTimesHeader: "§7------ §bTop 10 §7------"
+  topTimesEntry: "§6{time} §f{player}"
+  topTimesFooter: "§7--------------------"
