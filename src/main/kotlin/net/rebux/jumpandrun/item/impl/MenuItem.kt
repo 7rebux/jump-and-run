@@ -218,8 +218,7 @@ object MenuItem : Item("menu") {
 
     private fun buildLeaderboardItem(player: Player): ItemStack {
         val recordsByPlayer = recordsByPlayer()
-
-        return Builder()
+        val itemStack = Builder()
             .material(Material.NETHER_STAR)
             .displayName("${ChatColor.AQUA}Leaderboard")
             .lore(
@@ -236,6 +235,13 @@ object MenuItem : Item("menu") {
                 }
             )
             .build()
+
+        // Prevent inventory interactions
+        NBT.modify(itemStack) { nbt ->
+            nbt.setInteger(Plugin.ID_TAG, -1)
+        }
+
+        return itemStack
     }
 
     private fun buildCategoryItem(category: MenuCategory): ItemStack {
