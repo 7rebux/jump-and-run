@@ -2,8 +2,9 @@ package net.rebux.jumpandrun.parkour
 
 import net.rebux.jumpandrun.database.entities.LocationEntity
 import net.rebux.jumpandrun.database.entities.ParkourEntity
-import net.rebux.jumpandrun.database.entities.TimeEntity
+import org.bukkit.entity.Player
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.*
 
 object ParkourManager {
 
@@ -11,18 +12,10 @@ object ParkourManager {
 
     fun load() = transaction {
         ParkourEntity.all()
-            .map { entity ->
-                val parkour = entity.toParkour()
-                val parkourTimes =
-                    TimeEntity.all()
-                        .filter { time -> time.parkour.id.value == parkour.id }
-                        .map { time -> time.uuid to time.time }
-
-                parkour.times.putAll(parkourTimes)
-
-                return@map parkour
+            .map(ParkourEntity::toParkour)
+            .forEach { parkour ->
+                parkours[parkour.id] = parkour
             }
-            .forEach { parkour -> parkours[parkour.id] = parkour }
     }
 
     fun register(parkour: Parkour) {
@@ -41,6 +34,39 @@ object ParkourManager {
                 }
 
             parkours[entity.id.value] = parkour.copy(id = entity.id.value)
+        }
+    }
+
+    fun recordsByPlayer(): Map<UUID, Int> {
+        return parkours.values
+            .asSequence()
+            .filter { it.times.isNotEmpty() }
+            .flatMap { parkour ->
+                val recordTime = parkour.times.values.min()
+
+                parkour.times
+                    .filterValues { it == recordTime }
+                    .map { (uuid, _) -> uuid }
+            }
+            .groupingBy { it }
+            .eachCount()
+            .toList()
+            .sortedByDescending { (_, count) -> count }
+            .toMap()
+    }
+
+    fun countParkoursPlayed(player: Player): Int {
+        return parkours.values.count { parkour ->
+            player.uniqueId in parkour.times
+        }
+    }
+
+    fun countParkourRecords(player: Player): Int {
+        return parkours.values.count { parkour ->
+            val recordTime = parkour.times.values.minOrNull()
+            val playerTime = parkour.times[player.uniqueId] ?: Long.MAX_VALUE
+
+            recordTime == playerTime
         }
     }
 }

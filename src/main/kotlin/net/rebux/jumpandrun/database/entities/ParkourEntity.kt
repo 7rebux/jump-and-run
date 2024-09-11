@@ -1,6 +1,7 @@
 package net.rebux.jumpandrun.database.entities
 
 import net.rebux.jumpandrun.database.models.Parkours
+import net.rebux.jumpandrun.database.models.Times
 import net.rebux.jumpandrun.parkour.Parkour
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
@@ -14,16 +15,25 @@ class ParkourEntity(id: EntityID<Int>) : IntEntity(id) {
     var material by Parkours.material
     var location by LocationEntity referencedOn Parkours.location
     var finishLocation by LocationEntity optionalReferencedOn Parkours.finishLocation
+    val times by TimeEntity referrersOn Times.parkour
 
-    fun toParkour() =
-        Parkour(
+    fun toParkour(): Parkour {
+        val timeEntries = times.associate {
+            it.uuid to it.time
+        }
+
+        return Parkour(
             id.value,
             name,
             builder,
             difficulty,
             material,
             location.toLocation(),
-            finishLocation?.toLocation())
+            finishLocation?.toLocation()
+        ).apply {
+            this.times.putAll(timeEntries)
+        }
+    }
 
     override fun delete() {
         // TODO: Use onDelete callback of exposed

@@ -19,7 +19,6 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
-import java.util.*
 
 /** 0, 1, 2, 3, 4, 5, 6, 7, 8 P, A, E, M, H, U, x, S, P */
 object MenuItem : Item("menu") {
@@ -34,11 +33,11 @@ object MenuItem : Item("menu") {
 
     fun openInventory(player: Player, page: Int = 0) {
         val title =
-            MessageBuilder(MenuConfig.inventoryTile)
+            MessageBuilder(MenuConfig.inventoryTitle)
                 .values(
                     mapOf(
-                        "completed" to countParkoursPlayed(player),
-                        "records" to countParkourRecords(player),
+                        "completed" to ParkourManager.countParkoursPlayed(player),
+                        "records" to ParkourManager.countParkourRecords(player),
                         "quantity" to ParkourManager.parkours.size))
                 .prefix(false)
                 .buildSingle()
@@ -217,7 +216,7 @@ object MenuItem : Item("menu") {
     }
 
     private fun buildLeaderboardItem(player: Player): ItemStack {
-        val recordsByPlayer = recordsByPlayer()
+        val recordsByPlayer = ParkourManager.recordsByPlayer()
         val itemStack = Builder()
             .material(Material.NETHER_STAR)
             .displayName("${ChatColor.AQUA}Leaderboard")
@@ -255,39 +254,5 @@ object MenuItem : Item("menu") {
         }
 
         return itemStack
-    }
-
-    // TODO: Move this functions to an separate file
-    fun recordsByPlayer(): Map<UUID, Int> {
-        return ParkourManager.parkours.values
-            .asSequence()
-            .filter { it.times.isNotEmpty() }
-            .flatMap { parkour ->
-                val recordTime = parkour.times.values.min()
-
-                parkour.times
-                    .filterValues { it == recordTime }
-                    .map { (uuid, _) -> uuid }
-            }
-            .groupingBy { it }
-            .eachCount()
-            .toList()
-            .sortedByDescending { (_, count) -> count }
-            .toMap()
-    }
-
-    private fun countParkoursPlayed(player: Player): Int {
-        return ParkourManager.parkours.values.count { parkour ->
-            parkour.times.contains(player.uniqueId)
-        }
-    }
-
-    private fun countParkourRecords(player: Player): Int {
-        return ParkourManager.parkours.values.count { parkour ->
-            val recordTime = parkour.times.values.minOrNull()
-            val playerTime = parkour.times[player.uniqueId] ?: Int.MAX_VALUE
-
-            return@count recordTime == playerTime
-        }
     }
 }
