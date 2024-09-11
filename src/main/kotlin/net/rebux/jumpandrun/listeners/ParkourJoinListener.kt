@@ -9,7 +9,6 @@ import net.rebux.jumpandrun.safeTeleport
 import net.rebux.jumpandrun.utils.EventLogger
 import net.rebux.jumpandrun.utils.ScoreboardUtil
 import org.bukkit.Bukkit
-import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -39,7 +38,7 @@ object ParkourJoinListener : Listener {
             this.parkourData.checkpoint = parkour.startLocation
         }
 
-        player.gameMode = GameMode.valueOf(ParkourConfig.gameMode)
+        player.gameMode = ParkourConfig.gameMode
         player.foodLevel = MAX_FOOD_LEVEL
 
         player.scoreboard = ScoreboardUtil.createParkourScoreboard(parkour, player)

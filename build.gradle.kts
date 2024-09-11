@@ -8,7 +8,7 @@ val exposedVersion: String by project
 
 plugins {
   id("com.github.johnrengelman.shadow") version "7.1.2"
-  kotlin("jvm") version "1.7.20"
+  kotlin("jvm") version "1.9.10"
 }
 
 group = "net.rebux.jumpandrun"
@@ -32,6 +32,7 @@ dependencies {
   implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
 
   implementation("org.mariadb.jdbc:mariadb-java-client:3.4.0")
+  implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
   testImplementation(kotlin("test"))
 }

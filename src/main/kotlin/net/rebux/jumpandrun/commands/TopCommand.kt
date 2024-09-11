@@ -2,7 +2,7 @@ package net.rebux.jumpandrun.commands
 
 import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.config.MessagesConfig
-import net.rebux.jumpandrun.item.impl.MenuItem
+import net.rebux.jumpandrun.parkour.ParkourManager
 import net.rebux.jumpandrun.utils.MessageBuilder
 import net.rebux.jumpandrun.utils.TickFormatter
 import net.rebux.jumpandrun.utils.TickFormatter.toMessageValue
@@ -28,7 +28,7 @@ class TopCommand : CommandExecutor {
 
         // Parkour is also null if the sender is not a player
         if (parkour == null) {
-            MenuItem.recordsByPlayer().entries.take(entries).forEachIndexed { index, entry ->
+            ParkourManager.recordsByPlayer().entries.take(entries).forEachIndexed { index, entry ->
                 sender.sendMessage("${ChatColor.GRAY}${index + 1}. ${ChatColor.GOLD}${entry.value} ${ChatColor.WHITE}${Bukkit.getOfflinePlayer(entry.key).name}")
             }
             return true
