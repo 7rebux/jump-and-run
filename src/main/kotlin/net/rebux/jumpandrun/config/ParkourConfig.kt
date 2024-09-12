@@ -1,15 +1,24 @@
 package net.rebux.jumpandrun.config
 
+import org.bukkit.GameMode
 import org.bukkit.Material
 
-// TODO: Add documentation for what each option does
 object ParkourConfig : CustomConfiguration("parkour.yml") {
 
+    /** Specifies the y position at which the player should be reset */
     val resetHeight = config.getInt("resetHeight")
-    val gameMode = config.getString("gameMode")
+
+    /** Specifies the game mode in a parkour */
+    val gameMode = config.getString("gameMode")?.let(GameMode::valueOf)
         ?: error("Parkour game mode could not be found!")
+
+    /** Whether the player should leave parkour mode after finishing a parkour */
     val leaveOnFinish = config.getBoolean("leaveOnFinish")
+
+    /** Whether the player should run the spawn command when leaving parkour mode */
     val spawnOnLeave = config.getBoolean("spawnOnLeave")
+
+    /** Whether parkour events should be logged in the server console */
     val eventLogging = config.getBoolean("eventLogging")
 
     internal object Feature {
@@ -26,17 +35,6 @@ object ParkourConfig : CustomConfiguration("parkour.yml") {
 
         val checkpoint = config.getString("block.checkpoint")?.let(Material::getMaterial)
             ?: error("Material not found for block.checkpoint!")
-    }
-
-    internal object Difficulty {
-        val easy = config.getString("difficulty.easy")
-            ?: error("Difficulty not found for easy!")
-        val normal = config.getString("difficulty.normal")
-            ?: error("Difficulty not found for normal!")
-        val hard = config.getString("difficulty.hard")
-            ?: error("Difficulty not found for hard!")
-        val ultra = config.getString("difficulty.ultra")
-            ?: error("Difficulty not found for ultra!")
     }
 
     internal object Scoreboard {

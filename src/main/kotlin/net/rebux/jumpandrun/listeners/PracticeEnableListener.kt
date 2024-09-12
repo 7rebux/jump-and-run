@@ -9,7 +9,6 @@ import net.rebux.jumpandrun.item.ItemRegistry
 import net.rebux.jumpandrun.item.impl.PracticeItem
 import net.rebux.jumpandrun.utils.EventLogger
 import net.rebux.jumpandrun.utils.MessageBuilder
-import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -37,7 +36,7 @@ object PracticeEnableListener : Listener {
         player.inventory.clear()
         player.inventory.setItem(0, ItemRegistry.getItemStack(PracticeItem.id))
 
-        player.gameMode = GameMode.valueOf(ParkourConfig.gameMode)
+        player.gameMode = ParkourConfig.gameMode
 
         MessageBuilder(MessagesConfig.Command.Practice.enabled)
             .values(

@@ -5,6 +5,7 @@ import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.config.MessagesConfig
 import net.rebux.jumpandrun.config.ParkourConfig
 import net.rebux.jumpandrun.config.SoundsConfig
+import net.rebux.jumpandrun.config.WebhookConfig
 import net.rebux.jumpandrun.database.entities.ParkourEntity
 import net.rebux.jumpandrun.database.entities.TimeEntity
 import net.rebux.jumpandrun.database.models.Times
@@ -40,7 +41,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
             .values(
                 mapOf(
                     "name" to parkour.name,
-                    "difficulty" to parkour.difficulty.displayName,
+                    "difficulty" to parkour.difficulty.coloredName,
                     "time" to time,
                     "unit" to unit.toMessageValue(),
                 )
@@ -58,7 +59,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
                         mapOf(
                             "player" to player.name,
                             "name" to parkour.name,
-                            "difficulty" to parkour.difficulty.displayName,
+                            "difficulty" to parkour.difficulty.coloredName,
                             "time" to time,
                             "unit" to unit.toMessageValue(),
                         )
@@ -81,7 +82,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
                         mapOf(
                             "player" to player.name,
                             "name" to parkour.name,
-                            "difficulty" to parkour.difficulty.displayName,
+                            "difficulty" to parkour.difficulty.coloredName,
                             "holders" to previousHolders,
                             "time" to deltaTime,
                             "unit" to deltaUnit.toMessageValue(),
@@ -89,6 +90,18 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
                     )
                     .buildAndSendGlobally()
                 SoundUtil.playSound(SoundsConfig.newGlobalBest)
+
+                if (WebhookConfig.enabled) {
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin) { ->
+                        DiscordWebhook.postGlobalBest(
+                            player = player,
+                            parkour = parkour,
+                            previousHolders = previousHolders,
+                            time = time,
+                            deltaTime = deltaTime
+                        )
+                    }
+                }
             }
             // New personal best
             else {

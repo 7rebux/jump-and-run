@@ -2,11 +2,11 @@ package net.rebux.jumpandrun.utils
 
 import net.rebux.jumpandrun.config.ParkourConfig
 import net.rebux.jumpandrun.parkour.Parkour
+import net.rebux.jumpandrun.utils.PlayerCollisionUtil.addPlayerToAntiCollisionTeam
 import net.rebux.jumpandrun.utils.TickFormatter.toMessageValue
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.Scoreboard
-import org.bukkit.scoreboard.Team
 
 object ScoreboardUtil {
 
@@ -24,7 +24,9 @@ object ScoreboardUtil {
                     .prefix(false)
                     .values(
                         mapOf(
-                            "difficulty" to parkour.difficulty.displayName, "name" to parkour.name))
+                            "difficulty" to parkour.difficulty.coloredName,
+                            "name" to parkour.name)
+                        )
                     .buildSingle())
 
             appendLine(MessageBuilder(config.personalBestHeader).prefix(false).buildSingle())
@@ -49,16 +51,6 @@ object ScoreboardUtil {
                         .buildSingle())
             }
             appendLine(MessageBuilder(config.topTimesFooter).prefix(false).buildSingle())
-        }.also {
-            // TODO: Do this somewhere else
-            // No fallback needed since there is no player collision in older versions (right?)
-            try {
-                if (it.getTeam("NO_COLLIDERS_X") == null) {
-                    it.registerNewTeam("NO_COLLIDERS_X").setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER)
-                }
-
-                it.getTeam("NO_COLLIDERS_X")!!.addPlayer(player)
-            } catch (_: NoClassDefFoundError) { }
-        }
+        }.also { it.addPlayerToAntiCollisionTeam(player) }
     }
 }

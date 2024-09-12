@@ -96,8 +96,8 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabComple
             return
         }
 
-        val difficulty = ParkourDifficulty.values().find { it.name == args[2].uppercase() }
-        val material = Material.values().find { it.name == args[3].uppercase() }
+        val difficulty = ParkourDifficulty.entries.find { it.name == args[2].uppercase() }
+        val material = Material.entries.find { it.name == args[3].uppercase() }
 
         if (difficulty == null) {
             MessageBuilder("Difficulty not found!").error().buildAndSend(sender)
@@ -227,13 +227,13 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabComple
         }
 
         if (args.size == 4 && args[0] == "add") {
-            return ParkourDifficulty.values().map(ParkourDifficulty::name).filter {
+            return ParkourDifficulty.entries.map(ParkourDifficulty::name).filter {
                 it.startsWith(args[3])
             }
         }
 
         if (args.size == 5 && args[0] == "add") {
-            return Material.values().map(Material::name).filter { it.startsWith(args[4]) }
+            return Material.entries.map(Material::name).filter { it.startsWith(args[4]) }
         }
 
         return emptyList()

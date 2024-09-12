@@ -5,7 +5,7 @@ import org.bukkit.Material
 object MenuConfig : CustomConfiguration("menu.yml") {
 
     val parkoursPerPage = config.getInt("parkoursPerPage")
-    val inventoryTile = getNonNullableString("title")
+    val inventoryTitle = getNonNullableString("title")
     val nextPageTitle = getNonNullableString("nextPage")
     val previousPageTitle = getNonNullableString("previousPage")
 
