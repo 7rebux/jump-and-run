@@ -13,12 +13,6 @@ block:
   reset: "REDSTONE_BLOCK"
   finish: "GOLD_BLOCK"
 
-difficulty:
-  easy: "§aEasy"
-  normal: "§6Normal"
-  hard: "§cHard"
-  ultra: "§5Ultra"
-
 scoreboard:
   title: "§fParkour Server"
   subtitle: "{difficulty} {name}"

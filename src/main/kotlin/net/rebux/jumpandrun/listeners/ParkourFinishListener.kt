@@ -41,7 +41,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
             .values(
                 mapOf(
                     "name" to parkour.name,
-                    "difficulty" to parkour.difficulty.displayName,
+                    "difficulty" to parkour.difficulty.coloredName,
                     "time" to time,
                     "unit" to unit.toMessageValue(),
                 )
@@ -59,7 +59,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
                         mapOf(
                             "player" to player.name,
                             "name" to parkour.name,
-                            "difficulty" to parkour.difficulty.displayName,
+                            "difficulty" to parkour.difficulty.coloredName,
                             "time" to time,
                             "unit" to unit.toMessageValue(),
                         )
@@ -82,7 +82,7 @@ class ParkourFinishListener(private val plugin: Plugin) : Listener {
                         mapOf(
                             "player" to player.name,
                             "name" to parkour.name,
-                            "difficulty" to parkour.difficulty.displayName,
+                            "difficulty" to parkour.difficulty.coloredName,
                             "holders" to previousHolders,
                             "time" to deltaTime,
                             "unit" to deltaUnit.toMessageValue(),

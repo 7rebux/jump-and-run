@@ -24,7 +24,9 @@ object ScoreboardUtil {
                     .prefix(false)
                     .values(
                         mapOf(
-                            "difficulty" to parkour.difficulty.displayName, "name" to parkour.name))
+                            "difficulty" to parkour.difficulty.coloredName,
+                            "name" to parkour.name)
+                        )
                     .buildSingle())
 
             appendLine(MessageBuilder(config.personalBestHeader).prefix(false).buildSingle())

@@ -37,17 +37,6 @@ object ParkourConfig : CustomConfiguration("parkour.yml") {
             ?: error("Material not found for block.checkpoint!")
     }
 
-    internal object Difficulty {
-        val easy = config.getString("difficulty.easy")
-            ?: error("Difficulty not found for easy!")
-        val normal = config.getString("difficulty.normal")
-            ?: error("Difficulty not found for normal!")
-        val hard = config.getString("difficulty.hard")
-            ?: error("Difficulty not found for hard!")
-        val ultra = config.getString("difficulty.ultra")
-            ?: error("Difficulty not found for ultra!")
-    }
-
     internal object Scoreboard {
         val title = config.getString("scoreboard.title")
             ?: error("Scoreboard title not found!")

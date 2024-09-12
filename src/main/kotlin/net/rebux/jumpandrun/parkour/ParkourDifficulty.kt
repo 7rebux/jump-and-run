@@ -1,13 +1,13 @@
 package net.rebux.jumpandrun.parkour
 
-import net.rebux.jumpandrun.config.ParkourConfig
+import org.bukkit.ChatColor
 
-enum class ParkourDifficulty(val displayName: String) {
+enum class ParkourDifficulty(val color: ChatColor, val displayName: String) {
 
-    EASY(ParkourConfig.Difficulty.easy),
-    NORMAL(ParkourConfig.Difficulty.normal),
-    HARD(ParkourConfig.Difficulty.hard),
-    ULTRA(ParkourConfig.Difficulty.ultra);
+    EASY(ChatColor.GREEN, "Easy"),
+    NORMAL(ChatColor.GOLD, "Normal"),
+    HARD(ChatColor.RED, "Hard"),
+    ULTRA(ChatColor.DARK_BLUE, "Ultra");
 
-    override fun toString() = displayName
+    val coloredName = "$color$displayName"
 }

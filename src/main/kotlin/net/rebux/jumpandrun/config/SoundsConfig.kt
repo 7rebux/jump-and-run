@@ -21,5 +21,5 @@ object SoundsConfig : CustomConfiguration("sounds.yml") {
 }
 
 private fun getSoundOrNull(name: String): Sound? {
-    return Sound.values().firstOrNull { it.name == name }
+    return Sound.entries.firstOrNull { it.name == name }
 }

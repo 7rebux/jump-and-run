@@ -45,7 +45,7 @@ class TopCommand : CommandExecutor {
             .values(
                 mapOf(
                     "name" to parkour.name,
-                    "difficulty" to parkour.difficulty.displayName,
+                    "difficulty" to parkour.difficulty.coloredName,
                     "amount" to entries))
             .buildAndSend(sender)
 

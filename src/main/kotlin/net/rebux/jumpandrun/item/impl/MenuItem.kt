@@ -80,7 +80,7 @@ object MenuItem : Item("menu") {
 
         // Difficulty items
         if (config.categoryItems) {
-            for ((index, category) in MenuCategory.values().withIndex()) {
+            for ((index, category) in MenuCategory.entries.withIndex()) {
                 inventory.setItem(inventory.size - 8 + index, buildCategoryItem(category))
             }
         }
