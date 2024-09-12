@@ -58,8 +58,9 @@ object DiscordWebhook {
             if (!response.isSuccessful) {
                 plugin.logger.log(
                     Level.WARNING,
-                    "Failed to report new global best to discord webhook: ${response.code}"
+                    "Failed to report new global best to discord webhook: ${response.code} ${response.body?.string()}"
                 )
+                plugin.logger.log(Level.WARNING, json)
                 return
             }
 
