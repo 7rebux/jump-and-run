@@ -22,18 +22,16 @@ object DiscordWebhook {
         time: String,
         deltaTime: String
     ) {
-        val color = parkour.difficulty.color.asBungee().color.rgb
-        val name = "${parkour.difficulty.displayName} ${parkour.name}"
         val json = """
             {
                 "embeds": [
                     {
                         "title": "New Record",
-                        "color": $color,
+                        "color": ${parkour.difficulty.rgbColor},
                         "fields": [
                             {
                                 "name": "Module",
-                                "value": "$name"
+                                "value": "${parkour.difficulty.displayName} ${parkour.name}"
                             },
                             {
                                 "name": "Time",
