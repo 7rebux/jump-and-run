@@ -8,7 +8,7 @@ enum class ParkourDifficulty(chatColor: ChatColor, val rgbColor: Int, val displa
     EASY(ChatColor.GREEN, Color.GREEN.asRGB(), "Easy"),
     NORMAL(ChatColor.GOLD, Color.ORANGE.asRGB(), "Normal"),
     HARD(ChatColor.RED, Color.RED.asRGB(), "Hard"),
-    ULTRA(ChatColor.DARK_BLUE, Color.PURPLE.asRGB(), "Ultra");
+    ULTRA(ChatColor.DARK_PURPLE, Color.PURPLE.asRGB(), "Ultra");
 
     val coloredName = "$chatColor$displayName"
 }
