@@ -15,7 +15,7 @@ object ScoreboardUtil {
     fun createParkourScoreboard(parkour: Parkour, player: Player): Scoreboard {
         val personalBest = parkour.times[player.uniqueId]?.let(TickFormatter::format)
         val bestTimes = parkour.times.entries
-            .sortedWith(compareBy({ it.value }, { it.key != player.uniqueId }))
+            .sortedWith(compareBy({ it.value }, { it.key != player.uniqueId })) // Self as first entry
             .take(10)
 
         return scoreboard {

@@ -104,6 +104,7 @@ object MenuItem : Item("menu") {
         val playersWithBestTime =
             this.times.entries
                 .filter { it.value == bestTime }
+                .sortedWith(compareBy { it.key != player.uniqueId }) // Self at top
                 .map { Bukkit.getOfflinePlayer(it.key) }
 
         val displayName =
