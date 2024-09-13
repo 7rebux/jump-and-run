@@ -77,7 +77,7 @@ class TopCommand : CommandExecutor {
         return if (time - bestTime == 0L) {
             "${ChatColor.GOLD}✫"
         } else {
-            "-" + TickFormatter.format(time - bestTime).first
+            "${ChatColor.RED}-${TickFormatter.format(time - bestTime).first}"
         }
     }
 }
