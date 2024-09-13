@@ -124,7 +124,7 @@ object MenuItem : Item("menu") {
 
             addAll(
                 MessageBuilder(MenuConfig.Entry.difficulty)
-                    .values(mapOf("difficulty" to parkour.difficulty))
+                    .values(mapOf("difficulty" to parkour.difficulty.coloredName))
                     .prefix(false)
                     .build())
 
