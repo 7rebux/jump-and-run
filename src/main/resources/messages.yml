@@ -10,10 +10,15 @@ event:
 
 command:
   top:
-    invalid: "You have to be in a parkour to do this!"
-    empty: "This parkour does not have any completions!"
-    header: "§eTop {amount} times for §3{name} §e:"
-    entry: "§a#{rank} §9{player} §7» §a{time} {unit} §7(§a{delta}§7)"
+      global:
+        empty: "There are no records yet!"
+        header: "§eTop {amount} global §3global §erecord holders:"
+        entry: "§a#{rank} §9{player} §7» §a{records}"
+      parkour:
+        empty: "This parkour does not have any completions!"
+        notFound: "This parkour could not be found!"
+        header: "§eTop {amount} times for §3{name} §e:"
+        entry: "§a#{rank} §9{player} §7» §a{time} {unit} §7(§a{delta}§7)"
   practice:
     enabled: |-
       §aEnabled practice mode:
