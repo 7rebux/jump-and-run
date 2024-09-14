@@ -19,9 +19,18 @@ object MessagesConfig : CustomConfiguration("messages.yml") {
 
     internal object Command {
         internal object Top {
-            val empty = getMessage("command.top.empty")
-            val header = getMessage("command.top.header")
-            val entry = getMessage("command.top.entry")
+            internal object Global {
+                val empty = getMessage("command.top.global.empty")
+                val header = getMessage("command.top.global.header")
+                val entry = getMessage("command.top.global.entry")
+            }
+
+            internal object Parkour {
+                val empty = getMessage("command.top.parkour.empty")
+                val header = getMessage("command.top.parkour.header")
+                val entry = getMessage("command.top.parkour.entry")
+                val notFound = getMessage("command.top.parkour.notFound")
+            }
         }
 
         internal object Practice {

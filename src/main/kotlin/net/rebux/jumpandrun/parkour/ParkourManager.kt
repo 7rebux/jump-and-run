@@ -37,6 +37,7 @@ object ParkourManager {
         }
     }
 
+    // TODO: This might be expensive to calculate each time, maybe use a cache for this in the future
     fun recordsByPlayer(): Map<UUID, Int> {
         return parkours.values
             .asSequence()
