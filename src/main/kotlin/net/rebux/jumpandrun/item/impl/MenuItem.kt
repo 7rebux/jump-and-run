@@ -3,6 +3,7 @@ package net.rebux.jumpandrun.item.impl
 import de.tr7zw.nbtapi.NBT
 import net.rebux.jumpandrun.Plugin
 import net.rebux.jumpandrun.api.MenuCategory
+import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.config.MenuConfig
 import net.rebux.jumpandrun.item.Item
 import net.rebux.jumpandrun.parkour.Parkour
@@ -22,8 +23,6 @@ import org.bukkit.inventory.ItemStack
 
 /** 0, 1, 2, 3, 4, 5, 6, 7, 8 P, A, E, M, H, U, x, S, P */
 object MenuItem : Item("menu") {
-
-    val selectedDifficulty = mutableMapOf<Player, MenuCategory>()
 
     private val config = MenuConfig
 
@@ -48,10 +47,12 @@ object MenuItem : Item("menu") {
     }
 
     private fun Player.openParkourMenu(inventory: Inventory, page: Int = 0) {
+        val selectedCategory = this.data.menuState.category
+        val selectedSorting = this.data.menuState.sorting
         val parkours =
             ParkourManager.parkours.values
                 .filter { parkour ->
-                    when (selectedDifficulty[player]) {
+                    when (selectedCategory) {
                         MenuCategory.Easy -> parkour.difficulty == ParkourDifficulty.EASY
                         MenuCategory.Normal -> parkour.difficulty == ParkourDifficulty.NORMAL
                         MenuCategory.Hard -> parkour.difficulty == ParkourDifficulty.HARD
@@ -59,7 +60,7 @@ object MenuItem : Item("menu") {
                         else -> true
                     }
                 }
-                .sortedWith(compareBy(Parkour::difficulty, Parkour::name))
+                .sortedWith(compareBy(selectedSorting.sortFunction, Parkour::name))
 
         // Parkour items
         for (slot in 0 until config.parkoursPerPage) {
@@ -214,6 +215,10 @@ object MenuItem : Item("menu") {
         }
 
         return itemStack
+    }
+
+    private fun buildSortingItem(player: Player): ItemStack {
+        TODO()
     }
 
     private fun buildLeaderboardItem(player: Player): ItemStack {

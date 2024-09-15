@@ -57,8 +57,10 @@ object InventoryClickListener : Listener {
         val player = event.whoClicked as Player
         val page = itemStack.getTag(Plugin.PAGE_TAG)!!
         val step = itemStack.getTag(Plugin.PAGE_STEP_TAG)!!
+        val newPage = page + step
 
-        MenuItem.openInventory(player, page + step)
+        player.data.menuState.page = newPage
+        MenuItem.openInventory(player, newPage)
         event.isCancelled = true
     }
 
@@ -67,7 +69,7 @@ object InventoryClickListener : Listener {
         val category = itemStack.getEnumTag(Plugin.CATEGORY_TAG, MenuCategory::class.java)
             ?: error("Invalid category on item stack")
 
-        MenuItem.selectedDifficulty[player] = category
+        player.data.menuState.category = category
         MenuItem.openInventory(player, 0)
         event.isCancelled = true
     }
