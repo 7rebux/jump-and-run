@@ -10,6 +10,7 @@ object MenuConfig : CustomConfiguration("menu.yml") {
     val previousPageTitle = getNonNullableString("previousPage")
 
     val leaderboardItem = config.getBoolean("leaderboardItem")
+    val sortingItem = config.getBoolean("sortingItem")
     val categoryItems = config.getBoolean("categoryItems")
 
     internal object Category {

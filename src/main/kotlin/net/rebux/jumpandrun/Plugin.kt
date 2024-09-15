@@ -63,8 +63,8 @@ class Plugin : JavaPlugin() {
     companion object {
         const val ID_TAG = "net.rebux.jumpandrun.id"
         const val PARKOUR_TAG = "net.rebux.jumpandrun.parkour"
-        const val PAGE_TAG = "net.rebux.jumpandrun.page"
         const val PAGE_STEP_TAG = "net.rebux.jumpandrun.page.step"
         const val CATEGORY_TAG = "net.rebux.jumpandrun.category"
+        const val SORTING_TAG = "net.rebux.jumpandrun.sorting"
     }
 }
