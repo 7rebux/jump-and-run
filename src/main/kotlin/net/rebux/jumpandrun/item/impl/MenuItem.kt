@@ -63,7 +63,7 @@ object MenuItem : Item("menu") {
                         else -> true
                     }
                 }
-                .sortedWith(compareBy(sorting.sortFunction, Parkour::name))
+                .sortedWith(sorting.comparator)
 
         // Parkour items
         for (slot in 0 until config.parkoursPerPage) {
