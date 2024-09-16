@@ -3,6 +3,8 @@ package net.rebux.jumpandrun.item.impl
 import de.tr7zw.nbtapi.NBT
 import net.rebux.jumpandrun.Plugin
 import net.rebux.jumpandrun.api.MenuCategory
+import net.rebux.jumpandrun.api.MenuSorting
+import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.config.MenuConfig
 import net.rebux.jumpandrun.item.Item
 import net.rebux.jumpandrun.parkour.Parkour
@@ -20,10 +22,9 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 
-/** 0, 1, 2, 3, 4, 5, 6, 7, 8 P, A, E, M, H, U, x, S, P */
+/** 0, 1, 2, 3, 4, 5, 6, 7, 8
+  * P, A, E, M, H, U, S, L, P */
 object MenuItem : Item("menu") {
-
-    val selectedDifficulty = mutableMapOf<Player, MenuCategory>()
 
     private val config = MenuConfig
 
@@ -31,7 +32,7 @@ object MenuItem : Item("menu") {
         this.openInventory(player)
     }
 
-    fun openInventory(player: Player, page: Int = 0) {
+    fun openInventory(player: Player) {
         val title =
             MessageBuilder(MenuConfig.inventoryTitle)
                 .values(
@@ -44,14 +45,17 @@ object MenuItem : Item("menu") {
         val size = MenuConfig.parkoursPerPage + 9
         val inventory = Bukkit.createInventory(null, size, title)
 
-        player.openParkourMenu(inventory, page = page)
+        player.openParkourMenu(inventory)
     }
 
-    private fun Player.openParkourMenu(inventory: Inventory, page: Int = 0) {
+    private fun Player.openParkourMenu(inventory: Inventory) {
+        val category = this.data.menuState.category
+        val sorting = this.data.menuState.sorting
+        val page = this.data.menuState.page
         val parkours =
             ParkourManager.parkours.values
                 .filter { parkour ->
-                    when (selectedDifficulty[player]) {
+                    when (category) {
                         MenuCategory.Easy -> parkour.difficulty == ParkourDifficulty.EASY
                         MenuCategory.Normal -> parkour.difficulty == ParkourDifficulty.NORMAL
                         MenuCategory.Hard -> parkour.difficulty == ParkourDifficulty.HARD
@@ -59,7 +63,7 @@ object MenuItem : Item("menu") {
                         else -> true
                     }
                 }
-                .sortedWith(compareBy(Parkour::difficulty, Parkour::name))
+                .sortedWith(sorting.comparator)
 
         // Parkour items
         for (slot in 0 until config.parkoursPerPage) {
@@ -74,25 +78,29 @@ object MenuItem : Item("menu") {
 
         // Previous page item
         if (page > 0) {
-            inventory.setItem(
-                inventory.size - 9, buildPaginationItem(PaginationType.Previous, page))
+            inventory.setItem(inventory.size - 9, buildPaginationItem(PaginationType.Previous))
         }
 
         // Difficulty items
         if (config.categoryItems) {
-            for ((index, category) in MenuCategory.entries.withIndex()) {
-                inventory.setItem(inventory.size - 8 + index, buildCategoryItem(category))
+            for ((index, cat) in MenuCategory.entries.withIndex()) {
+                inventory.setItem(inventory.size - 8 + index, buildCategoryItem(cat))
             }
         }
 
         // Next page item
         if (parkours.size > MenuConfig.parkoursPerPage * (page + 1)) {
-            inventory.setItem(inventory.size - 1, buildPaginationItem(PaginationType.Next, page))
+            inventory.setItem(inventory.size - 1, buildPaginationItem(PaginationType.Next))
         }
 
         // Leaderboard item
         if (config.leaderboardItem) {
             inventory.setItem(inventory.size - 2, buildLeaderboardItem(this))
+        }
+
+        // Sorting item
+        if (config.sortingItem) {
+            inventory.setItem(inventory.size - 3, buildSortingItem(this))
         }
 
         this.openInventory(inventory)
@@ -204,13 +212,35 @@ object MenuItem : Item("menu") {
         Previous("MHF_ArrowLeft", MenuConfig.previousPageTitle, -1),
     }
 
-    private fun buildPaginationItem(type: PaginationType, page: Int): ItemStack {
+    private fun buildPaginationItem(type: PaginationType): ItemStack {
         val itemStack =
             SkullBuilder().displayName(type.displayName).username(type.skullName).build()
 
         NBT.modify(itemStack) { nbt ->
-            nbt.setInteger(Plugin.PAGE_TAG, page)
             nbt.setInteger(Plugin.PAGE_STEP_TAG, type.step)
+        }
+
+        return itemStack
+    }
+
+    private fun buildSortingItem(player: Player): ItemStack {
+        val selected = player.data.menuState.sorting
+        val itemStack = Builder()
+            .material(Material.COMPARATOR)
+            .displayName("${ChatColor.GREEN}Sorting")
+            .lore(
+                buildList {
+                    MenuSorting.entries.forEach { sorting ->
+                        val color = if (sorting == selected) ChatColor.WHITE else ChatColor.GRAY
+                        this.add("$color> ${sorting.name}")
+                    }
+                }
+            )
+            .build()
+
+        // TODO: But way of identifying item without extra data
+        NBT.modify(itemStack) { nbt ->
+            nbt.setInteger(Plugin.SORTING_TAG, 0)
         }
 
         return itemStack

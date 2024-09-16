@@ -2,6 +2,7 @@ package net.rebux.jumpandrun.listeners
 
 import net.rebux.jumpandrun.Plugin
 import net.rebux.jumpandrun.api.MenuCategory
+import net.rebux.jumpandrun.api.MenuSorting
 import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.events.ParkourJoinEvent
 import net.rebux.jumpandrun.getEnumTag
@@ -30,16 +31,20 @@ object InventoryClickListener : Listener {
 
         val idTag = item.getTag(Plugin.ID_TAG)
         val parkourTag = item.getTag(Plugin.PARKOUR_TAG)
-        val pageTag = item.getTag(Plugin.PAGE_TAG)
+        val pageStepTag = item.getTag(Plugin.PAGE_STEP_TAG)
         val categoryTag = item.getTag(Plugin.CATEGORY_TAG)
+        val sortingTag = item.getTag(Plugin.SORTING_TAG)
 
         idTag?.let { event.isCancelled = true }
         parkourTag?.let { handleParkourTag(event.currentItem!!, event) }
-        pageTag?.let { handlePageTag(event.currentItem!!, event) }
+        pageStepTag?.let { handlePageStepTag(event.currentItem!!, event) }
         categoryTag?.let { handleCategoryTag(event.currentItem!!, event) }
+        sortingTag?.let { handleSortingTag(event) }
     }
 
     private fun handleParkourTag(itemStack: ItemStack, event: InventoryClickEvent) {
+        event.isCancelled = true
+
         val player = event.whoClicked as Player
         val id = itemStack.getTag(Plugin.PARKOUR_TAG)!!
         val parkour =
@@ -53,22 +58,38 @@ object InventoryClickListener : Listener {
         Bukkit.getPluginManager().callEvent(ParkourJoinEvent(player, parkour))
     }
 
-    private fun handlePageTag(itemStack: ItemStack, event: InventoryClickEvent) {
+    private fun handlePageStepTag(itemStack: ItemStack, event: InventoryClickEvent) {
+        event.isCancelled = true
+
         val player = event.whoClicked as Player
-        val page = itemStack.getTag(Plugin.PAGE_TAG)!!
         val step = itemStack.getTag(Plugin.PAGE_STEP_TAG)!!
 
-        MenuItem.openInventory(player, page + step)
-        event.isCancelled = true
+        player.data.menuState.page += step
+        MenuItem.openInventory(player)
     }
 
     private fun handleCategoryTag(itemStack: ItemStack, event: InventoryClickEvent) {
+        event.isCancelled = true
+
         val player = event.whoClicked as Player
         val category = itemStack.getEnumTag(Plugin.CATEGORY_TAG, MenuCategory::class.java)
             ?: error("Invalid category on item stack")
 
-        MenuItem.selectedDifficulty[player] = category
-        MenuItem.openInventory(player, 0)
+        player.data.menuState.apply {
+            this.category = category
+            this.page = 0
+        }
+        MenuItem.openInventory(player)
+    }
+
+    private fun handleSortingTag(event: InventoryClickEvent) {
         event.isCancelled = true
+
+        val player = event.whoClicked as Player
+        val sortingIndex = player.data.menuState.sorting.ordinal
+
+        player.data.menuState.sorting =
+            MenuSorting.entries.getOrNull(sortingIndex + 1) ?: MenuSorting.entries.first()
+        MenuItem.openInventory(player)
     }
 }

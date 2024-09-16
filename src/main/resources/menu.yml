@@ -4,6 +4,7 @@ nextPage: "§7Next page §a»"
 previousPage: "§a« §7Previous page"
 
 leaderboardItem: true
+sortingItem: true
 categoryItems: true
 
 category:
