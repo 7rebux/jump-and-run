@@ -11,7 +11,7 @@ object MenuConfig : CustomConfiguration("menu.yml") {
 
     val leaderboardItem = config.getBoolean("leaderboardItem")
     val sortingItem = config.getBoolean("sortingItem")
-    val categoryItems = config.getBoolean("categoryItems")
+    val categoryItem = config.getBoolean("categoryItem")
 
     internal object Category {
 

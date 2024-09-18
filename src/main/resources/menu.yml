@@ -5,7 +5,7 @@ previousPage: "§a« §7Previous page"
 
 leaderboardItem: true
 sortingItem: true
-categoryItems: true
+categoryItem: true
 
 category:
   all:
