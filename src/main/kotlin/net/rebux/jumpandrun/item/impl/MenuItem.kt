@@ -76,21 +76,14 @@ object MenuItem : Item("menu") {
             inventory.setItem(slot, parkours[index].buildItem(this))
         }
 
-        // Previous page item
-        if (page > 0) {
-            inventory.setItem(inventory.size - 9, buildPaginationItem(PaginationType.Previous))
+        // Difficulty item
+        if (config.categoryItem) {
+            inventory.setItem(inventory.size - 7, buildCategoryItem(this))
         }
 
-        // Difficulty items
-        if (config.categoryItems) {
-            for ((index, cat) in MenuCategory.entries.withIndex()) {
-                inventory.setItem(inventory.size - 8 + index, buildCategoryItem(cat))
-            }
-        }
-
-        // Next page item
-        if (parkours.size > MenuConfig.parkoursPerPage * (page + 1)) {
-            inventory.setItem(inventory.size - 1, buildPaginationItem(PaginationType.Next))
+        // Sorting item
+        if (config.sortingItem) {
+            inventory.setItem(inventory.size - 6, buildSortingItem(this))
         }
 
         // Leaderboard item
@@ -98,9 +91,14 @@ object MenuItem : Item("menu") {
             inventory.setItem(inventory.size - 2, buildLeaderboardItem(this))
         }
 
-        // Sorting item
-        if (config.sortingItem) {
-            inventory.setItem(inventory.size - 3, buildSortingItem(this))
+        // Previous page item
+        if (page > 0) {
+            inventory.setItem(inventory.size - 9, buildPaginationItem(PaginationType.Previous))
+        }
+
+        // Next page item
+        if (parkours.size > MenuConfig.parkoursPerPage * (page + 1)) {
+            inventory.setItem(inventory.size - 1, buildPaginationItem(PaginationType.Next))
         }
 
         this.openInventory(inventory)
@@ -238,7 +236,7 @@ object MenuItem : Item("menu") {
             )
             .build()
 
-        // TODO: But way of identifying item without extra data
+        // TODO: Bad way of identifying item without extra data
         NBT.modify(itemStack) { nbt ->
             nbt.setInteger(Plugin.SORTING_TAG, 0)
         }
@@ -274,14 +272,26 @@ object MenuItem : Item("menu") {
         return itemStack
     }
 
-    private fun buildCategoryItem(category: MenuCategory): ItemStack {
+    private fun buildCategoryItem(player: Player): ItemStack {
+        val selected = player.data.menuState.category
         val itemStack = Builder()
-            .material(category.material)
-            .displayName(category.displayName)
+            .material(selected.material)
+            .displayName("${selected.color}Category")
+            .lore(
+                buildList {
+                    MenuCategory.entries.forEach { category ->
+                        if (category == selected) {
+                            this.add("${category.color}> ${category.name}")
+                        } else {
+                            this.add("${ChatColor.GRAY}> ${category.name}")
+                        }
+                    }
+                }
+            )
             .build()
 
         NBT.modify(itemStack) { nbt ->
-            nbt.setEnum(Plugin.CATEGORY_TAG, category)
+            nbt.setInteger(Plugin.CATEGORY_TAG, 0)
         }
 
         return itemStack

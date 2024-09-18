@@ -5,7 +5,6 @@ import net.rebux.jumpandrun.api.MenuCategory
 import net.rebux.jumpandrun.api.MenuSorting
 import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.events.ParkourJoinEvent
-import net.rebux.jumpandrun.getEnumTag
 import net.rebux.jumpandrun.getTag
 import net.rebux.jumpandrun.item.impl.MenuItem
 import net.rebux.jumpandrun.parkour.ParkourManager
@@ -38,7 +37,7 @@ object InventoryClickListener : Listener {
         idTag?.let { event.isCancelled = true }
         parkourTag?.let { handleParkourTag(event.currentItem!!, event) }
         pageStepTag?.let { handlePageStepTag(event.currentItem!!, event) }
-        categoryTag?.let { handleCategoryTag(event.currentItem!!, event) }
+        categoryTag?.let { handleCategoryTag(event) }
         sortingTag?.let { handleSortingTag(event) }
     }
 
@@ -68,15 +67,14 @@ object InventoryClickListener : Listener {
         MenuItem.openInventory(player)
     }
 
-    private fun handleCategoryTag(itemStack: ItemStack, event: InventoryClickEvent) {
+    private fun handleCategoryTag(event: InventoryClickEvent) {
         event.isCancelled = true
 
         val player = event.whoClicked as Player
-        val category = itemStack.getEnumTag(Plugin.CATEGORY_TAG, MenuCategory::class.java)
-            ?: error("Invalid category on item stack")
+        val categoryIndex = player.data.menuState.category.ordinal
 
         player.data.menuState.apply {
-            this.category = category
+            this.category = MenuCategory.entries.getOrNull(categoryIndex + 1) ?: MenuCategory.entries.first()
             this.page = 0
         }
         MenuItem.openInventory(player)

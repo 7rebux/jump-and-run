@@ -1,15 +1,13 @@
 package net.rebux.jumpandrun.api
 
 import net.rebux.jumpandrun.config.MenuConfig
+import org.bukkit.ChatColor
 import org.bukkit.Material
 
-enum class MenuCategory(val material: Material, val displayName: String) {
-
-    All(MenuConfig.Category.All.material, MenuConfig.Category.All.name),
-    Easy(MenuConfig.Category.Easy.material, MenuConfig.Category.Easy.name),
-    Normal(MenuConfig.Category.Normal.material, MenuConfig.Category.Normal.name),
-    Hard(MenuConfig.Category.Hard.material, MenuConfig.Category.Hard.name),
-    Ultra(MenuConfig.Category.Ultra.material, MenuConfig.Category.Ultra.name);
-
-    override fun toString() = displayName
+enum class MenuCategory(val material: Material, val color: ChatColor) {
+    All(MenuConfig.Category.All.material, ChatColor.WHITE),
+    Easy(MenuConfig.Category.Easy.material, ChatColor.GREEN),
+    Normal(MenuConfig.Category.Normal.material, ChatColor.GOLD),
+    Hard(MenuConfig.Category.Hard.material, ChatColor.RED),
+    Ultra(MenuConfig.Category.Ultra.material, ChatColor.DARK_PURPLE);
 }

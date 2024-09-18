@@ -5,24 +5,19 @@ previousPage: "§a« §7Previous page"
 
 leaderboardItem: true
 sortingItem: true
-categoryItems: true
+categoryItem: true
 
 category:
   all:
     material: "WHITE_CONCRETE"
-    name: "§fAll"
   easy:
     material: "GREEN_CONCRETE"
-    name: "§aEasy"
   normal:
     material: "YELLOW_CONCRETE"
-    name: "§6Normal"
   hard:
     material: "RED_CONCRETE"
-    name: "§cHard"
   ultra:
     material: "PURPLE_CONCRETE"
-    name: "§5Ultra"
 
 entry:
   difficulty: "§7» §eDifficulty: {difficulty}"
