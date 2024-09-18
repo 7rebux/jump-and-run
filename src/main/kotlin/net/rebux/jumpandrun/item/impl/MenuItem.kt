@@ -78,12 +78,12 @@ object MenuItem : Item("menu") {
 
         // Difficulty item
         if (config.categoryItem) {
-            inventory.setItem(inventory.size - 4, buildCategoryItem(this))
+            inventory.setItem(inventory.size - 7, buildCategoryItem(this))
         }
 
         // Sorting item
         if (config.sortingItem) {
-            inventory.setItem(inventory.size - 3, buildSortingItem(this))
+            inventory.setItem(inventory.size - 6, buildSortingItem(this))
         }
 
         // Leaderboard item
@@ -276,7 +276,18 @@ object MenuItem : Item("menu") {
         val selected = player.data.menuState.category
         val itemStack = Builder()
             .material(selected.material)
-            .displayName(selected.displayName)
+            .displayName("${selected.color}Category")
+            .lore(
+                buildList {
+                    MenuCategory.entries.forEach { category ->
+                        if (category == selected) {
+                            this.add("${category.color}> ${category.name}")
+                        } else {
+                            this.add("${ChatColor.GRAY}> ${category.name}")
+                        }
+                    }
+                }
+            )
             .build()
 
         NBT.modify(itemStack) { nbt ->

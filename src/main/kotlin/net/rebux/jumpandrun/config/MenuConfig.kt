@@ -18,31 +18,26 @@ object MenuConfig : CustomConfiguration("menu.yml") {
         internal object All {
             val material = config.getString("category.all.material")?.let(Material::getMaterial)
                 ?: error("Material for category All not found!")
-            val name = getNonNullableString("category.all.name")
         }
 
         internal object Easy {
             val material = config.getString("category.easy.material")?.let(Material::getMaterial)
                 ?: error("Material for category Easy not found!")
-            val name = getNonNullableString("category.easy.name")
         }
 
         internal object Normal {
             val material = config.getString("category.normal.material")?.let(Material::getMaterial)
                 ?: error("Material for category Normal not found!")
-            val name = getNonNullableString("category.normal.name")
         }
 
         internal object Hard {
             val material = config.getString("category.hard.material")?.let(Material::getMaterial)
                 ?: error("Material for category Hard not found!")
-            val name = getNonNullableString("category.hard.name")
         }
 
         internal object Ultra {
             val material = config.getString("category.ultra.material")?.let(Material::getMaterial)
                 ?: error("Material for category Ultra not found!")
-            val name = getNonNullableString("category.ultra.name")
         }
     }
 
