@@ -1,12 +1,13 @@
 package net.rebux.jumpandrun.listeners
 
 import net.rebux.jumpandrun.Plugin
-import net.rebux.jumpandrun.api.MenuCategory
-import net.rebux.jumpandrun.api.MenuSorting
 import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.events.ParkourJoinEvent
 import net.rebux.jumpandrun.getTag
-import net.rebux.jumpandrun.item.impl.MenuItem
+import net.rebux.jumpandrun.inventory.menu.MenuCategory
+import net.rebux.jumpandrun.inventory.menu.MenuFilter
+import net.rebux.jumpandrun.inventory.menu.MenuInventory
+import net.rebux.jumpandrun.inventory.menu.MenuSorting
 import net.rebux.jumpandrun.parkour.ParkourManager
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -33,12 +34,14 @@ object InventoryClickListener : Listener {
         val pageStepTag = item.getTag(Plugin.PAGE_STEP_TAG)
         val categoryTag = item.getTag(Plugin.CATEGORY_TAG)
         val sortingTag = item.getTag(Plugin.SORTING_TAG)
+        val filterTag = item.getTag(Plugin.FILTER_TAG)
 
         idTag?.let { event.isCancelled = true }
         parkourTag?.let { handleParkourTag(event.currentItem!!, event) }
         pageStepTag?.let { handlePageStepTag(event.currentItem!!, event) }
         categoryTag?.let { handleCategoryTag(event) }
         sortingTag?.let { handleSortingTag(event) }
+        filterTag?.let { handleFilterTag(event) }
     }
 
     private fun handleParkourTag(itemStack: ItemStack, event: InventoryClickEvent) {
@@ -64,7 +67,7 @@ object InventoryClickListener : Listener {
         val step = itemStack.getTag(Plugin.PAGE_STEP_TAG)!!
 
         player.data.menuState.page += step
-        MenuItem.openInventory(player)
+        MenuInventory.open(player)
     }
 
     private fun handleCategoryTag(event: InventoryClickEvent) {
@@ -77,7 +80,7 @@ object InventoryClickListener : Listener {
             this.category = MenuCategory.entries.getOrNull(categoryIndex + 1) ?: MenuCategory.entries.first()
             this.page = 0
         }
-        MenuItem.openInventory(player)
+        MenuInventory.open(player)
     }
 
     private fun handleSortingTag(event: InventoryClickEvent) {
@@ -88,6 +91,19 @@ object InventoryClickListener : Listener {
 
         player.data.menuState.sorting =
             MenuSorting.entries.getOrNull(sortingIndex + 1) ?: MenuSorting.entries.first()
-        MenuItem.openInventory(player)
+        MenuInventory.open(player)
+    }
+
+    private fun handleFilterTag(event: InventoryClickEvent) {
+        event.isCancelled = true
+
+        val player = event.whoClicked as Player
+        val filterIndex = player.data.menuState.filter.ordinal
+
+        player.data.menuState.apply {
+            this.filter = MenuFilter.entries.getOrNull(filterIndex + 1) ?: MenuFilter.entries.first()
+            this.page = 0
+        }
+        MenuInventory.open(player)
     }
 }

@@ -6,6 +6,7 @@ previousPage: "§a« §7Previous page"
 leaderboardItem: true
 sortingItem: true
 categoryItem: true
+filterItem: true
 
 category:
   all:

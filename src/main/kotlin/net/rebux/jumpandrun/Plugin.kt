@@ -66,5 +66,6 @@ class Plugin : JavaPlugin() {
         const val PAGE_STEP_TAG = "net.rebux.jumpandrun.page.step"
         const val CATEGORY_TAG = "net.rebux.jumpandrun.category"
         const val SORTING_TAG = "net.rebux.jumpandrun.sorting"
+        const val FILTER_TAG = "net.rebux.jumpandrun.filter"
     }
 }
