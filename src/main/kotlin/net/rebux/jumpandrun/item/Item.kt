@@ -1,10 +1,13 @@
 package net.rebux.jumpandrun.item
 
+import de.tr7zw.nbtapi.NBT
+import de.tr7zw.nbtapi.iface.ReadWriteItemNBT
 import net.rebux.jumpandrun.config.ItemsConfig
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
+import java.util.function.Consumer
 
 /** A wrapper class that contains a [ItemStack] and an interact event */
 abstract class Item(private val configName: String) {
@@ -34,11 +37,12 @@ abstract class Item(private val configName: String) {
         player.inventory.setItem(slot, ItemRegistry.getItemStack(id))
     }
 
+    // TODO: Convert this to a proper DSL builder pattern
     data class Builder(
         private var material: Material = Material.AIR,
         private var displayName: String? = null,
         private var lore: List<String>? = null,
-        private var durability: Short? = null
+        private var nbtConsumer: Consumer<ReadWriteItemNBT>? = null
     ) {
 
         fun material(material: Material) = apply { this.material = material }
@@ -47,17 +51,18 @@ abstract class Item(private val configName: String) {
 
         fun lore(lore: List<String>) = apply { this.lore = lore }
 
-        fun durability(durability: Short) = apply { this.durability = durability }
+        fun nbt(consumer: Consumer<ReadWriteItemNBT>) = apply { this.nbtConsumer = consumer }
 
         fun build(): ItemStack {
             val itemStack = ItemStack(material)
             val itemMeta = itemStack.itemMeta!!
 
-            durability?.let(itemStack::setDurability)
             displayName?.let(itemMeta::setDisplayName)
             lore?.let(itemMeta::setLore)
 
             itemStack.itemMeta = itemMeta
+
+            nbtConsumer?.let { NBT.modify(itemStack, it) }
 
             return itemStack
         }
@@ -65,12 +70,15 @@ abstract class Item(private val configName: String) {
 
     data class SkullBuilder(
         private var displayName: String? = null,
-        private var username: String? = null
+        private var username: String? = null,
+        private var nbtConsumer: Consumer<ReadWriteItemNBT>? = null
     ) {
 
         fun displayName(displayName: String) = apply { this.displayName = displayName }
 
         fun username(username: String) = apply { this.username = username }
+
+        fun nbt(consumer: Consumer<ReadWriteItemNBT>) = apply { this.nbtConsumer = consumer }
 
         fun build(): ItemStack {
             val itemStack = ItemStack(Material.PLAYER_HEAD, 1, 3)
@@ -80,6 +88,8 @@ abstract class Item(private val configName: String) {
             username?.let(itemMeta::setOwner)
 
             itemStack.itemMeta = itemMeta
+
+            nbtConsumer?.let { NBT.modify(itemStack, it) }
 
             return itemStack
         }

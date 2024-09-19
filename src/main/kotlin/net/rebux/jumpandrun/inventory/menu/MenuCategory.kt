@@ -1,4 +1,4 @@
-package net.rebux.jumpandrun.api
+package net.rebux.jumpandrun.inventory.menu
 
 import net.rebux.jumpandrun.config.MenuConfig
 import org.bukkit.ChatColor
