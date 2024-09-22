@@ -1,5 +1,7 @@
 package net.rebux.jumpandrun.config
 
+import org.bukkit.Material
+
 object ItemsConfig : CustomConfiguration("items.yml") {
 
     fun isEnabled(item: String): Boolean {
@@ -11,9 +13,9 @@ object ItemsConfig : CustomConfiguration("items.yml") {
             ?: error("Item name for item $item not found!")
     }
 
-    fun getMaterial(item: String): String {
-        return config.getString("$item.material")
-            ?: error("Material for item $item not found!")
+    fun getMaterial(item: String): Material {
+        return config.getString("$item.material")?.let(Material::getMaterial)
+            ?: error("Material for $item not found!")
     }
 
     fun getSlot(item: String): Int {
