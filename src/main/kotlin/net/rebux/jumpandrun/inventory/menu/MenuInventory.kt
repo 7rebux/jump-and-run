@@ -3,13 +3,10 @@ package net.rebux.jumpandrun.inventory.menu
 import net.rebux.jumpandrun.Plugin
 import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.config.MenuConfig
-import net.rebux.jumpandrun.item.Item.Builder
-import net.rebux.jumpandrun.item.Item.SkullBuilder
 import net.rebux.jumpandrun.parkour.Parkour
 import net.rebux.jumpandrun.parkour.ParkourDifficulty
 import net.rebux.jumpandrun.parkour.ParkourManager
-import net.rebux.jumpandrun.utils.MessageBuilder
-import net.rebux.jumpandrun.utils.TickFormatter
+import net.rebux.jumpandrun.utils.*
 import net.rebux.jumpandrun.utils.TickFormatter.toMessageValue
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -19,6 +16,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.SkullMeta
 
 object MenuInventory {
 
@@ -176,15 +174,18 @@ object MenuInventory {
             }
         }
 
-        val itemStack =
-            Builder()
-                .material(this.material)
-                .displayName(displayName)
-                .lore(lore)
-                .nbt { it.setInteger(Plugin.PARKOUR_TAG, this.id) }
-                .build()
+        val itemStack = itemStack(material) {
+            meta {
+                setDisplayName(displayName)
+                setLore(lore)
+            }
+            nbt {
+                setInteger(Plugin.PARKOUR_TAG, id)
+            }
+        }
 
         // TODO: This is not working for 1.20
+        // TODO: Enchantment is applied but no glowing effect, even without hide enchants flag
         if (playerTime != null) {
             val itemMeta = itemStack.itemMeta
 
@@ -207,19 +208,22 @@ object MenuInventory {
     }
 
     private fun buildPaginationItem(type: PaginationType): ItemStack {
-        return SkullBuilder()
-            .displayName(type.displayName)
-            .username(type.skullName)
-            .nbt { it.setInteger(Plugin.PAGE_STEP_TAG, type.step) }
-            .build()
+        return itemStack(Material.PLAYER_HEAD) {
+            meta<SkullMeta> {
+                setDisplayName(type.displayName)
+                setOwner(type.skullName)
+            }
+            nbt {
+                setInteger(Plugin.PAGE_STEP_TAG, type.step)
+            }
+        }
     }
 
     private fun buildCategoryItem(selected: MenuCategory): ItemStack {
-        return Builder()
-            .material(selected.material)
-            .displayName("${selected.color}Category")
-            .lore(
-                buildList {
+        return itemStack(selected.material) {
+            meta {
+                setDisplayName("${selected.color}Category")
+                lore {
                     MenuCategory.entries.forEach { category ->
                         if (category == selected) {
                             add("${category.color}> ${category.name}")
@@ -228,41 +232,45 @@ object MenuInventory {
                         }
                     }
                 }
-            )
-            .nbt { it.setByte(Plugin.CATEGORY_TAG, 0) }
-            .build()
+            }
+            nbt {
+                setByte(Plugin.CATEGORY_TAG, 0)
+            }
+        }
     }
 
     private fun buildSortingItem(selected: MenuSorting): ItemStack {
-        return Builder()
-            .material(Material.COMPARATOR)
-            .displayName("${ChatColor.GREEN}Sorting")
-            .lore(
-                buildList {
+        return itemStack(Material.COMPARATOR) {
+            meta {
+                setDisplayName("${ChatColor.GREEN}Sorting")
+                lore {
                     MenuSorting.entries.forEach { sorting ->
                         val color = if (sorting == selected) ChatColor.WHITE else ChatColor.GRAY
                         add("$color> ${sorting.name}")
                     }
                 }
-            )
-            .nbt { it.setByte(Plugin.SORTING_TAG, 0) }
-            .build()
+            }
+            nbt {
+                setByte(Plugin.SORTING_TAG, 0)
+            }
+        }
     }
 
     private fun buildFilterItem(selected: MenuFilter): ItemStack {
-        return Builder()
-            .material(Material.HOPPER)
-            .displayName("${ChatColor.LIGHT_PURPLE}Filter")
-            .lore(
-                buildList {
+        return itemStack(Material.HOPPER) {
+            meta {
+                setDisplayName("${ChatColor.LIGHT_PURPLE}Filter")
+                lore {
                     MenuFilter.entries.forEach { filter ->
                         val color = if (filter == selected) ChatColor.WHITE else ChatColor.GRAY
                         add("$color> ${filter.name}")
                     }
                 }
-            )
-            .nbt { it.setByte(Plugin.FILTER_TAG, 0) }
-            .build()
+            }
+            nbt {
+                setByte(Plugin.FILTER_TAG, 0)
+            }
+        }
     }
 
     private fun buildLeaderboardItem(player: Player): ItemStack {
@@ -270,11 +278,10 @@ object MenuInventory {
         val recordCount = recordsByPlayer[player.uniqueId] ?: 0
         val rank = recordsByPlayer.entries.indexOfFirst { it.key == player.uniqueId } + 1
 
-        return Builder()
-            .material(Material.NETHER_STAR)
-            .displayName("${ChatColor.AQUA}Leaderboard")
-            .lore(
-                buildList {
+        return itemStack(Material.NETHER_STAR) {
+            meta {
+                setDisplayName("${ChatColor.AQUA}Leaderboard")
+                lore {
                     recordsByPlayer.entries
                         .take(5)
                         .forEach {
@@ -285,8 +292,10 @@ object MenuInventory {
                     add("${ChatColor.GRAY}Your Records: ${ChatColor.GOLD}${recordCount}")
                     add("${ChatColor.GRAY}Your Rank: ${ChatColor.GOLD}${rank}")
                 }
-            )
-            .nbt { it.setByte(Plugin.ID_TAG, 0) } // Prevent inventory interactions
-            .build()
+            }
+            nbt {
+                setByte(Plugin.ID_TAG, 0)
+            }
+        }
     }
 }
