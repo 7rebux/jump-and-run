@@ -8,7 +8,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
@@ -27,15 +26,11 @@ object PlayerInteractListener : Listener {
             }
         } catch (_: NoSuchMethodError) { }
 
-        if (event.action !in listOf(Action.RIGHT_CLICK_BLOCK, Action.RIGHT_CLICK_AIR)) {
-            return
-        }
-
         if (itemStack == null || itemStack.type == Material.AIR || itemStack.amount == 0) {
             return
         }
 
-        ItemRegistry.handleInteraction(itemStack, event.player)
+        ItemRegistry.handleInteraction(itemStack, event)
     }
 
     // The lobby plugin of "auragames.de" prevents interacting with mine carts

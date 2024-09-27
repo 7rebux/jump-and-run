@@ -6,5 +6,6 @@ import org.bukkit.Location
 data class PracticeData(
     var previousState: PlayerStatePersistence? = null,
     var startLocation: Location? = null,
+    var finishPosition: Location? = null,
     var timer: TickCounter = TickCounter()
 )
