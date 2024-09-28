@@ -1,6 +1,7 @@
 package net.rebux.jumpandrun.item.impl
 
 import net.rebux.jumpandrun.api.PlayerDataManager.data
+import net.rebux.jumpandrun.config.MessagesConfig
 import net.rebux.jumpandrun.item.Item
 import net.rebux.jumpandrun.safeTeleport
 import net.rebux.jumpandrun.utils.MessageBuilder
@@ -22,7 +23,6 @@ object PracticeItem : Item("practice") {
         }
 
         player.data.practiceData.finishPosition = block.location
-
-        MessageBuilder("Set practice finish block").buildAndSend(player)
+        MessageBuilder(MessagesConfig.Command.Practice.setFinish).buildAndSend(player)
     }
 }

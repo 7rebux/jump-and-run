@@ -73,10 +73,15 @@ object PlayerMoveListener : Listener {
             val ticks = data.practiceData.timer.stop()
             val (time, unit) = TickFormatter.format(ticks)
 
-            MessageBuilder("Took $time ${unit.toMessageValue()}")
-                .buildAndSend(player)
-
             player.safeTeleport(data.practiceData.startLocation!!)
+            MessageBuilder(MessagesConfig.Command.Practice.finish)
+                .values(
+                    mapOf(
+                        "time" to time,
+                        "unit" to unit.toMessageValue(),
+                    )
+                )
+                .buildAndSend(player)
         }
 
         // Special blocks
