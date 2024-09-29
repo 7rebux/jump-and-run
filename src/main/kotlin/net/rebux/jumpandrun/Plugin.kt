@@ -4,6 +4,7 @@ package net.rebux.jumpandrun
 
 import net.rebux.jumpandrun.commands.JumpAndRunCommand
 import net.rebux.jumpandrun.commands.PracticeCommand
+import net.rebux.jumpandrun.commands.SplitCommand
 import net.rebux.jumpandrun.commands.TopCommand
 import net.rebux.jumpandrun.database.DatabaseConnector
 import net.rebux.jumpandrun.database.SchemaInitializer
@@ -49,7 +50,9 @@ class Plugin : JavaPlugin() {
         registerCommands(
             "jumpandrun" to JumpAndRunCommand(this),
             "practice" to PracticeCommand(),
-            "top" to TopCommand())
+            "top" to TopCommand(),
+            "split" to SplitCommand(this),
+        )
     }
 
     private fun registerListeners(vararg listener: Listener) {

@@ -21,6 +21,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerMoveEvent
+import kotlin.math.min
 
 object PlayerMoveListener : Listener {
 
@@ -82,6 +83,22 @@ object PlayerMoveListener : Listener {
                     )
                 )
                 .buildAndSend(player)
+        }
+
+        // Handle parkour splits
+        data.parkourData.splits.firstOrNull { it.block == blockBelow }?.let { split ->
+            val elapsedTicks = data.parkourData.timer.ticks
+
+            if (split.bestTime == null) {
+                split.bestTime = elapsedTicks
+                return@let
+            }
+
+            val ticksDelta = split.bestTime!! - elapsedTicks
+            val (delta, unit) = TickFormatter.format(ticksDelta)
+
+            split.bestTime = min(split.bestTime!!, elapsedTicks)
+            player.sendMessage("$delta ${unit.toMessageValue()}")
         }
 
         // Special blocks

@@ -26,6 +26,7 @@ object ParkourLeaveListener : Listener {
             this.parkourData.checkpoint = null
             this.parkourData.previousState = null
             this.parkourData.timer.stop()
+            this.parkourData.splits.clear()
         }
 
         player.scoreboard = Bukkit.getScoreboardManager()!!.newScoreboard
