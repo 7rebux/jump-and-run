@@ -3,7 +3,8 @@ package net.rebux.jumpandrun.item
 import de.tr7zw.nbtapi.NBT
 import net.rebux.jumpandrun.Plugin
 import net.rebux.jumpandrun.getTag
-import org.bukkit.entity.Player
+import org.bukkit.event.block.Action
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
@@ -19,10 +20,15 @@ object ItemRegistry {
         return nextId.getAndIncrement().also { id -> items[id] = item }
     }
 
-    fun handleInteraction(itemStack: ItemStack, player: Player) {
-        itemStack.getTag(Plugin.ID_TAG)?.let {
-            items[it]?.onInteract(player)
-                ?: error("Found ItemStack with custom id which is not registered!")
+    fun handleInteraction(itemStack: ItemStack, event: PlayerInteractEvent) {
+        val id = itemStack.getTag(Plugin.ID_TAG) ?: return
+        val item = items[id]
+            ?: error("Found ItemStack with custom id which is not registered!")
+
+        if (event.action in listOf(Action.RIGHT_CLICK_AIR, Action.RIGHT_CLICK_BLOCK)) {
+            item.onInteract(event.player)
+        } else if (event.action == Action.LEFT_CLICK_BLOCK) {
+            item.onLeftClickBlock(event.player, event.clickedBlock!!)
         }
     }
 

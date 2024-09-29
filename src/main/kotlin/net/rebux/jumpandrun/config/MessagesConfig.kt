@@ -36,6 +36,8 @@ object MessagesConfig : CustomConfiguration("messages.yml") {
         internal object Practice {
             val enabled = getMessage("command.practice.enabled")
             val disabled = getMessage("command.practice.disabled")
+            val finish = getMessage("command.practice.finish")
+            val setFinish = getMessage("command.practice.setFinish")
         }
     }
 

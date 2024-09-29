@@ -28,6 +28,8 @@ command:
         §2➥ Direction: §f{direction} 
         §2➥ Facing: §f{yaw} / {pitch}
     disabled: §aDisabled practice mode
+    finish: "§7Reached practice mode finish §7in §a{time} {unit}§7!"
+    setFinish: "§7Successfully set finish block for practice mode!"
 
 item:
   hider:

@@ -3,6 +3,7 @@ package net.rebux.jumpandrun.item
 import net.rebux.jumpandrun.config.ItemsConfig
 import net.rebux.jumpandrun.utils.itemStack
 import net.rebux.jumpandrun.utils.meta
+import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -16,6 +17,8 @@ abstract class Item(configName: String) {
     private val slot = ItemsConfig.getSlot(configName)
 
     abstract fun onInteract(player: Player)
+
+    open fun onLeftClickBlock(player: Player, block: Block) {}
 
     fun createItemStack(): ItemStack {
         return itemStack(material) {

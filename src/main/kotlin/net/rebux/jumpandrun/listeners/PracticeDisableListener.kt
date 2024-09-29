@@ -24,6 +24,7 @@ object PracticeDisableListener : Listener {
         practiceData.apply {
             timer.stop()
             startLocation = null
+            finishPosition = null
         }
 
         practiceData.previousState!!.restore()

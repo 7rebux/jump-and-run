@@ -69,6 +69,19 @@ object PlayerMoveListener : Listener {
             Bukkit.getPluginManager()
                 .callEvent(ParkourFinishEvent(player, player.data.parkourData.parkour!!))
             return
+        } else if (data.inPractice && blockBelow.location == data.practiceData.finishPosition) {
+            val ticks = data.practiceData.timer.stop()
+            val (time, unit) = TickFormatter.format(ticks)
+
+            player.safeTeleport(data.practiceData.startLocation!!)
+            MessageBuilder(MessagesConfig.Command.Practice.finish)
+                .values(
+                    mapOf(
+                        "time" to time,
+                        "unit" to unit.toMessageValue(),
+                    )
+                )
+                .buildAndSend(player)
         }
 
         // Special blocks
