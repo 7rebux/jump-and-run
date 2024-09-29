@@ -45,6 +45,7 @@ class Plugin : JavaPlugin() {
             ParkourJoinListener,
             ParkourLeaveListener,
             ParkourFinishListener(this),
+            PracticeFinishListener,
         )
 
         registerCommands(

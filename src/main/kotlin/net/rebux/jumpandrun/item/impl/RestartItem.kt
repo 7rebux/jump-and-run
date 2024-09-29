@@ -19,6 +19,7 @@ object RestartItem : Item("restart") {
 
         val startLocation = player.data.parkourData.parkour!!.startLocation
 
+        player.data.parkourData.splits.forEach { it.reached = false }
         player.data.parkourData.checkpoint = startLocation
         player.data.parkourData.timer.stop()
         player.safeTeleport(startLocation)
