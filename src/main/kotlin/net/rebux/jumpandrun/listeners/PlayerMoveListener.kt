@@ -81,8 +81,10 @@ object PlayerMoveListener : Listener {
     }
 
     private fun handleParkourSplits(player: Player, blockBelow: Block) {
+        // Try to find a split which matches the current block underneath the player
         val split = player.data.parkourData.splits.firstOrNull { it.block == blockBelow }
             ?: return
+
         val splitIndex = player.data.parkourData.splits.indexOf(split)
         val elapsedTicks = player.data.parkourData.timer.ticks
 
@@ -95,6 +97,7 @@ object PlayerMoveListener : Listener {
             return
         }
 
+        val elapsed = TickFormatter.format(elapsedTicks).first
         val ticksDelta = split.bestTime!! - elapsedTicks
         val delta = TickFormatter.format(ticksDelta).first
         val color = when {
@@ -106,7 +109,7 @@ object PlayerMoveListener : Listener {
         split.bestTime = min(split.bestTime!!, elapsedTicks)
         split.reached = true
 
-        player.sendMessage("$splitIndex: $color$delta")
+        player.sendMessage("$splitIndex ${ChatColor.GRAY}$elapsed ($color$delta${ChatColor.GRAY})")
     }
 
     private fun checkForPacketLoss(player: Player, event: PlayerMoveEvent) {
@@ -139,7 +142,12 @@ object PlayerMoveListener : Listener {
         val (time, unit) = TickFormatter.format(timer.ticks)
         player.sendActionBar(
             MessageBuilder(MessagesConfig.Timer.bar)
-                .values(mapOf("time" to time, "unit" to unit.toMessageValue()))
+                .values(
+                    mapOf(
+                        "time" to time,
+                        "unit" to unit.toMessageValue()
+                    )
+                )
                 .prefix(false)
                 .buildSingle())
     }

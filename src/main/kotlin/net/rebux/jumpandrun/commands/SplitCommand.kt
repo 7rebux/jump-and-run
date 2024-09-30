@@ -1,6 +1,5 @@
 package net.rebux.jumpandrun.commands
 
-import net.rebux.jumpandrun.Plugin
 import net.rebux.jumpandrun.api.ParkourSplit
 import net.rebux.jumpandrun.api.PlayerDataManager.data
 import net.rebux.jumpandrun.utils.MessageBuilder
@@ -10,7 +9,8 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 
-class SplitCommand(private val plugin: Plugin) : CommandExecutor, TabCompleter {
+// TODO: Create config entries for messages
+object SplitCommand : CommandExecutor, TabCompleter {
 
     override fun onCommand(
         sender: CommandSender,
@@ -43,13 +43,21 @@ class SplitCommand(private val plugin: Plugin) : CommandExecutor, TabCompleter {
         command: Command,
         label: String,
         args: Array<out String>
-    ): MutableList<String> {
-        return emptyList<String>().toMutableList()
+    ): List<String> {
+        if (args.size == 1) {
+            return listOf("list", "add", "remove")
+        }
+
+        return emptyList()
     }
 
     private fun handleListCommand(player: Player) {
-        player.data.parkourData.splits.forEachIndexed { index, split ->
-            player.sendMessage("#$index ${split.block.type} (${split.block.location})")
+        if (player.data.parkourData.splits.isEmpty()) {
+            player.sendMessage("No splits set for this parkour yet!")
+        } else {
+            player.data.parkourData.splits.forEachIndexed { index, split ->
+                player.sendMessage("#$index ${split.block.type} (${split.block.location})")
+            }
         }
     }
 
@@ -62,15 +70,16 @@ class SplitCommand(private val plugin: Plugin) : CommandExecutor, TabCompleter {
         }
 
         player.data.parkourData.splits += ParkourSplit(targetBlock)
-        player.sendMessage("Successfully added ${targetBlock.type} (${targetBlock.location})")
+        player.sendMessage("Successfully added ${targetBlock.type} (${targetBlock.location.toVector()})")
     }
 
     private fun handleRemoveCommand(player: Player, index: Int?) {
         if (index == null || index !in player.data.parkourData.splits.indices) {
             player.sendMessage("Please provide a valid index")
+            return
         }
 
-        player.data.parkourData.splits.removeAt(index!!)
+        player.data.parkourData.splits.removeAt(index)
         player.sendMessage("Successfully removed")
     }
 

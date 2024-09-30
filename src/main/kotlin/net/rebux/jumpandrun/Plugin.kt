@@ -52,7 +52,7 @@ class Plugin : JavaPlugin() {
             "jumpandrun" to JumpAndRunCommand(this),
             "practice" to PracticeCommand(),
             "top" to TopCommand(),
-            "split" to SplitCommand(this),
+            "split" to SplitCommand,
         )
     }
 
