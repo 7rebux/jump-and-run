@@ -54,7 +54,7 @@ object PlayerMoveListener : Listener {
 
         handleTimer(player, event.isPositionChange())
 
-        if (data.inParkour) {
+        if (!data.inPractice) {
             checkForPacketLoss(player, event)
             handleParkourSplits(player, blockBelow)
         }
