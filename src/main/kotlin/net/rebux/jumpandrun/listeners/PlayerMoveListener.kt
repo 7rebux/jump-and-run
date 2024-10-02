@@ -58,7 +58,7 @@ object PlayerMoveListener : Listener {
             checkForPacketLoss(player, event)
             handleParkourSplits(player, blockBelow)
         }
-
+        
         if (player.location.y <= ParkourConfig.resetHeight) {
             player.safeTeleport(checkpoint)
             SoundUtil.playSound(SoundsConfig.resetHeight, player)

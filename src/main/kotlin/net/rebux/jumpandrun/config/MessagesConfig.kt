@@ -18,6 +18,9 @@ object MessagesConfig : CustomConfiguration("messages.yml") {
     }
 
     internal object Command {
+
+        val playersOnly = getMessage("command.playersOnly")
+
         internal object Top {
             internal object Global {
                 val empty = getMessage("command.top.global.empty")
@@ -38,6 +41,15 @@ object MessagesConfig : CustomConfiguration("messages.yml") {
             val disabled = getMessage("command.practice.disabled")
             val finish = getMessage("command.practice.finish")
             val setFinish = getMessage("command.practice.setFinish")
+        }
+
+        // TODO: Add config values
+        internal object Split {
+            val empty = getMessage("command.split.empty")
+            val entry = getMessage("command.split.entry")
+            val added = getMessage("command.split.added")
+            val removed = getMessage("command.split.removed")
+            val invalid = getMessage("command.split.invalid")
         }
     }
 

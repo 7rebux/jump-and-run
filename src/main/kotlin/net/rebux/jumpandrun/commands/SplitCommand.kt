@@ -2,6 +2,7 @@ package net.rebux.jumpandrun.commands
 
 import net.rebux.jumpandrun.api.ParkourSplit
 import net.rebux.jumpandrun.api.PlayerDataManager.data
+import net.rebux.jumpandrun.config.MessagesConfig
 import net.rebux.jumpandrun.utils.MessageBuilder
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -9,7 +10,6 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 
-// TODO: Create config entries for messages
 object SplitCommand : CommandExecutor, TabCompleter {
 
     override fun onCommand(
@@ -19,12 +19,16 @@ object SplitCommand : CommandExecutor, TabCompleter {
         args: Array<out String>
     ): Boolean {
         if (sender !is Player) {
-            sender.sendMessage("This command can only be called as a player!")
+            MessageBuilder(MessagesConfig.Command.playersOnly)
+                .error()
+                .buildAndSend(sender)
             return true
         }
 
         if (!sender.data.inParkour) {
-            sender.sendMessage("This command can only be called while in parkour mode!")
+            MessageBuilder("This command can only be called while in parkour mode!")
+                .error()
+                .buildAndSend(sender)
             return true
         }
 
@@ -53,10 +57,22 @@ object SplitCommand : CommandExecutor, TabCompleter {
 
     private fun handleListCommand(player: Player) {
         if (player.data.parkourData.splits.isEmpty()) {
-            player.sendMessage("No splits set for this parkour yet!")
+            MessageBuilder(MessagesConfig.Command.Split.empty)
+                .error()
+                .buildAndSend(player)
         } else {
             player.data.parkourData.splits.forEachIndexed { index, split ->
-                player.sendMessage("#$index ${split.block.type} (${split.block.location})")
+                MessageBuilder(MessagesConfig.Command.Split.entry)
+                    .values(
+                        mapOf(
+                            "index" to index,
+                            "block" to split.block.type.name,
+                            "x" to split.block.x,
+                            "y" to split.block.y,
+                            "z" to split.block.z
+                        )
+                    )
+                    .buildAndSend(player)
             }
         }
     }
@@ -65,22 +81,37 @@ object SplitCommand : CommandExecutor, TabCompleter {
         val targetBlock = player.getTargetBlockExact(4)
 
         if (targetBlock == null) {
-            player.sendMessage("")
+            MessageBuilder(MessagesConfig.Command.Split.invalid)
+                .error()
+                .buildAndSend(player)
             return
         }
 
         player.data.parkourData.splits += ParkourSplit(targetBlock)
-        player.sendMessage("Successfully added ${targetBlock.type} (${targetBlock.location.toVector()})")
+        MessageBuilder(MessagesConfig.Command.Split.added)
+            .values(
+                mapOf(
+                    "block" to targetBlock.type.name,
+                    "x" to targetBlock.x,
+                    "y" to targetBlock.y,
+                    "z" to targetBlock.z
+                )
+            )
+            .buildAndSend(player)
     }
 
     private fun handleRemoveCommand(player: Player, index: Int?) {
         if (index == null || index !in player.data.parkourData.splits.indices) {
-            player.sendMessage("Please provide a valid index")
+            MessageBuilder("Please provide a valid index!")
+                .error()
+                .buildAndSend(player)
             return
         }
 
         player.data.parkourData.splits.removeAt(index)
-        player.sendMessage("Successfully removed")
+        MessageBuilder(MessagesConfig.Command.Split.removed)
+            .values(mapOf("index" to index))
+            .buildAndSend(player)
     }
 
     private fun sendUsage(sender: CommandSender) {

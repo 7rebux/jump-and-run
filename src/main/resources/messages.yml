@@ -9,6 +9,7 @@ event:
   personalBest: "§7You have set a new personal best time"
 
 command:
+  playersOnly: "This command can only be called as a player!"
   top:
       global:
         empty: "There are no records yet!"
@@ -30,6 +31,12 @@ command:
     disabled: §aDisabled practice mode
     finish: "§7Reached practice mode finish §7in §a{time} {unit}§7!"
     setFinish: "§7Successfully set finish block for practice mode!"
+  split:
+    removed: "§7Successfully removed split number §c{index}§7!"
+    added: "§7Successfully added {block} ({x},{y},{z})!"
+    empty: "No splits set for this parkour yet!"
+    entry: "§a#{index} §9{block} §7({x},{y},{z})"
+    invalid: "Invalid target block!"
 
 item:
   hider:

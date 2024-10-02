@@ -1,8 +1,10 @@
 package net.rebux.jumpandrun.commands
 
 import net.rebux.jumpandrun.api.PlayerDataManager.data
+import net.rebux.jumpandrun.config.MessagesConfig
 import net.rebux.jumpandrun.events.PracticeDisableEvent
 import net.rebux.jumpandrun.events.PracticeEnableEvent
+import net.rebux.jumpandrun.utils.MessageBuilder
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
@@ -18,7 +20,9 @@ class PracticeCommand : CommandExecutor {
         args: Array<String>
     ): Boolean {
         if (sender !is Player) {
-            sender.sendMessage("This command can only be called as a player!")
+            MessageBuilder(MessagesConfig.Command.playersOnly)
+                .error()
+                .buildAndSend(sender)
             return true
         }
 
