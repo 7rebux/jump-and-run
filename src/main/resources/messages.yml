@@ -7,6 +7,7 @@ event:
   globalBest: "§a{player} §7has beaten the best time at §a{name} §7of §a{holders} §7for §a{time} {unit}§7!"
   firstGlobalBest: "§7The player §a{player} §7was the first to complete §a{name} §7in §a{time} {unit}"
   personalBest: "§7You have set a new personal best time"
+  splitTime: "§f{index}: §7{time} ({delta}§7)"
 
 command:
   playersOnly: "This command can only be called as a player!"
@@ -33,7 +34,7 @@ command:
     setFinish: "§7Successfully set finish block for practice mode!"
   split:
     removed: "§7Successfully removed split number §c{index}§7!"
-    added: "§7Successfully added {block} ({x},{y},{z})!"
+    added: "§7Successfully added §9{block} §7({x},{y},{z})!"
     empty: "No splits set for this parkour yet!"
     entry: "§a#{index} §9{block} §7({x},{y},{z})"
     invalid: "Invalid target block!"

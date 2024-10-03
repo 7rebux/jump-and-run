@@ -109,7 +109,15 @@ object PlayerMoveListener : Listener {
         split.bestTime = min(split.bestTime!!, elapsedTicks)
         split.reached = true
 
-        player.sendMessage("$splitIndex ${ChatColor.GRAY}$elapsed ($color$delta${ChatColor.GRAY})")
+        MessageBuilder(MessagesConfig.Event.splitTime)
+            .values(
+                mapOf(
+                    "index" to splitIndex,
+                    "time" to elapsed,
+                    "delta" to "$color$delta"
+                )
+            )
+            .buildAndSend(player)
     }
 
     private fun checkForPacketLoss(player: Player, event: PlayerMoveEvent) {

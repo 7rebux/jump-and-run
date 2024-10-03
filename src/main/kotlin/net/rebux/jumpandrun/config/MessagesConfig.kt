@@ -15,6 +15,7 @@ object MessagesConfig : CustomConfiguration("messages.yml") {
         val globalBest = getMessage("event.globalBest")
         val firstGlobalBest = getMessage("event.firstGlobalBest")
         val personalBest = getMessage("event.personalBest")
+        val splitTime = getMessage("event.splitTime")
     }
 
     internal object Command {
