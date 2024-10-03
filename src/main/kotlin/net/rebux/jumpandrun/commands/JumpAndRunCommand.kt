@@ -2,6 +2,7 @@ package net.rebux.jumpandrun.commands
 
 import net.rebux.jumpandrun.Plugin
 import net.rebux.jumpandrun.api.PlayerDataManager.data
+import net.rebux.jumpandrun.config.MessagesConfig
 import net.rebux.jumpandrun.database.entities.ParkourEntity
 import net.rebux.jumpandrun.database.entities.TimeEntity
 import net.rebux.jumpandrun.events.ParkourJoinEvent
@@ -66,7 +67,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabComple
 
     private fun handleJoinCommand(sender: CommandSender, id: Int?) {
         if (sender !is Player) {
-            MessageBuilder("This command can only be called as a player!")
+            MessageBuilder(MessagesConfig.Command.playersOnly)
                 .error()
                 .buildAndSend(sender)
             return
@@ -84,7 +85,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabComple
 
     private fun handleAddCommand(sender: CommandSender, args: Array<String>) {
         if (sender !is Player) {
-            MessageBuilder("This command can only be called as a player!")
+            MessageBuilder(MessagesConfig.Command.playersOnly)
                 .error()
                 .buildAndSend(sender)
             return
@@ -122,7 +123,7 @@ class JumpAndRunCommand(private val plugin: Plugin) : CommandExecutor, TabComple
 
     private fun handleLeaveCommand(sender: CommandSender) {
         if (sender !is Player) {
-            MessageBuilder("This command can only be called as a player!")
+            MessageBuilder(MessagesConfig.Command.playersOnly)
                 .error()
                 .buildAndSend(sender)
             return

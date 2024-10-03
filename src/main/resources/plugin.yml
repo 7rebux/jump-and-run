@@ -19,3 +19,5 @@ commands:
   practice:
     aliases: [prac]
     description: Toggle practice mode
+  split:
+    description: Manage parkour splits

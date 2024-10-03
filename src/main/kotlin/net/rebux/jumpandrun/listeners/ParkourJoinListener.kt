@@ -32,10 +32,11 @@ object ParkourJoinListener : Listener {
             player.addParkourItems()
         }
 
-        player.data.apply {
-            this.parkourData.timer.stop()
-            this.parkourData.parkour = parkour
-            this.parkourData.checkpoint = parkour.startLocation
+        player.data.parkourData.apply {
+            this.parkour = parkour
+            checkpoint = parkour.startLocation
+            timer.stop()
+            splits.clear()
         }
 
         player.gameMode = ParkourConfig.gameMode
